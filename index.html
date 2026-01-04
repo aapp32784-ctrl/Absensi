@@ -17,6 +17,7 @@
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 100; align-items: center; justify-content: center; padding: 16px; }
         #sync-loader { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.9); z-index: 1000; align-items: center; justify-content: center; flex-direction: column; }
         
+        /* Updated Sidebar Active Style */
         .sidebar-active { 
             background-color: white !important; 
             color: var(--theme-primary) !important; 
@@ -42,6 +43,7 @@
     <div id="view-login" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4">
         <div class="bg-white w-full max-w-md rounded-[40px] p-8 space-y-6">
             <div class="flex flex-col items-center gap-4">
+                <!-- Profile photo on login screen as requested -->
                 <img src="https://iili.io/fwqYOWx.png" alt="Yelmi Putri, S.Pd." class="h-28 w-28 object-cover rounded-full border-4 border-blue-50 shadow-md">
                 <div class="text-center">
                     <h2 class="text-xl font-black text-gray-800">Yelmi Putri, S.Pd.</h2>
@@ -65,11 +67,12 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" class="theme-text-primary" stroke="currentColor" stroke-width="2.5"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
         </button>
         <header class="theme-bg-primary text-white pt-12 pb-10 px-6 shadow-xl rounded-b-[40px] text-center flex flex-col items-center gap-4">
+            <!-- Profile Image near SDN 22 text -->
             <img src="https://iili.io/fwqYOWx.png" alt="Admin SDN 22" class="h-16 w-16 object-cover rounded-full border-2 border-white/30 shadow-lg">
             <div class="space-y-1">
                 <p class="text-xs font-bold uppercase tracking-[0.2em] opacity-90">Yelmi Putri, S.Pd.</p>
                 <h1 class="text-3xl font-extrabold tracking-tight">SDN 22 TANAH KERAS</h1>
-                <p class="text-[10px] font-medium opacity-70 uppercase tracking-widest">Presensi Digital . Kelas 1</p>
+                <p class="text-[10px] font-medium opacity-70 uppercase tracking-widest">Presensi Digital • Kelas 1</p>
             </div>
         </header>
         <main class="max-w-xl mx-auto px-6 -mt-8 pb-12">
@@ -79,18 +82,8 @@
                         <span id="liveDayDate" class="block text-[10px] font-bold text-gray-400 uppercase">Memuat...</span>
                         <span id="liveTime" class="block text-2xl font-black theme-text-primary">00:00:00</span>
                     </div>
-                    <button onclick="startScanner()" class="theme-bg-primary p-4 rounded-2xl text-white shadow-lg flex items-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-                        <span class="text-xs font-bold">SCAN QR</span>
-                    </button>
+                    <button onclick="startScanner()" class="theme-bg-primary p-4 rounded-2xl text-white shadow-lg"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></button>
                 </div>
-                
-                <div class="p-4 bg-blue-50 rounded-2xl border border-blue-100">
-                    <p class="text-[10px] text-blue-600 font-bold text-center leading-relaxed">
-                        INFO: Gunakan tombol Scan QR untuk absen otomatis (Hadir).<br>Gunakan formulir di bawah jika ingin absen manual / Sakit / Izin.
-                    </p>
-                </div>
-
                 <form id="absensiForm" class="space-y-4">
                     <div class="space-y-1">
                         <label class="text-xs font-bold text-gray-500 uppercase px-1">Nama Lengkap</label>
@@ -102,7 +95,7 @@
                         <div class="space-y-1"><label class="text-xs font-bold text-gray-500 uppercase px-1">Kelas</label><select id="kelas" required class="w-full px-5 py-4 rounded-2xl bg-gray-50 outline-none bg-white"><option value="" disabled selected>Pilih</option><option value="Kelas 1">1</option><option value="Kelas 2">2</option><option value="Kelas 3">3</option><option value="Kelas 4">4</option><option value="Kelas 5">5</option><option value="Kelas 6">6</option></select></div>
                     </div>
                     <div class="space-y-2">
-                        <label class="text-xs font-bold text-gray-500 uppercase px-1">Keterangan Manual</label>
+                        <label class="text-xs font-bold text-gray-500 uppercase px-1">Keterangan</label>
                         <div class="grid grid-cols-2 gap-2">
                             <label class="flex items-center justify-center p-3 bg-gray-50 rounded-xl cursor-pointer has-[:checked]:bg-blue-600 has-[:checked]:text-white transition-all text-xs font-bold border border-gray-100"><input type="radio" name="ket" value="Hadir" checked class="hidden" onchange="document.getElementById('keterangan').value=this.value">Hadir</label>
                             <label class="flex items-center justify-center p-3 bg-gray-50 rounded-xl cursor-pointer has-[:checked]:bg-amber-500 has-[:checked]:text-white transition-all text-xs font-bold border border-gray-100"><input type="radio" name="ket" value="Sakit" class="hidden" onchange="document.getElementById('keterangan').value=this.value">Sakit</label>
@@ -111,7 +104,7 @@
                         </div>
                         <input type="hidden" id="keterangan" value="Hadir">
                     </div>
-                    <button type="submit" class="w-full theme-bg-primary text-white font-black py-5 rounded-[24px] shadow-xl text-lg active:scale-95 transition-all">Kirim Presensi Manual</button>
+                    <button type="submit" class="w-full theme-bg-primary text-white font-black py-5 rounded-[24px] shadow-xl text-lg active:scale-95 transition-all">Kirim Presensi</button>
                 </form>
             </div>
         </main>
@@ -142,6 +135,7 @@
 
         <!-- Content Area -->
         <main class="flex-1 overflow-y-auto no-scrollbar pb-24 md:pb-0">
+            <!-- Mobile Header Profile -->
             <div class="md:hidden bg-white p-4 border-b flex items-center justify-center gap-3">
                 <img src="https://iili.io/fwqYOWx.png" alt="Admin" class="h-10 w-10 object-cover rounded-full">
                 <span class="font-black text-gray-800 text-xs">Yelmi Putri, S.Pd.</span>
@@ -180,6 +174,7 @@
                         <button onclick="downloadFilteredPDF()" class="bg-emerald-100 text-emerald-600 p-4 rounded-2xl font-bold shadow-sm active:scale-95 transition-all">PDF</button>
                     </div>
 
+                    <!-- Filter Section -->
                     <div class="bg-white p-6 rounded-[32px] shadow-sm border border-gray-100">
                         <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Pencarian & Filter</p>
                         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -226,6 +221,7 @@
             </div>
         </main>
 
+        <!-- Mobile Nav -->
         <nav class="md:hidden fixed bottom-0 left-0 w-full bg-white border-t px-8 py-4 flex justify-between items-center z-40 rounded-t-[32px] shadow-[0_-10px_30px_rgba(0,0,0,0.05)]">
             <button onclick="switchAdminTab('beranda')" class="flex flex-col items-center gap-1 text-blue-600" id="mob-beranda"><span class="text-[10px] font-black uppercase">Utama</span></button>
             <button onclick="switchAdminTab('data-siswa')" class="flex flex-col items-center gap-1 text-gray-300" id="mob-data-siswa"><span class="text-[10px] font-black uppercase">Siswa</span></button>
@@ -233,7 +229,7 @@
         </nav>
     </div>
 
-    <!-- Modals -->
+    <!-- Modal Form Tambah/Edit Siswa -->
     <div id="student-modal" class="modal-overlay">
         <div class="bg-white w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden">
             <div class="theme-bg-primary p-6 text-white flex justify-between items-center">
@@ -259,17 +255,9 @@
         </div>
     </div>
 
+    <!-- Scanner Modal -->
     <div id="scanner-modal" class="modal-overlay">
-        <div class="relative w-full max-sm px-6">
-            <div class="bg-white rounded-3xl overflow-hidden shadow-2xl">
-                <div id="reader"></div>
-                <div class="p-4 bg-gray-50 border-t flex flex-col items-center gap-1">
-                    <p class="text-[10px] font-black text-blue-600 uppercase">Mode: Absen Otomatis (Hadir)</p>
-                    <p class="text-[8px] text-gray-400 text-center italic">Arahkan kamera ke QR Code Siswa</p>
-                </div>
-            </div>
-            <button onclick="stopScanner()" class="mt-4 w-full bg-white py-4 rounded-2xl font-black active:scale-95 transition-all shadow-xl">TUTUP KAMERA</button>
-        </div>
+        <div class="relative w-full max-sm px-6"><div id="reader"></div><button onclick="stopScanner()" class="mt-4 w-full bg-white py-4 rounded-2xl font-black active:scale-95 transition-all">TUTUP KAMERA</button></div>
     </div>
     
     <div id="messageBox" class="fixed bottom-10 left-1/2 -translate-x-1/2 hidden z-[300] bg-green-600 text-white px-8 py-3 rounded-full font-bold shadow-2xl transition-all"><span id="messageText"></span></div>
@@ -308,33 +296,12 @@
             try {
                 studentsDatabase = await fetchFromSheet('getStudents');
                 attendanceHistory = await fetchFromSheet('getAttendance');
-                filteredAttendance = [...attendanceHistory];
+                filteredAttendance = [...attendanceHistory]; // Initialize filtered list
                 renderStudentDatabase();
                 renderAttendance();
                 updatePublicDataList();
             } finally {
                 document.getElementById('sync-loader').style.display = 'none';
-            }
-        }
-
-        // --- AUDIO FEEDBACK ---
-        function playBeep() {
-            try {
-                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const oscillator = audioCtx.createOscillator();
-                const gainNode = audioCtx.createGain();
-
-                oscillator.connect(gainNode);
-                gainNode.connect(audioCtx.destination);
-
-                oscillator.type = 'sine';
-                oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); // Pitch A5
-                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
-
-                oscillator.start();
-                oscillator.stop(audioCtx.currentTime + 0.1); // Duration 100ms
-            } catch (e) {
-                console.warn("Audio Context not supported or interaction required.");
             }
         }
 
@@ -363,12 +330,29 @@
             } else { alert("Login Gagal!"); }
         });
 
-        async function submitAttendance(entry) {
-            attendanceHistory.unshift(entry);
-            filteredAttendance = [...attendanceHistory];
-            renderAttendance();
-            await postToSheet('addAttendance', entry);
-        }
+        document.getElementById('studentDataForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const editId = document.getElementById('edit-student-id').value;
+            const newStudent = {
+                id: editId || Date.now().toString(),
+                nama: document.getElementById('master-nama').value,
+                nisn: document.getElementById('master-nisn').value,
+                kelas: document.getElementById('master-kelas').value
+            };
+
+            if (editId) {
+                const idx = studentsDatabase.findIndex(s => s.id == editId);
+                if(idx !== -1) studentsDatabase[idx] = newStudent;
+            } else {
+                studentsDatabase.unshift(newStudent);
+            }
+
+            await postToSheet('syncStudents', studentsDatabase);
+            renderStudentDatabase();
+            updatePublicDataList();
+            closeStudentModal();
+            showNotification("Data Berhasil Disinkronkan");
+        });
 
         document.getElementById('absensiForm').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -385,66 +369,14 @@
                 waktu: now.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit', hour12:false})
             };
 
-            await submitAttendance(entry);
+            attendanceHistory.unshift(entry);
+            filteredAttendance = [...attendanceHistory]; // Sync local view
+            await postToSheet('addAttendance', entry);
+            renderAttendance();
             this.reset();
             document.getElementById('keterangan').value = "Hadir";
-            showNotification("Presensi Manual Berhasil!");
+            showNotification("Presensi Berhasil Dikirim!");
         });
-
-        // --- QR SCANNER AUTOMATION ---
-        async function startScanner() {
-            document.getElementById('scanner-modal').style.display = 'flex';
-            html5QrCode = new Html5Qrcode("reader");
-            
-            const config = { fps: 15, qrbox: { width: 250, height: 250 } };
-            
-            await html5QrCode.start({ facingMode: "environment" }, config, async (decodedText) => {
-                // PLAY SOUND ON SUCCESS
-                playBeep();
-                
-                await stopScanner();
-                
-                const dataParts = decodedText.split(',');
-                const scannedName = dataParts[0].trim();
-                
-                const student = studentsDatabase.find(s => s.nama.toLowerCase() === scannedName.toLowerCase());
-                
-                if (student) {
-                    const now = new Date();
-                    const days = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
-                    const autoEntry = {
-                        nama: student.nama,
-                        nisn: student.nisn,
-                        kelas: student.kelas,
-                        keterangan: "Hadir",
-                        hari: days[now.getDay()],
-                        tanggal: now.toLocaleDateString('id-ID'),
-                        isoDate: now.toISOString().split('T')[0],
-                        waktu: now.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit', hour12:false})
-                    };
-                    
-                    await submitAttendance(autoEntry);
-                    showNotification(`Beep! Absen Berhasil: ${student.nama}`);
-                } else {
-                    document.getElementById('nama').value = scannedName;
-                    autoFillSiswa(scannedName);
-                    showNotification("Data Siswa Tidak Ditemukan. Isi Manual.");
-                    document.getElementById('absensiForm').scrollIntoView({ behavior: 'smooth' });
-                }
-            });
-        }
-
-        function stopScanner() { 
-            if(html5QrCode) {
-                return html5QrCode.stop().then(() => {
-                    document.getElementById('scanner-modal').style.display = 'none';
-                    html5QrCode = null;
-                }).catch(err => {
-                    document.getElementById('scanner-modal').style.display = 'none';
-                    console.error("Stop Error:", err);
-                });
-            }
-        }
 
         // --- Filtering Logic ---
         function applyFilters() {
@@ -455,11 +387,22 @@
             filteredAttendance = attendanceHistory.filter(item => {
                 let matchHari = true;
                 let matchTanggal = true;
-                if (hari && item.hari !== hari) matchHari = false;
-                if (mulai && item.isoDate < mulai) matchTanggal = false;
-                if (selesai && item.isoDate > selesai) matchTanggal = false;
+
+                if (hari && item.hari !== hari) {
+                    matchHari = false;
+                }
+
+                if (mulai && item.isoDate < mulai) {
+                    matchTanggal = false;
+                }
+
+                if (selesai && item.isoDate > selesai) {
+                    matchTanggal = false;
+                }
+
                 return matchHari && matchTanggal;
             });
+
             renderAttendance(filteredAttendance);
             showNotification(`${filteredAttendance.length} Data Ditemukan`);
         }
@@ -493,6 +436,7 @@
                 </tr>
             `).join('') : `<tr><td colspan="2" class="px-6 py-12 text-center text-gray-300 italic">Data Absen Kosong</td></tr>`;
 
+            // Statistics always use global history for summary
             document.getElementById('stat-hadir').innerText = attendanceHistory.filter(h => h.keterangan === "Hadir").length;
             document.getElementById('stat-sakit').innerText = attendanceHistory.filter(h => h.keterangan === "Sakit").length;
             document.getElementById('stat-izin').innerText = attendanceHistory.filter(h => h.keterangan === "Izin").length;
@@ -510,6 +454,7 @@
             document.getElementById('student-modal').style.display = 'flex';
         }
 
+        // --- Basic Helpers ---
         function openStudentModal() { 
             document.getElementById('student-modal-title').innerText = "Tambah Siswa Baru";
             document.getElementById('edit-student-id').value = "";
@@ -530,15 +475,38 @@
         }
 
         function showNotification(msg) { const b = document.getElementById('messageBox'); document.getElementById('messageText').innerText = msg; b.classList.remove('hidden'); setTimeout(() => b.classList.add('hidden'), 2500); }
-        function autoFillSiswa(v) { const m = studentsDatabase.find(s => s.nama.toLowerCase() === v.toLowerCase()); if(m) { document.getElementById('nisn').value = m.nisn; document.getElementById('kelas').value = m.kelas; } }
+        function autoFillSiswa(v) { const m = studentsDatabase.find(s => s.nama == v); if(m) { document.getElementById('nisn').value = m.nisn; document.getElementById('kelas').value = m.kelas; } }
         function updatePublicDataList() { document.getElementById('list-siswa-nama').innerHTML = studentsDatabase.map(s => `<option value="${s.nama}">`).join(''); }
         
+        async function startScanner() {
+            document.getElementById('scanner-modal').style.display = 'flex';
+            html5QrCode = new Html5Qrcode("reader");
+            await html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: 250 }, (t) => {
+                stopScanner();
+                const d = t.split(',');
+                if(d[0]) { document.getElementById('nama').value = d[0].trim(); autoFillSiswa(d[0].trim()); }
+            });
+        }
+        function stopScanner() { if(html5QrCode) html5QrCode.stop().then(() => document.getElementById('scanner-modal').style.display = 'none'); }
+
         function downloadFilteredPDF() {
             const dataToDownload = filteredAttendance;
             if (dataToDownload.length === 0) return;
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('landscape');
             doc.text("Laporan Absensi UPT SDN 22 Tanah Keras", 148.5, 20, { align: "center" });
+            
+            // Add filter info if applied
+            const hari = document.getElementById('filter-hari').value;
+            const mulai = document.getElementById('filter-mulai').value;
+            const selesai = document.getElementById('filter-selesai').value;
+            let filterText = "Filter: Semua Data";
+            if(hari || mulai || selesai) {
+                filterText = `Filter: ${hari || 'Semua Hari'} | ${mulai || 'Awal'} s/d ${selesai || 'Sekarang'}`;
+            }
+            doc.setFontSize(10);
+            doc.text(filterText, 14, 28);
+
             const tableData = dataToDownload.map((item, index) => [index + 1, `${item.hari}, ${item.tanggal}`, item.waktu, item.nama, item.nisn, item.kelas, item.keterangan]);
             doc.autoTable({ startY: 32, head: [['No', 'Tanggal', 'Waktu', 'Nama', 'NISN', 'Kelas', 'Keterangan']], body: tableData, theme: 'grid' });
             doc.save(`Laporan_Absensi_SDN22_Filtered.pdf`);
