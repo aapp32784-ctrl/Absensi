@@ -16,9 +16,20 @@
         .theme-text-primary { color: var(--theme-primary) !important; }
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 100; align-items: center; justify-content: center; padding: 16px; }
         #sync-loader { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.9); z-index: 1000; align-items: center; justify-content: center; flex-direction: column; }
-        .sidebar-active { background-color: var(--theme-primary) !important; color: white !important; }
+        
+        /* Updated Sidebar Active Style */
+        .sidebar-active { 
+            background-color: white !important; 
+            color: var(--theme-primary) !important; 
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .mobile-nav-active { color: var(--theme-primary) !important; font-weight: 800; }
+        
+        .sidebar-item-hover:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
     </style>
 </head>
 <body class="min-h-screen">
@@ -32,15 +43,19 @@
     <div id="view-login" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4">
         <div class="bg-white w-full max-w-md rounded-[40px] p-8 space-y-6">
             <div class="flex flex-col items-center gap-4">
-                <img src="https://iili.io/3b1SedN.png" alt="Logo SDN 22 Tanah Keras" class="h-24 w-auto object-contain">
-                <h2 class="text-2xl font-black text-center text-gray-800">Login Guru</h2>
+                <!-- Profile photo on login screen as requested -->
+                <img src="https://iili.io/fwqYOWx.png" alt="Yelmi Putri, S.Pd." class="h-28 w-28 object-cover rounded-full border-4 border-blue-50 shadow-md">
+                <div class="text-center">
+                    <h2 class="text-xl font-black text-gray-800">Yelmi Putri, S.Pd.</h2>
+                    <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">Sistem Presensi Digital</p>
+                </div>
             </div>
             <form id="loginForm" class="space-y-4">
-                <input type="text" id="username" required class="w-full px-6 py-4 rounded-2xl bg-gray-50 outline-none" placeholder="Username">
-                <input type="password" id="password" required class="w-full px-6 py-4 rounded-2xl bg-gray-50 outline-none" placeholder="Password">
+                <input type="text" id="username" required class="w-full px-6 py-4 rounded-2xl bg-gray-50 outline-none border border-transparent focus:border-blue-500 transition-all" placeholder="Username">
+                <input type="password" id="password" required class="w-full px-6 py-4 rounded-2xl bg-gray-50 outline-none border border-transparent focus:border-blue-500 transition-all" placeholder="Password">
                 <div class="flex gap-2 pt-4">
-                    <button type="button" onclick="hideLogin()" class="flex-1 py-4 text-gray-400">Batal</button>
-                    <button type="submit" class="flex-1 theme-bg-primary text-white font-bold rounded-2xl shadow-lg">Masuk</button>
+                    <button type="button" onclick="hideLogin()" class="flex-1 py-4 text-gray-400 font-bold">Batal</button>
+                    <button type="submit" class="flex-1 theme-bg-primary text-white font-bold rounded-2xl shadow-lg active:scale-95 transition-all">Masuk</button>
                 </div>
             </form>
         </div>
@@ -49,11 +64,16 @@
     <!-- UI: Main Public -->
     <div id="view-public" class="block">
         <button onclick="showLogin()" class="fixed top-4 right-4 z-40 bg-white/80 p-3 rounded-2xl shadow-lg border border-gray-100">
-            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" class="theme-text-primary" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" class="theme-text-primary" stroke="currentColor" stroke-width="2.5"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
         </button>
-        <header class="theme-bg-primary text-white pt-16 pb-12 px-6 shadow-xl rounded-b-[40px] text-center">
-            <h1 class="text-3xl font-extrabold tracking-tight">SDN 22 TANAH KERAS</h1>
-            <p class="text-sm font-medium opacity-80 uppercase tracking-widest">Presensi Digital • Kelas 1</p>
+        <header class="theme-bg-primary text-white pt-12 pb-10 px-6 shadow-xl rounded-b-[40px] text-center flex flex-col items-center gap-4">
+            <!-- Profile Image near SDN 22 text -->
+            <img src="https://iili.io/fwqYOWx.png" alt="Admin SDN 22" class="h-16 w-16 object-cover rounded-full border-2 border-white/30 shadow-lg">
+            <div class="space-y-1">
+                <p class="text-xs font-bold uppercase tracking-[0.2em] opacity-90">Yelmi Putri, S.Pd.</p>
+                <h1 class="text-3xl font-extrabold tracking-tight">SDN 22 TANAH KERAS</h1>
+                <p class="text-[10px] font-medium opacity-70 uppercase tracking-widest">Presensi Digital Kelas 1</p>
+            </div>
         </header>
         <main class="max-w-xl mx-auto px-6 -mt-8 pb-12">
             <div class="bg-white rounded-[32px] p-6 shadow-xl space-y-6">
@@ -93,23 +113,32 @@
     <!-- UI: Admin Dashboard -->
     <div id="view-admin" class="hidden flex flex-col md:flex-row h-screen bg-gray-50 overflow-hidden text-gray-800">
         <!-- Sidebar (Desktop) -->
-        <aside class="w-64 bg-white border-r hidden md:flex flex-col">
-            <div class="p-6 border-b flex justify-center items-center">
-                <img src="https://iili.io/3b1SedN.png" alt="Logo SDN 22 Tanah Keras" class="h-16 w-auto object-contain">
+        <aside class="w-64 theme-bg-primary text-white hidden md:flex flex-col shadow-2xl">
+            <div class="p-6 border-b border-white/10 flex flex-col items-center gap-3 bg-black/10">
+                <img src="https://iili.io/fwqYOWx.png" alt="Yelmi Putri, S.Pd." class="h-24 w-24 object-cover rounded-full border-2 border-white/20 shadow-lg">
+                <div class="text-center">
+                    <p class="font-black text-white text-sm leading-tight">Yelmi Putri, S.Pd.</p>
+                    <p class="text-[9px] text-blue-100 font-bold uppercase tracking-widest mt-1">Administrator</p>
+                </div>
             </div>
             <nav class="flex-1 p-4 space-y-2 overflow-y-auto no-scrollbar">
-                <button onclick="switchAdminTab('beranda')" id="btn-beranda" class="w-full text-left px-5 py-4 rounded-2xl sidebar-active font-bold">Beranda</button>
-                <button onclick="switchAdminTab('data-siswa')" id="btn-data-siswa" class="w-full text-left px-5 py-4 rounded-2xl font-bold">Data Siswa</button>
-                <button onclick="switchAdminTab('laporan')" id="btn-laporan" class="w-full text-left px-5 py-4 rounded-2xl font-bold">Laporan</button>
+                <button onclick="switchAdminTab('beranda')" id="btn-beranda" class="w-full text-left px-5 py-4 rounded-2xl sidebar-active font-bold transition-all duration-300">Beranda</button>
+                <button onclick="switchAdminTab('data-siswa')" id="btn-data-siswa" class="w-full text-left px-5 py-4 rounded-2xl font-bold transition-all duration-300 sidebar-item-hover">Data Siswa</button>
+                <button onclick="switchAdminTab('laporan')" id="btn-laporan" class="w-full text-left px-5 py-4 rounded-2xl font-bold transition-all duration-300 sidebar-item-hover">Laporan</button>
             </nav>
-            <div class="p-6"><button onclick="logout()" class="w-full py-4 rounded-2xl text-red-500 bg-red-50 font-black">Logout</button></div>
+            <div class="p-6">
+                <button onclick="logout()" class="w-full py-4 rounded-2xl text-white bg-red-600 hover:bg-red-700 font-black shadow-lg shadow-red-900/20 active:scale-95 transition-all">
+                    Logout
+                </button>
+            </div>
         </aside>
 
         <!-- Content Area -->
         <main class="flex-1 overflow-y-auto no-scrollbar pb-24 md:pb-0">
-            <!-- Mobile Header Logo -->
-            <div class="md:hidden bg-white p-4 border-b flex items-center justify-center">
-                <img src="https://iili.io/3b1SedN.png" alt="Logo" class="h-10 w-auto">
+            <!-- Mobile Header Profile -->
+            <div class="md:hidden bg-white p-4 border-b flex items-center justify-center gap-3">
+                <img src="https://iili.io/fwqYOWx.png" alt="Admin" class="h-10 w-10 object-cover rounded-full">
+                <span class="font-black text-gray-800 text-xs">Yelmi Putri, S.Pd.</span>
             </div>
 
             <!-- Beranda -->
@@ -128,7 +157,7 @@
 
             <!-- Data Siswa -->
             <div id="admin-data-siswa" class="hidden p-5 md:p-10 space-y-6">
-                <div class="flex justify-between items-center"><h1 class="text-2xl font-black text-gray-800">Master Siswa</h1><button onclick="openStudentModal()" class="theme-bg-primary text-white py-3 px-6 rounded-2xl font-bold shadow-lg">Tambah Siswa</button></div>
+                <div class="flex justify-between items-center"><h1 class="text-2xl font-black text-gray-800">Master Siswa</h1><button onclick="openStudentModal()" class="theme-bg-primary text-white py-3 px-6 rounded-2xl font-bold shadow-lg active:scale-95 transition-all">Tambah Siswa</button></div>
                 <div class="bg-white rounded-[32px] shadow-sm overflow-hidden border border-gray-100">
                     <table class="w-full text-left">
                         <thead class="bg-gray-50 text-gray-400 text-[10px] uppercase font-black tracking-widest"><tr><th class="px-6 py-6">Informasi</th><th class="px-6 py-6 text-center">Aksi</th></tr></thead>
@@ -142,7 +171,7 @@
                 <div class="flex flex-col gap-6">
                     <div class="flex justify-between items-center">
                         <h1 class="text-2xl font-black text-gray-800">Laporan Absen</h1>
-                        <button onclick="downloadFilteredPDF()" class="bg-emerald-100 text-emerald-600 p-4 rounded-2xl font-bold shadow-sm">PDF</button>
+                        <button onclick="downloadFilteredPDF()" class="bg-emerald-100 text-emerald-600 p-4 rounded-2xl font-bold shadow-sm active:scale-95 transition-all">PDF</button>
                     </div>
 
                     <!-- Filter Section -->
@@ -171,8 +200,8 @@
                                 <input type="date" id="filter-selesai" class="w-full px-4 py-3 rounded-xl bg-gray-50 text-xs font-bold border-none outline-none">
                             </div>
                             <div class="flex items-end gap-2">
-                                <button onclick="applyFilters()" class="flex-1 theme-bg-primary text-white font-bold py-3 rounded-xl text-xs uppercase shadow-lg shadow-blue-100">Cari</button>
-                                <button onclick="resetFilters()" class="flex-1 bg-gray-100 text-gray-500 font-bold py-3 rounded-xl text-xs uppercase">Reset</button>
+                                <button onclick="applyFilters()" class="flex-1 theme-bg-primary text-white font-bold py-3 rounded-xl text-xs uppercase shadow-lg shadow-blue-100 active:scale-95">Cari</button>
+                                <button onclick="resetFilters()" class="flex-1 bg-gray-100 text-gray-500 font-bold py-3 rounded-xl text-xs uppercase active:scale-95">Reset</button>
                             </div>
                         </div>
                     </div>
@@ -220,7 +249,7 @@
                 </div>
                 <div class="pt-4 flex gap-3">
                     <button type="button" onclick="closeStudentModal()" class="flex-1 bg-gray-100 text-gray-600 font-bold py-4 rounded-2xl">Batal</button>
-                    <button type="submit" class="flex-1 theme-bg-primary text-white font-bold py-4 rounded-2xl shadow-lg">Simpan</button>
+                    <button type="submit" class="flex-1 theme-bg-primary text-white font-bold py-4 rounded-2xl shadow-lg active:scale-95">Simpan</button>
                 </div>
             </form>
         </div>
@@ -228,7 +257,7 @@
 
     <!-- Scanner Modal -->
     <div id="scanner-modal" class="modal-overlay">
-        <div class="relative w-full max-w-sm"><div id="reader"></div><button onclick="stopScanner()" class="mt-4 w-full bg-white py-4 rounded-2xl font-black active:scale-95 transition-all">TUTUP KAMERA</button></div>
+        <div class="relative w-full max-sm px-6"><div id="reader"></div><button onclick="stopScanner()" class="mt-4 w-full bg-white py-4 rounded-2xl font-black active:scale-95 transition-all">TUTUP KAMERA</button></div>
     </div>
     
     <div id="messageBox" class="fixed bottom-10 left-1/2 -translate-x-1/2 hidden z-[300] bg-green-600 text-white px-8 py-3 rounded-full font-bold shadow-2xl transition-all"><span id="messageText"></span></div>
@@ -286,6 +315,10 @@
             if(document.getElementById('liveTime')) document.getElementById('liveTime').innerText = timeStr;
         }
         setInterval(updateClock, 1000);
+
+        function showLogin() { document.getElementById('view-login').classList.remove('hidden'); }
+        function hideLogin() { document.getElementById('view-login').classList.add('hidden'); }
+        function logout() { document.getElementById('view-admin').classList.add('hidden'); document.getElementById('view-public').classList.remove('hidden'); }
 
         document.getElementById('loginForm').addEventListener('submit', (e) => {
             e.preventDefault();
@@ -389,7 +422,7 @@
             list.innerHTML = studentsDatabase.length ? studentsDatabase.map(s => `
                 <tr class="border-b border-gray-50">
                     <td class="px-6 py-5"><div class="font-black text-gray-800">${s.nama}</div><div class="text-[9px] text-gray-400 font-bold uppercase">NISN: ${s.nisn} • ${s.kelas}</div></td>
-                    <td class="px-6 py-5 text-center"><button onclick="editStudent('${s.id}')" class="text-blue-600 bg-blue-50 px-3 py-1.5 rounded-xl font-bold text-xs">Edit</button></td>
+                    <td class="px-6 py-5 text-center"><button onclick="editStudent('${s.id}')" class="text-blue-600 bg-blue-50 px-3 py-1.5 rounded-xl font-bold text-xs active:scale-90 transition-all">Edit</button></td>
                 </tr>
             `).join('') : `<tr><td colspan="2" class="px-6 py-12 text-center text-gray-300 italic">Database Kosong</td></tr>`;
         }
@@ -403,7 +436,7 @@
                 </tr>
             `).join('') : `<tr><td colspan="2" class="px-6 py-12 text-center text-gray-300 italic">Data Absen Kosong</td></tr>`;
 
-            // Statistics always use global history for summary, or you can use data if you want statistics to follow filter
+            // Statistics always use global history for summary
             document.getElementById('stat-hadir').innerText = attendanceHistory.filter(h => h.keterangan === "Hadir").length;
             document.getElementById('stat-sakit').innerText = attendanceHistory.filter(h => h.keterangan === "Sakit").length;
             document.getElementById('stat-izin').innerText = attendanceHistory.filter(h => h.keterangan === "Izin").length;
@@ -422,9 +455,6 @@
         }
 
         // --- Basic Helpers ---
-        function showLogin() { document.getElementById('view-login').classList.remove('hidden'); }
-        function hideLogin() { document.getElementById('view-login').classList.add('hidden'); }
-        function logout() { document.getElementById('view-admin').classList.add('hidden'); document.getElementById('view-public').classList.remove('hidden'); }
         function openStudentModal() { 
             document.getElementById('student-modal-title').innerText = "Tambah Siswa Baru";
             document.getElementById('edit-student-id').value = "";
