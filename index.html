@@ -272,7 +272,7 @@
     <div id="modal-add-employee" class="fixed inset-0 bg-black/50 z-[200] hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl p-6 w-full max-w-md space-y-4 shadow-2xl overflow-y-auto max-h-[90vh]">
             <h4 class="text-lg font-bold">Tambah Pegawai</h4>
-            <form onsubmit="addEmployee(event)" class="space-y-3">
+            <form id="form-add-employee" onsubmit="addEmployee(event)" class="space-y-3">
                 <input type="text" id="new-name" required placeholder="Nama Lengkap" class="w-full p-3 bg-slate-50 border rounded-xl text-sm">
                 <input type="text" id="new-nip" required placeholder="NIP/NUPT" class="w-full p-3 bg-slate-50 border rounded-xl text-sm" oninput="syncUsername(this.value)">
                 <input type="text" id="new-photo" placeholder="URL Foto Pegawai (Opsional)" class="w-full p-3 bg-slate-50 border rounded-xl text-sm">
@@ -280,8 +280,14 @@
                     <option value="PNS">PNS</option><option value="PPPK">PPPK</option><option value="PPPK PW">PPPK PW</option><option value="Honor">Honor</option><option value="Kontrak">Kontrak</option>
                 </select>
                 <input type="text" id="new-jabatan" required placeholder="Jabatan" class="w-full p-3 bg-slate-50 border rounded-xl text-sm">
-                <div class="grid grid-cols-2 gap-2"><input type="text" id="new-user" required placeholder="Username" class="w-full p-3 bg-slate-50 border rounded-xl text-sm"><input type="password" id="new-pass" required placeholder="Password" class="w-full p-3 bg-slate-50 border rounded-xl text-sm"></div>
-                <div class="flex gap-2"><button type="button" onclick="closeAddEmployeeModal()" class="flex-1 py-3 bg-slate-100 rounded-xl font-bold">Batal</button><button type="submit" class="flex-1 py-3 bg-indigo-600 text-white rounded-xl font-bold">Simpan</button></div>
+                <div class="grid grid-cols-2 gap-2">
+                    <input type="text" id="new-user" required placeholder="Username" class="w-full p-3 bg-slate-50 border rounded-xl text-sm">
+                    <input type="password" id="new-pass" required placeholder="Password" class="w-full p-3 bg-slate-50 border rounded-xl text-sm">
+                </div>
+                <div class="flex gap-2">
+                    <button type="button" onclick="closeAddEmployeeModal()" class="flex-1 py-3 bg-slate-100 rounded-xl font-bold">Batal</button>
+                    <button type="submit" class="flex-1 py-3 bg-indigo-600 text-white rounded-xl font-bold">Simpan</button>
+                </div>
             </form>
         </div>
     </div>
@@ -339,7 +345,7 @@
                 <h4 class="text-xl font-bold text-emerald-600">Presensi Manual Pegawai</h4>
                 <button onclick="closeManualAbsenModal()" class="text-slate-400 hover:text-slate-600 transition"><i class="fas fa-times text-xl"></i></button>
             </div>
-            <form onsubmit="handleManualAbsenSubmit(event)" class="space-y-4">
+            <form id="form-manual-absen" onsubmit="handleManualAbsenSubmit(event)" class="space-y-4">
                 <div class="space-y-1">
                     <label class="text-xs font-bold text-slate-400 uppercase">Pilih Nama Pegawai</label>
                     <select id="manual-select-user" required onchange="onManualEmployeeChange()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-emerald-500 transition">
@@ -586,7 +592,6 @@
             const head = document.getElementById('history-header'); 
             const body = document.getElementById('history-body'); if(!body) return;
             
-            // CEK USER LOGIN
             if (!currentUser) return; 
 
             const isAdmin = currentUser.role === 'admin';
@@ -725,8 +730,26 @@
 
         async function addEmployee(e) {
             e.preventDefault();
-            users.push({ id: Date.now(), name: document.getElementById('new-name').value, user: document.getElementById('new-user').value, pass: document.getElementById('new-pass').value, role: 'pegawai', dept: OFFICE_NAME, nip: document.getElementById('new-nip').value, statusPegawai: document.getElementById('new-status').value, jabatan: document.getElementById('new-jabatan').value, photoUrl: document.getElementById('new-photo').value });
-            await syncWithCloud(); renderEmployeeList(); closeAddEmployeeModal(); showModal("Berhasil", "Pegawai ditambahkan.");
+            users.push({ 
+                id: Date.now(), 
+                name: document.getElementById('new-name').value, 
+                user: document.getElementById('new-user').value, 
+                pass: document.getElementById('new-pass').value, 
+                role: 'pegawai', 
+                dept: OFFICE_NAME, 
+                nip: document.getElementById('new-nip').value, 
+                statusPegawai: document.getElementById('new-status').value, 
+                jabatan: document.getElementById('new-jabatan').value, 
+                photoUrl: document.getElementById('new-photo').value 
+            });
+            await syncWithCloud(); 
+            renderEmployeeList(); 
+            closeAddEmployeeModal(); 
+            
+            // RESET FORM SETELAH DISIMPAN
+            e.target.reset();
+            
+            showModal("Berhasil", "Pegawai ditambahkan.");
         }
 
         function renderEmployeeList() {
