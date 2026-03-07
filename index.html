@@ -45,8 +45,9 @@
     <div id="login-page" class="min-h-screen flex items-center justify-center p-4 login-gradient">
         <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden">
             <div class="p-8 text-center bg-slate-50 border-b">
-                <div class="w-16 h-16 bg-indigo-600 text-white rounded-2xl flex items-center justify-center text-3xl mx-auto mb-4 shadow-lg">
-                    <i class="fas fa-fingerprint"></i>
+                <!-- Logo Baru Disini -->
+                <div class="mb-4 mx-auto">
+                    <img src="https://iili.io/3b1SedN.png" alt="Logo AbsenKU" class="h-28 w-auto mx-auto object-contain drop-shadow-md">
                 </div>
                 <h2 class="text-2xl font-bold text-slate-800">AbsenKU</h2>
                 <p class="text-slate-500 text-sm">Sistem Absensi Kehadiran Terpadu</p>
@@ -71,7 +72,7 @@
                         <label class="text-xs font-bold text-slate-500 uppercase">Username Pegawai</label>
                         <div class="relative">
                             <i class="fas fa-user absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                            <input type="text" id="p-user" placeholder="Username (NIP)" required class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition">
+                            <input type="text" id="p-user" placeholder="Username (NIP/NUPT)" required class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition">
                         </div>
                     </div>
                     <div class="space-y-1">
@@ -265,7 +266,7 @@
                                 <thead class="bg-slate-50 text-[10px] text-slate-400 uppercase font-bold">
                                     <tr>
                                         <th class="p-4">Nama</th>
-                                        <th class="p-4">NIP</th>
+                                        <th class="p-4">NIP/NUPT</th>
                                         <th class="p-4">Status</th>
                                         <th class="p-4 text-center">Aksi</th>
                                     </tr>
@@ -285,12 +286,12 @@
                                 <div class="space-y-4 p-5 bg-slate-50 rounded-2xl border border-slate-200">
                                     <h4 class="text-sm font-bold text-slate-500 uppercase flex items-center gap-2">Pengawas</h4>
                                     <input type="text" id="pic-pengawas-nama" placeholder="Nama Lengkap Pengawas" class="w-full p-3 bg-white border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
-                                    <input type="text" id="pic-pengawas-nip" placeholder="NIP Pengawas" class="w-full p-3 bg-white border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+                                    <input type="text" id="pic-pengawas-nip" placeholder="NIP/NUPT Pengawas" class="w-full p-3 bg-white border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
                                 </div>
                                 <div class="space-y-4 p-5 bg-slate-50 rounded-2xl border border-slate-200">
                                     <h4 class="text-sm font-bold text-slate-500 uppercase flex items-center gap-2">Kepala Sekolah</h4>
                                     <input type="text" id="pic-kepsek-nama" placeholder="Nama Kepala Sekolah" class="w-full p-3 bg-white border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
-                                    <input type="text" id="pic-kepsek-nip" placeholder="NIP Kepala Sekolah" class="w-full p-3 bg-white border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+                                    <input type="text" id="pic-kepsek-nip" placeholder="NIP/NUPT Kepala Sekolah" class="w-full p-3 bg-white border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
                                 </div>
                             </div>
                             <button type="submit" class="w-full py-4 bg-indigo-600 text-white rounded-2xl font-bold shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition flex items-center justify-center gap-2">
@@ -342,7 +343,7 @@
                         <h3 id="profile-name" class="text-xl font-bold text-slate-800">-</h3>
                         <p id="profile-role-text" class="text-slate-500 text-sm mb-6">-</p>
                         <div class="grid grid-cols-2 gap-3 text-left">
-                            <div class="bg-slate-50 p-3 rounded-2xl"><p class="text-[9px] font-bold text-slate-400 uppercase">NIP</p><p id="profile-nip" class="text-xs font-bold text-slate-700">-</p></div>
+                            <div class="bg-slate-50 p-3 rounded-2xl"><p class="text-[9px] font-bold text-slate-400 uppercase">NIP/NUPT</p><p id="profile-nip" class="text-xs font-bold text-slate-700">-</p></div>
                             <div class="bg-slate-50 p-3 rounded-2xl"><p class="text-[9px] font-bold text-slate-400 uppercase">Status</p><p id="profile-status" class="text-xs font-bold text-slate-700">-</p></div>
                         </div>
                     </div>
@@ -372,7 +373,7 @@
                         <input type="text" id="edit-h-name" required class="w-full p-3 bg-slate-50 border rounded-xl outline-none font-medium">
                     </div>
                     <div class="space-y-1">
-                        <label class="font-bold text-slate-400 uppercase">NIP</label>
+                        <label class="font-bold text-slate-400 uppercase">NIP/NUPT</label>
                         <input type="text" id="edit-h-nip" required class="w-full p-3 bg-slate-50 border rounded-xl outline-none font-medium">
                     </div>
                     <div class="space-y-1">
@@ -417,7 +418,7 @@
                 </select>
                 <div class="space-y-3 text-xs">
                     <input type="text" id="manual-name" required readonly class="w-full p-3 bg-slate-100 border rounded-xl outline-none text-slate-600 font-medium" placeholder="Nama Lengkap">
-                    <input type="text" id="manual-nip" required readonly class="w-full p-3 bg-slate-100 border rounded-xl outline-none text-slate-600 font-medium" placeholder="NIP">
+                    <input type="text" id="manual-nip" required readonly class="w-full p-3 bg-slate-100 border rounded-xl outline-none text-slate-600 font-medium" placeholder="NIP/NUPT">
                     <div class="grid grid-cols-2 gap-2">
                         <input type="text" id="manual-status" required readonly class="w-full p-3 bg-slate-100 border rounded-xl" placeholder="Status">
                         <input type="text" id="manual-jabatan" required readonly class="w-full p-3 bg-slate-100 border rounded-xl" placeholder="Jabatan">
@@ -448,13 +449,14 @@
             <h4 class="text-lg font-bold">Tambah Pegawai</h4>
             <form onsubmit="addEmployee(event)" class="space-y-3">
                 <input type="text" id="new-name" required placeholder="Nama Lengkap" class="w-full p-3 bg-slate-50 border rounded-xl text-sm">
-                <input type="text" id="new-nip" required placeholder="NIP" class="w-full p-3 bg-slate-50 border rounded-xl text-sm" oninput="syncUsername(this.value)">
+                <input type="text" id="new-nip" required placeholder="NIP/NUPT" class="w-full p-3 bg-slate-50 border rounded-xl text-sm" oninput="syncUsername(this.value)">
                 <input type="text" id="new-photo" placeholder="URL Foto Pegawai (Opsional)" class="w-full p-3 bg-slate-50 border rounded-xl text-sm">
                 <select id="new-status" required class="w-full p-3 bg-slate-50 border rounded-xl text-sm">
                     <option value="PNS">PNS</option>
                     <option value="PPPK">PPPK</option>
                     <option value="PPPK PW">PPPK PW</option>
-                    <option value="Honor/Kontrak">Honor/Kontrak</option>
+                    <option value="Honor">Honor</option>
+                    <option value="Kontrak">Kontrak</option>
                 </select>
                 <input type="text" id="new-jabatan" required placeholder="Jabatan" class="w-full p-3 bg-slate-50 border rounded-xl text-sm">
                 <div class="grid grid-cols-2 gap-2">
@@ -604,13 +606,13 @@
                     </div>
                     <div class="report-header"><h3>LAPORAN KEHADIRAN PEGAWAI</h3></div>
                     <table class="data-table">
-                        <thead><tr><th>No</th><th>Nama Lengkap</th><th>NIP</th><th>Status</th><th>Jabatan</th><th>Hari</th><th>Jam Masuk</th><th>Jam Keluar</th><th>Keterangan</th></tr></thead>
+                        <thead><tr><th>No</th><th>Nama Lengkap</th><th>NIP/NUPT</th><th>Status</th><th>Jabatan</th><th>Hari</th><th>Jam Masuk</th><th>Jam Keluar</th><th>Keterangan</th></tr></thead>
                         <tbody>${tableRows || '<tr><td colspan="9" align="center" style="padding: 20px;">Belum ada data riwayat absensi.</td></tr>'}</tbody>
                     </table>
                     <table class="footer-table">
                         <tr>
-                            <td>Mengetahui,<br>Pengawas Satuan Pendidikan<br><br><div class="signature-space"></div><b><u>${picData.pengawas || '(..........................................)'}</u></b><br>NIP. ${picData.nipPengawas || '..........................................'}</td>
-                            <td>${tempatVal || '................'}, ${tanggalVal || '................'}<br>Kepala Sekolah<br><br><div class="signature-space"></div><b><u>${picData.kepsek || '(..........................................)'}</u></b><br>NIP. ${picData.nipKepsek || '..........................................'}</td>
+                            <td>Mengetahui,<br>Pengawas Satuan Pendidikan<br><br><div class="signature-space"></div><b><u>${picData.pengawas || '(..........................................)'}</u></b><br>NIP/NUPT. ${picData.nipPengawas || '..........................................'}</td>
+                            <td>${tempatVal || '................'}, ${tanggalVal || '................'}<br>Kepala Sekolah<br><br><div class="signature-space"></div><b><u>${picData.kepsek || '(..........................................)'}</u></b><br>NIP/NUPT. ${picData.nipKepsek || '..........................................'}</td>
                         </tr>
                     </table>
                 </body>
@@ -864,7 +866,7 @@
         function renderHistory() {
             const head = document.getElementById('history-header'); const body = document.getElementById('history-body'); if(!body || !head) return;
             const isAdmin = currentUser?.role === 'admin';
-            head.innerHTML = `<th class="p-4 whitespace-nowrap">Nama</th><th class="p-4 whitespace-nowrap">NIP</th><th class="p-4 whitespace-nowrap">Status</th><th class="p-4 whitespace-nowrap">Jabatan</th><th class="p-4 whitespace-nowrap">Hari & Tanggal</th><th class="p-4 whitespace-nowrap">Masuk</th><th class="p-4 whitespace-nowrap">Pulang</th><th class="p-4 whitespace-nowrap">Ket</th>` + (isAdmin ? `<th class="p-4 text-center">Aksi</th>` : '');
+            head.innerHTML = `<th class="p-4 whitespace-nowrap">Nama</th><th class="p-4 whitespace-nowrap">NIP/NUPT</th><th class="p-4 whitespace-nowrap">Status</th><th class="p-4 whitespace-nowrap">Jabatan</th><th class="p-4 whitespace-nowrap">Hari & Tanggal</th><th class="p-4 whitespace-nowrap">Masuk</th><th class="p-4 whitespace-nowrap">Pulang</th><th class="p-4 whitespace-nowrap">Ket</th>` + (isAdmin ? `<th class="p-4 text-center">Aksi</th>` : '');
             
             let displayData = isAdmin ? attendanceData : attendanceData.filter(d => d.username === currentUser.user);
 
@@ -939,7 +941,7 @@
         function syncUsername(val) { const el = document.getElementById('new-user'); if(el) el.value = val; }
         function openAddEmployeeModal() { document.getElementById('modal-add-employee').classList.remove('hidden'); }
         function closeAddEmployeeModal() { document.getElementById('modal-add-employee').classList.add('hidden'); }
-        function addEmployee(e) { e.preventDefault(); const u = document.getElementById('new-user').value; if(users.find(x => x.user === u)) return showModal("Error", "NIP sudah ada!"); users.push({ id: Date.now(), name: document.getElementById('new-name').value, user: u, pass: document.getElementById('new-pass').value, role: 'pegawai', dept: OFFICE_NAME, nip: document.getElementById('new-nip').value, statusPegawai: document.getElementById('new-status').value, jabatan: document.getElementById('new-jabatan').value, photoUrl: document.getElementById('new-photo').value }); saveDataToStorage(); e.target.reset(); closeAddEmployeeModal(); renderEmployeeList(); showModal("Berhasil", "Pegawai ditambahkan."); }
+        function addEmployee(e) { e.preventDefault(); const u = document.getElementById('new-user').value; if(users.find(x => x.user === u)) return showModal("Error", "Username/NIP sudah ada!"); users.push({ id: Date.now(), name: document.getElementById('new-name').value, user: u, pass: document.getElementById('new-pass').value, role: 'pegawai', dept: OFFICE_NAME, nip: document.getElementById('new-nip').value, statusPegawai: document.getElementById('new-status').value, jabatan: document.getElementById('new-jabatan').value, photoUrl: document.getElementById('new-photo').value }); saveDataToStorage(); e.target.reset(); closeAddEmployeeModal(); renderEmployeeList(); showModal("Berhasil", "Pegawai ditambahkan."); }
         function renderEmployeeList() { const b = document.getElementById('employee-list-body'); if(!b) return; b.innerHTML = ''; users.filter(x => x.role === 'pegawai').forEach(emp => { b.innerHTML += `<tr><td class="p-4 font-bold flex items-center gap-3"><img src="${emp.photoUrl || 'https://ui-avatars.com/api/?name='+encodeURIComponent(emp.name)}" class="w-8 h-8 rounded-full object-cover">${emp.name}</td><td class="p-4">${emp.nip}</td><td class="p-4 text-xs font-bold">${emp.statusPegawai}</td><td class="p-4 text-center space-x-2"><button onclick="openConfirmDelete(${emp.id}, 'pegawai')" class="text-red-500"><i class="fas fa-trash"></i></button></td></tr>`; }); }
         function openConfirmDelete(idx, type) { document.getElementById('delete-index').value = idx; document.getElementById('delete-type').value = type; document.getElementById('modal-confirm').classList.remove('hidden'); }
         function closeConfirmModal() { document.getElementById('modal-confirm').classList.add('hidden'); }
