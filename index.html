@@ -217,7 +217,7 @@
                                     <input type="text" id="pic-kepsek-nip" placeholder="NIP/NUPT Kepala Sekolah" class="w-full p-3 bg-white border border-slate-200 rounded-xl outline-none text-sm">
                                 </div>
                             </div>
-                            <button type="submit" class="w-full py-4 bg-indigo-600 text-white rounded-2xl font-bold">Simpan Data Penanggung Jawab</button>
+                            <button type="submit" class="w-full py-4 bg-indigo-600 text-white rounded-xl font-bold">Simpan Data Penanggung Jawab</button>
                         </form>
                     </div>
                 </section>
@@ -332,7 +332,7 @@
         </div>
     </div>
 
-    <!-- MODAL PRESENSI MANUAL ADMIN (BARU) -->
+    <!-- MODAL PRESENSI MANUAL ADMIN -->
     <div id="modal-manual-absen" class="fixed inset-0 bg-black/50 z-[200] hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl p-6 w-full max-w-lg space-y-4 shadow-2xl overflow-y-auto max-h-[90vh]">
             <div class="flex justify-between items-center border-b pb-4">
@@ -585,7 +585,11 @@
         function renderHistory() {
             const head = document.getElementById('history-header'); 
             const body = document.getElementById('history-body'); if(!body) return;
-            const isAdmin = currentUser?.role === 'admin';
+            
+            // CEK USER LOGIN
+            if (!currentUser) return; 
+
+            const isAdmin = currentUser.role === 'admin';
             
             let headerHtml = `<th class="p-4">Nama</th><th class="p-4">NIP/NUPT</th><th class="p-4">Status</th><th class="p-4">Jabatan</th><th class="p-4">Tanggal</th><th class="p-4 text-center">Masuk</th><th class="p-4 text-center">Keluar</th><th class="p-4">Ket</th>`;
             if(isAdmin) headerHtml += `<th class="p-4 text-center">Aksi</th>`;
@@ -617,7 +621,6 @@
             const statsEl = document.getElementById('stats-hadir'); if (statsEl) statsEl.innerText = displayData.length;
         }
 
-        // FUNGSI MODAL PRESENSI MANUAL ADMIN
         function openManualAbsenModal() {
             const selectUser = document.getElementById('manual-select-user');
             selectUser.innerHTML = '<option value="">-- Pilih Pegawai --</option>';
@@ -628,7 +631,6 @@
                 selectUser.appendChild(opt);
             });
 
-            // Set default date manual ke hari ini
             const now = new Date();
             document.getElementById('manual-date').value = now.toLocaleDateString('id-ID', {weekday: 'long', day: '2-digit', month: 'long', year: 'numeric'});
             document.getElementById('manual-in').value = "07:30";
@@ -680,7 +682,6 @@
             showModal("Berhasil", "Data presensi manual telah disimpan.");
         }
 
-        // EDIT HISTORY (EXISTING)
         function openEditHistoryModal(index) {
             const data = attendanceData[index];
             document.getElementById('edit-history-index').value = index;
