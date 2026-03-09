@@ -100,6 +100,9 @@
                 <button onclick="switchTab('pic')" id="side-pic" class="hidden tab-btn w-full flex items-center gap-3 p-3 rounded-lg hover:bg-indigo-600 transition"><i class="fas fa-user-shield"></i> Penanggung Jawab</button>
                 <button onclick="switchTab('kop')" id="side-kop" class="hidden tab-btn w-full flex items-center gap-3 p-3 rounded-lg hover:bg-indigo-600 transition"><i class="fas fa-file-invoice"></i> Pengaturan Kop Surat</button>
                 <button onclick="switchTab('profile')" id="side-profile" class="tab-btn w-full flex items-center gap-3 p-3 rounded-lg hover:bg-indigo-600 transition"><i class="fas fa-user-circle"></i> Profil</button>
+                
+                <!-- TOMBOL SINGKRON ADMIN -->
+                <button onclick="loadFromCloud()" id="side-sync" class="hidden w-full flex items-center gap-3 p-3 rounded-lg bg-emerald-600 hover:bg-emerald-500 transition shadow-inner font-bold"><i class="fas fa-sync-alt"></i> Singkronkan</button>
             </nav>
             <div class="p-4 mt-auto border-t border-indigo-500">
                 <div class="flex items-center gap-3">
@@ -142,7 +145,7 @@
                             <h3 class="text-2xl font-bold text-slate-800">Panel Presensi</h3>
                             <p class="text-slate-500 text-xs italic"><i class="fas fa-map-marker-alt text-red-500"></i> <a href="https://www.google.com/maps?q=-1.2942335988142928,100.52147339164873" target="_blank" class="hover:text-indigo-600 transition underline decoration-dotted">UPT SDN 22 Tanah Keras</a></p>
                         </div>
-                        <div id="label-status" class="px-6 py-2 inline-block rounded-full bg-slate-100 text-slate-500 text-sm font-semibold">Belum Absen Hari Ini</div>
+                        <div id="label-status" class="px-6 py-2 inline-block rounded-full bg-slate-100 text-slate-500 text-sm font-semibold">Memeriksa Status...</div>
                         <div id="location-info" class="hidden text-xs text-indigo-600 bg-indigo-50 p-2 rounded-lg animate-pulse">Memverifikasi GPS...</div>
                         
                         <div class="flex flex-col gap-4 max-w-lg mx-auto">
@@ -217,7 +220,7 @@
                                     <input type="text" id="pic-kepsek-nip" placeholder="NIP/NUPT Kepala Sekolah" class="w-full p-3 bg-white border border-slate-200 rounded-xl outline-none text-sm">
                                 </div>
                             </div>
-                            <button type="submit" class="w-full py-4 bg-indigo-600 text-white rounded-xl font-bold">Simpan Data Penanggung Jawab</button>
+                            <button type="submit" class="w-full py-4 bg-indigo-600 text-white rounded-2xl font-bold">Simpan Data Penanggung Jawab</button>
                         </form>
                     </div>
                 </section>
@@ -448,7 +451,9 @@
 
         async function syncWithCloud() {
             if (!SCRIPT_URL || SCRIPT_URL === "") return;
-            document.getElementById('loading-overlay').classList.remove('hidden');
+            const loader = document.getElementById('loading-overlay');
+            loader.classList.remove('hidden');
+            
             try {
                 const elPlace = document.getElementById('print-place');
                 const elDate = document.getElementById('print-date-manual');
@@ -463,18 +468,22 @@
                         type: "sync_all", users: users, history: attendanceData, pic: picData, kop: kopData
                     })
                 });
-            } catch (err) { console.error("Sync Error:", err); }
-            finally { 
-                setTimeout(() => document.getElementById('loading-overlay').classList.add('hidden'), 1000);
+            } catch (err) { 
+                console.error("Sync Error:", err); 
+            } finally { 
+                loader.classList.add('hidden');
             }
         }
 
         async function loadFromCloud() {
             if (!SCRIPT_URL || SCRIPT_URL === "") { loadFromLocalFallback(); return; }
-            document.getElementById('loading-overlay').classList.remove('hidden');
+            const loader = document.getElementById('loading-overlay');
+            loader.classList.remove('hidden');
+            
             try {
                 const response = await fetch(SCRIPT_URL);
                 const data = await response.json();
+                
                 if (data.users && data.users.length > 0) users = data.users;
                 else loadFromLocalFallback();
 
@@ -502,9 +511,16 @@
                 renderEmployeeList();
                 loadKopDataUI();
                 loadPICDataUI();
+                
+                // Update status tombol jika ada user login
+                if(currentUser) updateAttendanceStatus();
+
             } catch (err) { 
-                console.error("Cloud Load Error:", err); loadFromLocalFallback();
-            } finally { document.getElementById('loading-overlay').classList.add('hidden'); }
+                console.error("Cloud Load Error:", err); 
+                loadFromLocalFallback();
+            } finally { 
+                loader.classList.add('hidden');
+            }
         }
 
         function loadFromLocalFallback() {
@@ -551,15 +567,61 @@
             document.getElementById('profile-role-text').innerText = currentUser.jabatan;
             document.getElementById('profile-nip').innerText = currentUser.nip;
             document.getElementById('profile-status').innerText = currentUser.statusPegawai;
+            
             if (isAdmin) {
-                ['side-dashboard', 'side-history', 'side-manage', 'side-pic', 'side-kop', 'print-controls-admin', 'admin-manual-area'].forEach(id => document.getElementById(id)?.classList.remove('hidden'));
+                ['side-dashboard', 'side-history', 'side-manage', 'side-pic', 'side-kop', 'print-controls-admin', 'admin-manual-area', 'side-sync'].forEach(id => document.getElementById(id)?.classList.remove('hidden'));
                 switchTab('dashboard');
             } else {
-                ['side-dashboard', 'side-history', 'side-manage', 'side-pic', 'side-kop', 'print-controls-admin', 'admin-manual-area'].forEach(id => document.getElementById(id)?.classList.add('hidden'));
+                ['side-dashboard', 'side-history', 'side-manage', 'side-pic', 'side-kop', 'print-controls-admin', 'admin-manual-area', 'side-sync'].forEach(id => document.getElementById(id)?.classList.add('hidden'));
                 switchTab('attendance');
             }
+            
             renderHistory();
             if(isAdmin) renderEmployeeList();
+            
+            // Periksa status tombol absen segera setelah dashboard siap
+            updateAttendanceStatus();
+        }
+
+        // FUNGSI BARU: MEMERIKSA STATUS ABSENSI DAN MENGAKTIFKAN TOMBOL PULANG
+        function updateAttendanceStatus() {
+            if (!currentUser || currentUser.role === 'admin') return;
+
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('id-ID', {weekday: 'long', day: '2-digit', month: 'long', year: 'numeric'});
+
+            // Cari data absensi user hari ini
+            const todayRecord = attendanceData.find(x => x.username === currentUser.user && x.date === dateStr);
+
+            const btnIn = document.getElementById('btn-in');
+            const btnOut = document.getElementById('btn-out');
+            const labelStatus = document.getElementById('label-status');
+
+            if (!todayRecord) {
+                // Belum absen sama sekali
+                btnIn.disabled = false;
+                btnIn.className = "group px-8 py-6 bg-indigo-600 text-white rounded-2xl font-bold hover:bg-indigo-700 transition flex flex-col items-center justify-center gap-2 active:scale-95 shadow-lg shadow-indigo-100";
+                btnOut.disabled = true;
+                btnOut.className = "group px-8 py-6 bg-slate-200 text-slate-400 cursor-not-allowed rounded-2xl font-bold transition flex flex-col items-center justify-center gap-2";
+                labelStatus.innerText = "Belum Absen Hari Ini";
+                labelStatus.className = "px-6 py-2 inline-block rounded-full bg-slate-100 text-slate-500 text-sm font-semibold";
+            } else if (todayRecord.out === '-') {
+                // Sudah Masuk, Tapi Belum Pulang -> AKTIFKAN TOMBOL PULANG
+                btnIn.disabled = true;
+                btnIn.className = "group px-8 py-6 bg-slate-200 text-slate-400 cursor-not-allowed rounded-2xl font-bold transition flex flex-col items-center justify-center gap-2";
+                btnOut.disabled = false;
+                btnOut.className = "group px-8 py-6 bg-orange-600 text-white rounded-2xl font-bold hover:bg-orange-700 transition flex flex-col items-center justify-center gap-2 active:scale-95 shadow-lg shadow-orange-100";
+                labelStatus.innerText = "Sudah Absen Masuk";
+                labelStatus.className = "px-6 py-2 inline-block rounded-full bg-indigo-100 text-indigo-600 text-sm font-semibold";
+            } else {
+                // Sudah Selesai (Masuk & Pulang)
+                btnIn.disabled = true;
+                btnIn.className = "group px-8 py-6 bg-slate-200 text-slate-400 cursor-not-allowed rounded-2xl font-bold transition flex flex-col items-center justify-center gap-2";
+                btnOut.disabled = true;
+                btnOut.className = "group px-8 py-6 bg-slate-200 text-slate-400 cursor-not-allowed rounded-2xl font-bold transition flex flex-col items-center justify-center gap-2";
+                labelStatus.innerText = "Absensi Hari Ini Selesai";
+                labelStatus.className = "px-6 py-2 inline-block rounded-full bg-green-100 text-green-600 text-sm font-semibold";
+            }
         }
 
         async function startAbsenceProcess(type) {
@@ -576,16 +638,28 @@
             const now = new Date(); 
             const time = now.toLocaleTimeString('id-ID', {hour: '2-digit', minute: '2-digit'}); 
             const dateStr = now.toLocaleDateString('id-ID', {weekday: 'long', day: '2-digit', month: 'long', year: 'numeric'});
+            
             if (type === 'Masuk') {
                 const isLate = (now.getHours() > 7 || (now.getHours() == 7 && now.getMinutes() > 30));
                 attendanceData.unshift({ 
                     name: currentUser.name, nip: currentUser.nip, statusPegawai: currentUser.statusPegawai, jabatan: currentUser.jabatan, date: dateStr, in: time, out: '-', status: isLate ? 'Terlambat' : 'Hadir', username: currentUser.user 
                 });
             } else {
-                const entry = attendanceData.find(x => x.username === currentUser.user && x.out === '-');
+                // Cari record masuk hari ini untuk ditambahkan jam pulang
+                const entry = attendanceData.find(x => x.username === currentUser.user && x.date === dateStr && x.out === '-');
                 if(entry) entry.out = time;
+                else {
+                    // Jika tidak ketemu data masuk hari ini, buat baru (antisipasi data hilang)
+                    attendanceData.unshift({ 
+                        name: currentUser.name, nip: currentUser.nip, statusPegawai: currentUser.statusPegawai, jabatan: currentUser.jabatan, date: dateStr, in: '-', out: time, status: 'Hadir', username: currentUser.user 
+                    });
+                }
             }
-            await syncWithCloud(); renderHistory(); showModal("Berhasil", `Absen ${type} tercatat.`);
+            
+            await syncWithCloud(); 
+            renderHistory(); 
+            updateAttendanceStatus(); // Refresh status tombol
+            showModal("Berhasil", `Absen ${type} tercatat.`);
         }
 
         function renderHistory() {
