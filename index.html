@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Absensi Digital - UPT SDN 22 Tanah Keras</title>
+    <title>SDN 22 Tanah Keras</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -30,7 +30,7 @@
     <!-- LOADING OVERLAY -->
     <div id="loading-overlay" class="loading-overlay hidden">
         <div class="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
-        <p class="font-bold text-indigo-600 animate-pulse">Menyingkronkan Data...</p>
+        <p class="font-bold text-indigo-600 animate-pulse">Sedang Singkron </p>
     </div>
 
     <!-- LOGIN PAGE -->
@@ -40,8 +40,8 @@
                 <div class="mb-4 mx-auto">
                     <img src="https://iili.io/3b1SedN.png" alt="Logo AbsenKU" class="h-28 w-auto mx-auto object-contain drop-shadow-md">
                 </div>
-                <h2 class="text-2xl font-bold text-slate-800">AbsenKU</h2>
-                <p class="text-slate-500 text-sm">Sistem Absensi Kehadiran Terpadu</p>
+                <h2 class="text-2xl font-bold text-slate-800">PRESENSI ONLINE</h2>
+                <p class="text-slate-500 text-sm">Sistem Absensi Kehadiran</p>
             </div>
             <div class="flex border-b">
                 <button onclick="switchLoginForm('pegawai')" id="tab-login-pegawai" class="flex-1 py-4 text-sm font-bold border-b-2 border-indigo-600 text-indigo-600 transition">Pegawai</button>
@@ -114,8 +114,8 @@
 
         <!-- HEADER MOBILE -->
         <header class="md:hidden glass-effect sticky top-0 z-50 px-5 py-4 border-b flex justify-between items-center bg-white/80">
-            <div><p id="mobile-greeting" class="text-[10px] font-bold text-indigo-600 uppercase tracking-widest">Selamat Pagi</p><h1 id="mobile-display-name" class="text-lg font-bold text-slate-800 truncate max-w-[150px]">-</h1></div>
-            <div class="text-right"><div id="clock-mobile" class="text-sm font-mono font-bold text-indigo-700">00:00:00</div><div id="date-mobile" class="text-[9px] text-slate-400 font-medium uppercase tracking-tighter">01 Jan 2024</div></div>
+            <div><p id="mobile-greeting" class="text-[10px] font-bold text-indigo-600 uppercase tracking-widest">Memuat...</p><h1 id="mobile-display-name" class="text-lg font-bold text-slate-800 truncate max-w-[150px]">-</h1></div>
+            <div class="text-right"><div id="clock-mobile" class="text-sm font-mono font-bold text-indigo-700">00:00:00</div><div id="date-mobile" class="text-[9px] text-slate-400 font-medium uppercase tracking-tighter">Memuat Tanggal...</div></div>
         </header>
 
         <!-- MAIN CONTENT -->
@@ -272,7 +272,7 @@
     </div>
 
     <!-- MODAL PEGAWAI -->
-    <div id="modal-add-employee" class="fixed inset-0 bg-black/50 gold-z z-[200] hidden flex items-center justify-center p-4">
+    <div id="modal-add-employee" class="fixed inset-0 bg-black/50 z-[200] hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl p-6 w-full max-w-md space-y-4 shadow-2xl overflow-y-auto max-h-[90vh]">
             <h4 class="text-lg font-bold">Tambah Pegawai</h4>
             <form id="form-add-employee" onsubmit="addEmployee(event)" class="space-y-3">
@@ -296,7 +296,7 @@
     </div>
 
     <!-- MODAL EDIT RIWAYAT -->
-    <div id="modal-edit-history" class="fixed inset-0 bg-black/50 gold-z z-[200] hidden flex items-center justify-center p-4">
+    <div id="modal-edit-history" class="fixed inset-0 bg-black/50 z-[200] hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl p-6 w-full max-w-md space-y-4 shadow-2xl overflow-y-auto max-h-[90vh]">
             <h4 class="text-lg font-bold">Edit Riwayat Absensi</h4>
             <form id="form-edit-history" onsubmit="handleUpdateHistory(event)" class="space-y-3">
@@ -355,7 +355,7 @@
     </div>
 
     <!-- MODAL PRESENSI MANUAL ADMIN -->
-    <div id="modal-manual-absen" class="fixed inset-0 bg-black/50 gold-z z-[200] hidden flex items-center justify-center p-4">
+    <div id="modal-manual-absen" class="fixed inset-0 bg-black/50 z-[200] hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl p-6 w-full max-w-lg space-y-4 shadow-2xl overflow-y-auto max-h-[90vh]">
             <div class="flex justify-between items-center border-b pb-4">
                 <h4 class="text-xl font-bold text-emerald-600">Presensi Manual Pegawai</h4>
@@ -682,7 +682,6 @@
                     <td class="p-4 text-center font-mono font-bold text-orange-600">${i.out}</td>
                     <td class="p-4 font-bold ${i.status === 'Hadir' ? 'text-green-600' : 'text-red-600'}">${i.status}</td>`;
                 if(isAdmin) {
-                    // MENGGUNAKAN INDEKS ABSOLUT DI ARRAY ASLI AGAR TIDAK SALAH HAPUS SAAT FILTER AKTIF
                     const realIndex = attendanceData.indexOf(i);
                     row += `<td class="p-4 text-center">
                         <div class="flex items-center justify-center gap-2">
@@ -697,7 +696,6 @@
             const statsEl = document.getElementById('stats-hadir'); if (statsEl) statsEl.innerText = displayData.length;
         }
 
-        // FUNGSI KONFIRMASI HAPUS
         function confirmDeleteHistory(index) {
             const modal = document.getElementById('modal-confirm-delete');
             const btnDelete = document.getElementById('btn-actual-delete');
@@ -709,7 +707,6 @@
             document.getElementById('modal-confirm-delete').classList.add('hidden');
         }
 
-        // FUNGSI EKSEKUSI HAPUS RIWAYAT
         async function deleteHistory(index) {
             attendanceData.splice(index, 1);
             await syncWithCloud();
@@ -864,13 +861,40 @@
         function syncUsername(v) { const userEl = document.getElementById('new-user'); if (userEl) userEl.value = v; }
         function handleLogout() { currentUser = null; location.reload(); }
 
+        // LOGIKA JAM, TANGGAL, DAN SALAM DINAMIS
         setInterval(() => {
-            const now = new Date(); const t = now.toLocaleTimeString('id-ID');
-            const elD = document.getElementById('clock-desktop'); const elM = document.getElementById('clock-mobile');
+            const now = new Date();
+            const t = now.toLocaleTimeString('id-ID');
+            const hour = now.getHours();
+
+            // Elemen Jam
+            const elD = document.getElementById('clock-desktop');
+            const elM = document.getElementById('clock-mobile');
+            if(elD) elD.innerText = t;
+            if(elM) elM.innerText = t;
+
+            // Logika Salam Dinamis
+            let greet = "Selamat Pagi";
+            if (hour >= 11 && hour < 15) greet = "Selamat Siang";
+            else if (hour >= 15 && hour < 18) greet = "Selamat Sore";
+            else if (hour >= 18 || hour < 4) greet = "Selamat Malam";
+
+            const mobileGreetEl = document.getElementById('mobile-greeting');
+            if(mobileGreetEl) mobileGreetEl.innerText = greet;
+
+            const desktopGreetEl = document.getElementById('greeting');
+            if(desktopGreetEl) desktopGreetEl.innerText = greet + ", selamat bekerja!";
+
+            // Update Tanggal
             const dateEl = document.getElementById('date-now');
-            const dateMobEl = document.getElementById('date-now');
-            if(elD) elD.innerText = t; if(elM) elM.innerText = t;
-            if(dateEl) dateEl.innerText = now.toLocaleDateString('id-ID', {weekday: 'long', day: '2-digit', month: 'long', year: 'numeric'});
+            const dateMobEl = document.getElementById('date-mobile'); // Perbaikan ID di sini
+
+            if(dateEl) {
+                dateEl.innerText = now.toLocaleDateString('id-ID', {weekday: 'long', day: '2-digit', month: 'long', year: 'numeric'});
+            }
+            if(dateMobEl) {
+                dateMobEl.innerText = now.toLocaleDateString('id-ID', {day: '2-digit', month: 'short', year: 'numeric'});
+            }
         }, 1000);
 
         window.onload = loadFromCloud;
