@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UPT SDN 22 Tanah Keras</title>
+    <title>Sistem Absensi Digital - UPT SDN 22 Tanah Keras</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -220,7 +220,7 @@
                                     <input type="text" id="pic-kepsek-nip" placeholder="NIP/NUPT Kepala Sekolah" class="w-full p-3 bg-white border border-slate-200 rounded-xl outline-none text-sm">
                                 </div>
                             </div>
-                            <button type="submit" class="w-full py-4 bg-indigo-600 text-white rounded-2xl font-bold">Simpan Data Penanggung Jawab</button>
+                            <button type="submit" class="w-full py-4 bg-indigo-600 text-white rounded-xl font-bold">Simpan Data Penanggung Jawab</button>
                         </form>
                     </div>
                 </section>
@@ -463,25 +463,24 @@
             return s;
         }
 
-        // FUNGSI UNTUK MEMASTIKAN JAM SELALU DALAM FORMAT HH:mm:ss TANPA PERGESERAN WAKTU
+        // FUNGSI PERBAIKAN: MENGAMBIL JAM SECARA LITERAL TANPA PERGESERAN TIMEZONE
         function formatTimeDisplay(timeStr) {
             if (!timeStr || timeStr === '-') return '-';
             let s = String(timeStr).trim();
             
-            // Jika sudah berformat HH:mm:ss, biarkan saja
-            if (/^\d{2}:\d{2}:\d{2}$/.test(s)) return s;
-
-            // Jika berisi format ISO (T dan Z), kita ambil komponen jamnya saja secara manual
-            // Ini untuk menghindari 'toLocaleTimeString' yang menyesuaikan zona waktu browser secara paksa
-            if (s.includes('T') || s.includes('Z')) {
+            // JIKA FORMATNYA ISO (Contoh: "2026-03-07T07:54:28.000Z")
+            // Kita potong teksnya langsung di bagian jam untuk menghindari pergeseran otomatis browser
+            if (s.includes('T')) {
                 try {
-                    const d = new Date(s);
-                    const hh = String(d.getHours()).padStart(2, '0');
-                    const mm = String(d.getMinutes()).padStart(2, '0');
-                    const ss = String(d.getSeconds()).padStart(2, '0');
-                    return `${hh}:${mm}:${ss}`;
-                } catch(e) { return s; }
+                    const timePart = s.split('T')[1]; // Ambil "07:54:28.000Z"
+                    const hms = timePart.split('.')[0].replace('Z', ''); // Ambil "07:54:28"
+                    return hms;
+                } catch(e) { 
+                    return s; 
+                }
             }
+            
+            // Jika sudah format jam HH:mm:ss, biarkan saja
             return s;
         }
 
@@ -594,7 +593,6 @@
             } else document.getElementById('login-error').classList.remove('hidden'); 
         }
 
-        // Penanganan login dipanggil dari onsubmit form
         document.getElementById('form-pegawai').onsubmit = (e) => { e.preventDefault(); handleLogin('pegawai'); };
         document.getElementById('form-admin').onsubmit = (e) => { e.preventDefault(); handleLogin('admin'); };
 
@@ -667,7 +665,6 @@
 
         async function doAbsen(type) {
             const now = new Date(); 
-            // Jam Lokal dalam format HH:mm:ss
             const hh = String(now.getHours()).padStart(2, '0');
             const mm = String(now.getMinutes()).padStart(2, '0');
             const ss = String(now.getSeconds()).padStart(2, '0');
