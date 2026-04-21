@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UPT SDN 22 Tanah Keras</title>
+    <title>Sistem Absensi Digital - UPT SDN 22 Tanah Keras</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -446,44 +446,45 @@
             id: 1, name: 'Admin Utama', user: 'admin', pass: '12345', role: 'admin', dept: 'System Management', nip: 'ADMIN-001', statusPegawai: 'Administrator', jabatan: 'IT Manager', photoUrl: '' 
         };
 
-        // FUNGSI PEMBERSIH TANGGAL: KONVERSI UTC KE TANGGAL LOKAL INDONESIA
+        // FUNGSI PEMBERSIH TANGGAL: KONVERSI UTC KE TANGGAL LOKAL INDONESIA SECARA LITERAL
         function cleanDate(dateString) {
             if (!dateString) return '';
             const s = String(dateString).trim();
             if (s.includes('T')) {
                 try {
-                    const d = new Date(s);
-                    if (!isNaN(d.getTime())) {
-                        return d.toLocaleDateString('id-ID', {weekday: 'long', day: '2-digit', month: 'long', year: 'numeric'});
+                    // Ambil bagian tanggal murni YYYY-MM-DD
+                    const datePart = s.split('T')[0];
+                    const [y, m, d] = datePart.split('-');
+                    // Gunakan constructor literal agar tidak terjadi pergeseran hari akibat UTC
+                    const dObj = new Date(parseInt(y), parseInt(m) - 1, parseInt(d));
+                    if (!isNaN(dObj.getTime())) {
+                        return dObj.toLocaleDateString('id-ID', {weekday: 'long', day: '2-digit', month: 'long', year: 'numeric'});
                     }
                 } catch(e) {}
             }
             return s;
         }
 
-        // FUNGSI PERBAIKAN: KONVERSI UTC KE WAKTU LOKAL (GMT+7) SECARA DINAMIS
+        // FUNGSI PERBAIKAN TOTAL: MENGAMBIL KARAKTER JAM SECARA LITERAL (EKSTRAKSI TEKS)
+        // Ini menjamin jam yang tampil SAMA PERSIS dengan database tanpa peduli timezone browser
         function formatTimeDisplay(val) {
             if (!val || val === '-') return '-';
             let s = String(val).trim();
             
-            // JIKA FORMAT ISO (Ada T): Contoh "2026-03-07T01:24:46.000Z"
-            // Browser akan otomatis menambah 7 jam sesuai zona waktu WIB jika kita menggunakan objek Date
-            if (s.includes('T') || s.includes('Z') || s.length > 12) {
+            // JIKA FORMAT ISO DARI GOOGLE: Contoh "2026-03-07T09:50:12.000Z"
+            if (s.includes('T')) {
                 try {
-                    const d = new Date(s);
-                    if (!isNaN(d.getTime())) {
-                        // Menggunakan toLocaleTimeString agar otomatis menyesuaikan Timezone perangkat (WIB)
-                        return d.toLocaleTimeString('id-ID', {
-                            hour: '2-digit', 
-                            minute: '2-digit', 
-                            second: '2-digit',
-                            hour12: false
-                        }).replace(/\./g, ':');
-                    }
-                } catch(e) {}
+                    // Potong teks antara 'T' dan '.' atau '+' atau 'Z'
+                    // Ini mengambil teks jam secara harfiah sesuai yang tersimpan di Google Sheet
+                    const timePart = s.split('T')[1];
+                    const hms = timePart.substring(0, 8); // Mengambil HH:mm:ss
+                    return hms;
+                } catch(e) {
+                    return s;
+                }
             }
             
-            // Jika sudah format jam HH:mm:ss biasa, biarkan saja
+            // JIKA SUDAH FORMAT JAM BIASA: "09:50:12"
             if (s.match(/^\d{1,2}:\d{1,2}(:\d{1,2})?$/)) {
                 return s;
             }
@@ -530,13 +531,15 @@
                 if (!hasAdmin) users.push(DEFAULT_ADMIN);
 
                 if (data.history) {
-                    // SEBELUM RENDER: Semua jam (in/out) diproses melalui formatTimeDisplay yang baru
+                    // SINKRONISASI TOTAL: Memproses ulang semua jam masuk/keluar dari database Cloud
                     attendanceData = data.history.map(item => ({
                         ...item,
                         date: cleanDate(item.date),
                         in: formatTimeDisplay(item.in),
                         out: formatTimeDisplay(item.out)
                     }));
+                    // Bersihkan cache lokal agar data Cloud menjadi sumber utama
+                    localStorage.setItem('absensi_history_data', JSON.stringify(attendanceData));
                 }
                 
                 if (data.pic) picData = data.pic;
