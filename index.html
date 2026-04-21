@@ -298,6 +298,9 @@
                     <option value="PPPK Paruh Waktu">PPPK Paruh Waktu</option>
                     <option value="Honor">Honor</option>
                 </select>
+                <!-- TAMBAHAN: URL FOTO PEGAWAI -->
+                <input type="text" id="new-avatar-url" placeholder="URL Foto Pegawai (Opsional)" class="w-full p-3 bg-slate-50 border rounded-xl text-sm">
+                
                 <div class="grid grid-cols-2 gap-2">
                     <input type="text" id="new-user" required placeholder="User" class="w-full p-3 bg-slate-50 border rounded-xl text-sm">
                     <input type="password" id="new-pass" required placeholder="Pass" class="w-full p-3 bg-slate-50 border rounded-xl text-sm">
@@ -338,7 +341,6 @@
         const OFFICE_LAT = -1.2942335988142928, OFFICE_LNG = 100.52147339164873, MAX_DIST = 1000;
         let users = [], attendanceData = [], picData = {}, kopData = {}, currentUser = null;
 
-        // DEFAULT_ADMIN DENGAN FOTO PROFIL KHUSUS
         const DEFAULT_ADMIN = { 
             id: 1, 
             name: 'Admin', 
@@ -351,7 +353,6 @@
             avatar: 'https://iili.io/Bra9Tb4.png' 
         };
 
-        // FUNGSI UTAMA: Hanya menampilkan apa adanya (Literal)
         function formatTimeDisplay(val) {
             if (!val || val === '-') return '-';
             let s = String(val).trim();
@@ -378,7 +379,6 @@
                 const data = await res.json();
                 users = (data.users && data.users.length) ? data.users : [DEFAULT_ADMIN];
                 
-                // Pastikan admin selalu punya avatar yang benar
                 users = users.map(u => u.user === 'admin' ? { ...u, avatar: DEFAULT_ADMIN.avatar } : u);
                 if (!users.some(u => u.user === 'admin')) users.push(DEFAULT_ADMIN);
                 
@@ -443,7 +443,6 @@
             document.getElementById('profile-status').innerText = currentUser.statusPegawai || '-';
             document.getElementById('profile-role-text').innerText = currentUser.jabatan || '-';
             
-            // LOGIKA AVATAR: Menggunakan avatar khusus jika tersedia, jika tidak pakai UI Avatars
             const avatarUrl = currentUser.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.name)}`;
             document.getElementById('side-avatar').src = avatarUrl;
             document.getElementById('profile-avatar').src = avatarUrl;
@@ -490,10 +489,8 @@
         async function startAbsenceProcess(type) {
             const btn = type === 'Masuk' ? document.getElementById('btn-in') : document.getElementById('btn-out');
             if (btn.disabled) return;
-
             const displayType = type === 'Pulang' ? 'Keluar' : type;
             showModal("Proses", "Sedang Absen " + displayType);
-
             navigator.geolocation.getCurrentPosition(pos => {
                 const dist = getDistance(pos.coords.latitude, pos.coords.longitude, OFFICE_LAT, OFFICE_LNG);
                 if (dist > MAX_DIST) showModal("Gagal", "Lokasi terlalu jauh dari sekolah.");
@@ -511,14 +508,12 @@
                 const min = now.getMinutes();
                 let status = "Hadir";
                 if (hr > 7 || (hr == 7 && min > 30)) status = "Terlambat";
-
                 attendanceData.unshift({ name: currentUser.name, nip: currentUser.nip, statusPegawai: currentUser.statusPegawai, jabatan: currentUser.jabatan, date, in: time, out: '-', status: status, username: currentUser.user });
             } else {
                 const rec = attendanceData.find(x => x.username === currentUser.user && x.date === date && x.out === '-');
                 if (rec) rec.out = time;
                 else return;
             }
-            
             await syncWithCloud(); 
             renderHistory(); 
             updateAttendanceStatus(); 
@@ -532,21 +527,14 @@
             });
             const targetTab = document.getElementById('tab-' + n);
             if (targetTab) targetTab.classList.remove('hidden');
-            
             const titleEl = document.getElementById('tab-title');
             if (titleEl) titleEl.innerText = n.charAt(0).toUpperCase() + n.slice(1);
-
             const navIds = ['dashboard', 'attendance', 'history', 'profile'];
             navIds.forEach(id => {
                 const btn = document.getElementById('nav-btn-' + id);
                 if (btn) {
-                    if (id === n) {
-                        btn.classList.remove('text-slate-400');
-                        btn.classList.add('text-indigo-600');
-                    } else {
-                        btn.classList.remove('text-indigo-600');
-                        btn.classList.add('text-slate-400');
-                    }
+                    if (id === n) { btn.classList.remove('text-slate-400'); btn.classList.add('text-indigo-600'); }
+                    else { btn.classList.remove('text-indigo-600'); btn.classList.add('text-slate-400'); }
                 }
             });
         }
@@ -557,13 +545,11 @@
             const isAdmin = currentUser.role === 'admin';
             const head = document.getElementById('history-header');
             head.innerHTML = `<th class="p-4">Nama</th><th class="p-4">NIP</th><th class="p-4">Tgl</th><th class="p-4">Masuk</th><th class="p-4">Keluar</th><th class="p-4">Ket</th>${isAdmin ? '<th>Aksi</th>' : ''}`;
-            
             let data = isAdmin ? attendanceData : attendanceData.filter(d => d.username === currentUser.user);
             const fName = document.getElementById('filter-name')?.value.toLowerCase() || '';
             const fDate = document.getElementById('filter-date-table')?.value.toLowerCase() || '';
             if (fName) data = data.filter(d => d.name.toLowerCase().includes(fName));
             if (fDate) data = data.filter(d => d.date.toLowerCase().includes(fDate));
-
             body.innerHTML = data.map((i, idx) => `<tr>
                 <td class="p-4 font-bold">${i.name}</td>
                 <td class="p-4">${i.nip}</td>
@@ -573,7 +559,6 @@
                 <td class="p-4 font-bold ${i.status === 'Hadir' ? 'text-green-600' : 'text-red-600'}">${i.status}</td>
                 ${isAdmin ? `<td class="p-4 text-center"><button onclick="deleteRow(${attendanceData.indexOf(i)})" class="text-red-500"><i class="fas fa-trash"></i></button></td>` : ''}
             </tr>`).join('');
-            
             const statsHadir = document.getElementById('stats-hadir');
             if (statsHadir) statsHadir.innerText = data.filter(x => x.status === 'Hadir').length;
             const statsLate = document.getElementById('stats-late');
@@ -594,7 +579,17 @@
 
         async function addEmployee(e) {
             e.preventDefault();
-            users.push({ id: Date.now(), name: document.getElementById('new-name').value, user: document.getElementById('new-user').value, pass: document.getElementById('new-pass').value, role: 'pegawai', nip: document.getElementById('new-nip').value, statusPegawai: document.getElementById('new-status').value, jabatan: document.getElementById('new-jabatan').value });
+            users.push({ 
+                id: Date.now(), 
+                name: document.getElementById('new-name').value, 
+                user: document.getElementById('new-user').value, 
+                pass: document.getElementById('new-pass').value, 
+                role: 'pegawai', 
+                nip: document.getElementById('new-nip').value, 
+                statusPegawai: document.getElementById('new-status').value, 
+                jabatan: document.getElementById('new-jabatan').value,
+                avatar: document.getElementById('new-avatar-url').value // Simpan URL Foto
+            });
             await syncWithCloud(); 
             renderEmployeeList(); 
             populateLoginUsernames(); 
@@ -622,9 +617,7 @@
             selectUser.innerHTML = '<option value="">-- Pilih Pegawai --</option>';
             users.filter(u => u.role === 'pegawai').forEach(emp => {
                 const opt = document.createElement('option');
-                opt.value = emp.user;
-                opt.textContent = emp.name;
-                selectUser.appendChild(opt);
+                opt.value = emp.user; opt.textContent = emp.name; selectUser.appendChild(opt);
             });
             document.getElementById('modal-manual-absen').classList.remove('hidden');
         }
@@ -647,8 +640,7 @@
         }
 
         function showModal(t, m) { 
-            document.getElementById('modal-title').innerText=t; 
-            document.getElementById('modal-message').innerText=m; 
+            document.getElementById('modal-title').innerText=t; document.getElementById('modal-message').innerText=m; 
             document.getElementById('modal-alert').classList.remove('hidden'); 
         }
 
@@ -659,12 +651,7 @@
 
         function openAddEmployeeModal() { document.getElementById('modal-add-employee').classList.remove('hidden'); }
         function closeAddEmployeeModal() { document.getElementById('modal-add-employee').classList.add('hidden'); }
-        
-        function handleLogout() { 
-            window.isLoggingOut = true;
-            showModal("Keluar", "Keluar Aplikasi");
-        }
-        
+        function handleLogout() { window.isLoggingOut = true; showModal("Keluar", "Keluar Aplikasi"); }
         function loadKopDataUI() { if(kopData) Object.keys(kopData).forEach(k => { const el = document.getElementById('kop-'+k); if(el) el.value = kopData[k]; }); }
         function loadPICDataUI() { if(picData) Object.keys(picData).forEach(k => { const el = document.getElementById('pic-'+k); if(el) el.value = picData[k]; }); }
 
@@ -681,14 +668,10 @@
         }
 
         async function printReport() {
-            const elPlace = document.getElementById('print-place');
-            const elDate = document.getElementById('print-date-manual');
-            const tempatVal = elPlace ? elPlace.value : '';
-            const tanggalVal = elDate ? elDate.value : '';
-            const frame = document.getElementById('print-frame');
-            const doc = frame.contentWindow.document;
+            const elPlace = document.getElementById('print-place'); const elDate = document.getElementById('print-date-manual');
+            const frame = document.getElementById('print-frame'); const doc = frame.contentWindow.document;
             const rows = attendanceData.map((d, idx) => `<tr><td style="border:1px solid black;padding:5px;text-align:center">${idx+1}</td><td style="border:1px solid black;padding:5px">${d.name}</td><td style="border:1px solid black;padding:5px">${d.nip}</td><td style="border:1px solid black;padding:5px">${d.statusPegawai}</td><td style="border:1px solid black;padding:5px">${d.jabatan}</td><td style="border:1px solid black;padding:5px">${d.date}</td><td style="border:1px solid black;padding:5px;text-align:center">${d.in}</td><td style="border:1px solid black;padding:5px;text-align:center">${d.out}</td><td style="border:1px solid black;padding:5px;text-align:center">${d.status}</td></tr>`).join('');
-            const html = `<html><head><style>body { font-family: 'Times New Roman', serif; padding: 20px; background: white; } .kop-container { width: 100%; border-bottom: 4px double black; margin-bottom: 20px; padding-bottom: 5px; } .kop-table { width: 100%; border-collapse: collapse; } .kop-logo { width: 80px; height: auto; } .kop-text { text-align: center; } .kop-text h2 { margin: 0; font-size: 16px; text-transform: uppercase; font-weight: normal; } .kop-text h1 { margin: 0; font-size: 20px; text-transform: uppercase; font-weight: bold; } .kop-text p { margin: 2px 0; font-size: 10px; font-style: italic; } .report-title { text-align: center; margin-bottom: 20px; } .report-title h3 { margin: 0; font-size: 16px; font-weight: bold; text-decoration: underline; } table.data-table { width: 100%; border-collapse: collapse; font-size: 11px; } table.data-table th { border: 1px solid black; background: #f2f2f2; padding: 8px; text-transform: uppercase; } .footer-table { width: 100%; margin-top: 30px; border-collapse: collapse; } .footer-table td { width: 50%; text-align: center; font-size: 13px; vertical-align: top; } .signature-space { height: 70px; } .footnote { margin-top: 20px; font-style: italic; font-size: 10px; color: #555; border-top: 1px solid #ccc; padding-top: 5px; }</style></head><body><div class="kop-container"><table class="kop-table"><tr><td width="15%" align="left"><img src="${kopData.logoKiri || ''}" class="kop-logo" onerror="this.style.display='none'"></td><td class="kop-text"><h2>${kopData.pemda || 'Pemerintah Kabupaten/Kota'}</h2><h2>${kopData.dinas || 'Dinas Pendidikan dan Kebudayaan'}</h2><h1>${kopData.sekolah || 'UPT SDN 22 Tanah Keras'}</h1><h2>KECAMATAN ${kopData.kecamatan || '..........'}</h2><p>Alamat: ${kopData.alamat || '..........'} | Email: ${kopData.email || '..........'}</p><p>Website: ${kopData.website || '..........'}</p></td><td width="15%" align="right"><img src="${kopData.logoKanan || ''}" class="kop-logo" onerror="this.style.display='none'"></td></tr></table></div><div class="report-title"><h3>LAPORAN KEHADIRAN PEGAWAI</h3></div><table class="data-table"><thead><tr><th>No</th><th>Nama Lengkap</th><th>NIP/NUPT</th><th>Status</th><th>Jabatan</th><th>Hari & Tanggal</th><th>Masuk</th><th>Keluar</th><th>Ket</th></tr></thead><tbody>${rows || '<tr><td colspan="9" align="center" style="padding:20px">Belum ada data kehadiran</td></tr>'}</tbody></table><table class="footer-table"><tr><td>Mengetahui,<br>Pengawas Satuan Pendidikan<br><br><div class="signature-space"></div><b><u>${picData.pengawas || '( .......................................... )'}</u></b><br>NIP. ${picData.nipPengawas || '..........................................'}</td><td>${tempatVal || '..........'}, ${tanggalVal || '..........'}<br>Kepala Sekolah<br><br><div class="signature-space"></div><b><u>${picData.kepsek || '( .......................................... )'}</u></b><br>NIP. ${picData.nipKepsek || '..........................................'}</td></tr></table><div class="footnote">Dicetak Melalui Aplikasi Presensi UPT SDN 22 Tanah Keras</div></body></html>`;
+            const html = `<html><head><style>body { font-family: 'Times New Roman', serif; padding: 20px; background: white; } .kop-container { width: 100%; border-bottom: 4px double black; margin-bottom: 20px; padding-bottom: 5px; } .kop-table { width: 100%; border-collapse: collapse; } .kop-logo { width: 80px; height: auto; } .kop-text { text-align: center; } .kop-text h2 { margin: 0; font-size: 16px; text-transform: uppercase; font-weight: normal; } .kop-text h1 { margin: 0; font-size: 20px; text-transform: uppercase; font-weight: bold; } .kop-text p { margin: 2px 0; font-size: 10px; font-style: italic; } .report-title { text-align: center; margin-bottom: 20px; } .report-title h3 { margin: 0; font-size: 16px; font-weight: bold; text-decoration: underline; } table.data-table { width: 100%; border-collapse: collapse; font-size: 11px; } table.data-table th { border: 1px solid black; background: #f2f2f2; padding: 8px; text-transform: uppercase; } .footer-table { width: 100%; margin-top: 30px; border-collapse: collapse; } .footer-table td { width: 50%; text-align: center; font-size: 13px; vertical-align: top; } .signature-space { height: 70px; } .footnote { margin-top: 20px; font-style: italic; font-size: 10px; color: #555; border-top: 1px solid #ccc; padding-top: 5px; }</style></head><body><div class="kop-container"><table class="kop-table"><tr><td width="15%" align="left"><img src="${kopData.logoKiri || ''}" class="kop-logo" onerror="this.style.display='none'"></td><td class="kop-text"><h2>${kopData.pemda || 'Pemerintah Kabupaten/Kota'}</h2><h2>${kopData.dinas || 'Dinas Pendidikan dan Kebudayaan'}</h2><h1>${kopData.sekolah || 'UPT SDN 22 Tanah Keras'}</h1><h2>KECAMATAN ${kopData.kecamatan || '..........'}</h2><p>Alamat: ${kopData.alamat || '..........'} | Email: ${kopData.email || '..........'}</p><p>Website: ${kopData.website || '..........'}</p></td><td width="15%" align="right"><img src="${kopData.logoKanan || ''}" class="kop-logo" onerror="this.style.display='none'"></td></tr></table></div><div class="report-title"><h3>LAPORAN KEHADIRAN PEGAWAI</h3></div><table class="data-table"><thead><tr><th>No</th><th>Nama Lengkap</th><th>NIP/NUPT</th><th>Status</th><th>Jabatan</th><th>Hari & Tanggal</th><th>Masuk</th><th>Keluar</th><th>Ket</th></tr></thead><tbody>${rows || '<tr><td colspan="9" align="center" style="padding:20px">Belum ada data kehadiran</td></tr>'}</tbody></table><table class="footer-table"><tr><td>Mengetahui,<br>Pengawas Satuan Pendidikan<br><br><div class="signature-space"></div><b><u>${picData.pengawas || '( .......................................... )'}</u></b><br>NIP. ${picData.nipPengawas || '..........................................'}</td><td>${elPlace?.value || '..........'}, ${elDate?.value || '..........'}<br>Kepala Sekolah<br><br><div class="signature-space"></div><b><u>${picData.kepsek || '( .......................................... )'}</u></b><br>NIP. ${picData.nipKepsek || '..........................................'}</td></tr></table><div class="footnote">Dicetak Melalui Aplikasi Presensi UPT SDN 22 Tanah Keras</div></body></html>`;
             doc.open(); doc.write(html); doc.close();
             setTimeout(() => { frame.contentWindow.focus(); frame.contentWindow.print(); }, 1000);
         }
@@ -696,13 +679,9 @@
         setInterval(() => {
             const now = new Date();
             const t = now.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false}).replace(/\./g, ':');
-            document.getElementById('clock-desktop').innerText = t;
-            document.getElementById('clock-mobile').innerText = t;
+            document.getElementById('clock-desktop').innerText = t; document.getElementById('clock-mobile').innerText = t;
             const hr = now.getHours();
-            let msg = "Selamat Pagi";
-            if(hr >= 11 && hr < 15) msg = "Selamat Siang";
-            else if(hr >= 15 && hr < 18) msg = "Selamat Sore";
-            else if(hr >= 18 || hr < 5) msg = "Selamat Malam";
+            let msg = "Selamat Pagi"; if(hr >= 11 && hr < 15) msg = "Selamat Siang"; else if(hr >= 15 && hr < 18) msg = "Selamat Sore"; else if(hr >= 18 || hr < 5) msg = "Selamat Malam";
             document.getElementById('mobile-greeting').innerText = msg;
             document.getElementById('date-now').innerText = now.toLocaleDateString('id-ID', {weekday: 'long', day: '2-digit', month: 'long', year: 'numeric'});
             document.getElementById('date-mobile').innerText = now.toLocaleDateString('id-ID', {day: '2-digit', month: 'short', year: 'numeric'});
