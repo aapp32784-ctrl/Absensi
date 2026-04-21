@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UPT SDN 22 Tanah Keras</title>
+    <title>Sistem Absensi Digital - UPT SDN 22 Tanah Keras</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -124,8 +124,18 @@
                 <!-- DASHBOARD -->
                 <section id="tab-dashboard" class="space-y-6">
                     <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-                        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-3"><div class="w-10 h-10 bg-green-100 text-green-600 rounded-xl flex items-center justify-center text-lg"><i class="fas fa-check-circle"></i></div><div><p class="text-[9px] text-slate-400 uppercase font-bold">Hadir</p><p class="text-lg font-bold" id="stats-hadir">0</p></div></div>
-                        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-3"><div class="w-10 h-10 bg-orange-100 text-orange-600 rounded-xl flex items-center justify-center text-lg"><i class="fas fa-clock"></i></div><div><p class="text-[9px] text-slate-400 uppercase font-bold">Telat</p><p class="text-lg font-bold" id="stats-late">0</p></div></div>
+                        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-3">
+                            <div class="w-10 h-10 bg-green-100 text-green-600 rounded-xl flex items-center justify-center text-lg"><i class="fas fa-check-circle"></i></div>
+                            <div><p class="text-[9px] text-slate-400 uppercase font-bold">Hadir</p><p class="text-lg font-bold" id="stats-hadir">0</p></div>
+                        </div>
+                        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-3">
+                            <div class="w-10 h-10 bg-orange-100 text-orange-600 rounded-xl flex items-center justify-center text-lg"><i class="fas fa-clock"></i></div>
+                            <div><p class="text-[9px] text-slate-400 uppercase font-bold">Telat</p><p class="text-lg font-bold" id="stats-late">0</p></div>
+                        </div>
+                        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-3">
+                            <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center text-lg"><i class="fas fa-envelope-open-text"></i></div>
+                            <div><p class="text-[9px] text-slate-400 uppercase font-bold">Izin</p><p class="text-lg font-bold" id="stats-izin">0</p></div>
+                        </div>
                     </div>
                 </section>
 
@@ -380,7 +390,6 @@
         }
 
         function initDashboard() {
-            // SET DATA PROFIL DAN NAMA
             document.getElementById('display-name').innerText = currentUser.name;
             document.getElementById('mobile-display-name').innerText = currentUser.name;
             document.getElementById('profile-name').innerText = currentUser.name;
@@ -433,6 +442,10 @@
             const btn = type === 'Masuk' ? document.getElementById('btn-in') : document.getElementById('btn-out');
             if (btn.disabled) return;
 
+            // NOTIFIKASI SEDANG ABSEN
+            const displayType = type === 'Pulang' ? 'Keluar' : type;
+            showModal("Proses", "Sedang Absen " + displayType);
+
             navigator.geolocation.getCurrentPosition(pos => {
                 const dist = getDistance(pos.coords.latitude, pos.coords.longitude, OFFICE_LAT, OFFICE_LNG);
                 if (dist > MAX_DIST) showModal("Gagal", "Lokasi terlalu jauh dari sekolah.");
@@ -451,17 +464,7 @@
                 let status = "Hadir";
                 if (hr > 7 || (hr == 7 && min > 30)) status = "Terlambat";
 
-                attendanceData.unshift({ 
-                    name: currentUser.name, 
-                    nip: currentUser.nip, 
-                    statusPegawai: currentUser.statusPegawai, 
-                    jabatan: currentUser.jabatan, 
-                    date, 
-                    in: time, 
-                    out: '-', 
-                    status: status, 
-                    username: currentUser.user 
-                });
+                attendanceData.unshift({ name: currentUser.name, nip: currentUser.nip, statusPegawai: currentUser.statusPegawai, jabatan: currentUser.jabatan, date, in: time, out: '-', status: status, username: currentUser.user });
             } else {
                 const rec = attendanceData.find(x => x.username === currentUser.user && x.date === date && x.out === '-');
                 if (rec) rec.out = time;
@@ -471,10 +474,10 @@
             await syncWithCloud(); 
             renderHistory(); 
             updateAttendanceStatus(); 
-            showModal("Berhasil", "Data absen " + type + " tersimpan.");
+            // NOTIFIKASI BERHASIL
+            showModal("Berhasil", "Berhasil Terkirim");
         }
 
-        // FUNGSI PINDAH TAB & NAVIGASI HIGHLIGHT
         function switchTab(n) {
             ['dashboard', 'attendance', 'history', 'manage', 'pic', 'kop', 'profile'].forEach(t => {
                 const tabEl = document.getElementById('tab-' + t);
@@ -486,7 +489,6 @@
             const titleEl = document.getElementById('tab-title');
             if (titleEl) titleEl.innerText = n.charAt(0).toUpperCase() + n.slice(1);
 
-            // Update Highlight Navigasi Bawah (Mobile)
             const navIds = ['dashboard', 'attendance', 'history', 'profile'];
             navIds.forEach(id => {
                 const btn = document.getElementById('nav-btn-' + id);
@@ -527,9 +529,10 @@
             
             const statsHadir = document.getElementById('stats-hadir');
             if (statsHadir) statsHadir.innerText = data.filter(x => x.status === 'Hadir').length;
-            
             const statsLate = document.getElementById('stats-late');
             if (statsLate) statsLate.innerText = data.filter(x => x.status === 'Terlambat').length;
+            const statsIzin = document.getElementById('stats-izin');
+            if (statsIzin) statsIzin.innerText = data.filter(x => x.status === 'Izin').length;
         }
 
         function renderEmployeeList() {
@@ -548,8 +551,19 @@
             await syncWithCloud(); renderEmployeeList(); closeAddEmployeeModal(); e.target.reset();
         }
 
-        async function deleteUser(id) { users = users.filter(u => u.id !== id); await syncWithCloud(); renderEmployeeList(); }
-        async function deleteRow(idx) { attendanceData.splice(idx, 1); await syncWithCloud(); renderHistory(); }
+        async function deleteUser(id) { 
+            showModal("Proses", "Sedang Menghapus Data");
+            users = users.filter(u => u.id !== id); 
+            await syncWithCloud(); 
+            renderEmployeeList(); 
+        }
+        
+        async function deleteRow(idx) { 
+            showModal("Proses", "Sedang Menghapus Data");
+            attendanceData.splice(idx, 1); 
+            await syncWithCloud(); 
+            renderHistory(); 
+        }
 
         function openManualAbsenModal() {
             const selectUser = document.getElementById('manual-select-user');
@@ -571,7 +585,7 @@
             const emp = users.find(x => x.user === u);
             if(!emp) return;
             attendanceData.unshift({ name: emp.name, nip: emp.nip, statusPegawai: emp.statusPegawai, jabatan: emp.jabatan, date: document.getElementById('manual-date').value, in: document.getElementById('manual-in').value || '-', out: document.getElementById('manual-out').value || '-', status: document.getElementById('manual-status').value, username: emp.user });
-            await syncWithCloud(); renderHistory(); closeManualAbsenModal(); showModal("Berhasil", "Data manual tersimpan.");
+            await syncWithCloud(); renderHistory(); closeManualAbsenModal(); showModal("Berhasil", "Berhasil Terkirim");
         }
 
         function getDistance(lat1, lon1, lat2, lon2) {
@@ -580,11 +594,25 @@
             return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         }
 
-        function showModal(t, m) { document.getElementById('modal-title').innerText=t; document.getElementById('modal-message').innerText=m; document.getElementById('modal-alert').classList.remove('hidden'); }
-        function closeModal() { document.getElementById('modal-alert').classList.add('hidden'); }
+        function showModal(t, m) { 
+            document.getElementById('modal-title').innerText=t; 
+            document.getElementById('modal-message').innerText=m; 
+            document.getElementById('modal-alert').classList.remove('hidden'); 
+        }
+
+        function closeModal() { 
+            document.getElementById('modal-alert').classList.add('hidden'); 
+            // Jika konteksnya logout, maka reload setelah modal ditutup
+            if (window.isLoggingOut) location.reload();
+        }
+
         function openAddEmployeeModal() { document.getElementById('modal-add-employee').classList.remove('hidden'); }
         function closeAddEmployeeModal() { document.getElementById('modal-add-employee').classList.add('hidden'); }
-        function handleLogout() { location.reload(); }
+        
+        function handleLogout() { 
+            window.isLoggingOut = true;
+            showModal("Keluar", "Keluar Aplikasi");
+        }
         
         function loadKopDataUI() { if(kopData) Object.keys(kopData).forEach(k => { const el = document.getElementById('kop-'+k); if(el) el.value = kopData[k]; }); }
         function loadPICDataUI() { if(picData) Object.keys(picData).forEach(k => { const el = document.getElementById('pic-'+k); if(el) el.value = picData[k]; }); }
@@ -592,13 +620,13 @@
         async function handleSaveKop(e) {
             e.preventDefault();
             kopData = { logoKiri: document.getElementById('kop-logo-kiri').value, logoKanan: document.getElementById('kop-logo-kanan').value, pemda: document.getElementById('kop-pemda').value, dinas: document.getElementById('kop-dinas').value, sekolah: document.getElementById('kop-sekolah').value, kecamatan: document.getElementById('kop-kecamatan').value, alamat: document.getElementById('kop-alamat').value, email: document.getElementById('kop-email').value, website: document.getElementById('kop-website').value };
-            await syncWithCloud(); showModal("Berhasil", "Data Kop Surat disimpan.");
+            await syncWithCloud(); showModal("Berhasil", "Berhasil Terkirim");
         }
 
         async function handleSavePIC(e) {
             e.preventDefault();
             picData = { pengawas: document.getElementById('pic-pengawas-nama').value, nipPengawas: document.getElementById('pic-pengawas-nip').value, kepsek: document.getElementById('pic-kepsek-nama').value, nipKepsek: document.getElementById('pic-kepsek-nip').value };
-            await syncWithCloud(); showModal("Berhasil", "Data Penanggung Jawab disimpan.");
+            await syncWithCloud(); showModal("Berhasil", "Berhasil Terkirim");
         }
 
         async function printReport() {
