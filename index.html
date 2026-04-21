@@ -54,7 +54,6 @@
             <div class="p-8">
                 <div id="login-error" class="hidden mb-4 p-3 bg-red-50 text-red-600 text-xs font-bold rounded-xl border border-red-100 flex items-center gap-2"><i class="fas fa-exclamation-circle"></i> Username atau sandi salah!</div>
                 
-                <!-- FORM PEGAWAI DENGAN DROPDOWN USERNAME -->
                 <form id="form-pegawai" onsubmit="handleLogin(event, 'pegawai')" class="space-y-5">
                     <div class="space-y-1">
                         <label class="text-xs font-bold text-slate-500 uppercase">Pilih Username Pegawai</label>
@@ -154,7 +153,7 @@
                     <div class="bg-white p-8 rounded-3xl shadow-lg border border-slate-100 text-center space-y-6">
                         <div class="bg-amber-50 border border-amber-200 p-4 rounded-2xl flex items-center gap-3 text-left">
                             <div class="w-10 h-10 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center flex-shrink-0"><i class="fas fa-location-arrow"></i></div>
-                            <p class="text-xs font-medium text-amber-800 leading-relaxed"><span class="block font-bold mb-0.5">Petunjuk Absensi:</span>Pastikan Aktifkan GPS Handphone (HP) Anda sebelum menekan tombol ambil absen untuk verifikasi lokasi.</p>
+                            <p class="text-xs font-medium text-amber-800 leading-relaxed"><span class="block font-bold mb-0.5">Petunjuk Absensi:</span>Batas absen masuk tepat waktu adalah jam <b>07.15 WIB</b>. Pastikan Aktifkan GPS Handphone (HP) Anda sebelum menekan tombol ambil absen.</p>
                         </div>
                         <div class="space-y-2">
                             <h3 class="text-2xl font-bold text-slate-800">Panel Presensi</h3>
@@ -341,6 +340,7 @@
         const OFFICE_LAT = -1.2942335988142928, OFFICE_LNG = 100.52147339164873, MAX_DIST = 1000;
         let users = [], attendanceData = [], picData = {}, kopData = {}, currentUser = null;
 
+        // DEFAULT_ADMIN DENGAN FOTO PROFIL KHUSUS
         const DEFAULT_ADMIN = { 
             id: 1, 
             name: 'Admin', 
@@ -507,7 +507,8 @@
                 const hr = now.getHours();
                 const min = now.getMinutes();
                 let status = "Hadir";
-                if (hr > 7 || (hr == 7 && min > 30)) status = "Terlambat";
+                // LOGIKA TERLAMBAT: BATAS 07.15 (Lewat 07.15 otomatis Terlambat)
+                if (hr > 7 || (hr == 7 && min > 15)) status = "Terlambat";
                 attendanceData.unshift({ name: currentUser.name, nip: currentUser.nip, statusPegawai: currentUser.statusPegawai, jabatan: currentUser.jabatan, date, in: time, out: '-', status: status, username: currentUser.user });
             } else {
                 const rec = attendanceData.find(x => x.username === currentUser.user && x.date === date && x.out === '-');
@@ -588,7 +589,7 @@
                 nip: document.getElementById('new-nip').value, 
                 statusPegawai: document.getElementById('new-status').value, 
                 jabatan: document.getElementById('new-jabatan').value,
-                avatar: document.getElementById('new-avatar-url').value // Simpan URL Foto
+                avatar: document.getElementById('new-avatar-url').value 
             });
             await syncWithCloud(); 
             renderEmployeeList(); 
