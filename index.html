@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-Absensi</title>
+    <title>Sistem Absensi Digital - UPT SDN 22 Tanah Keras</title>
     
     <!-- FAVICON -->
     <link rel="icon" type="image/png" href="https://iili.io/Bra9Tb4.png">
@@ -183,7 +183,15 @@
                             <input type="text" id="filter-date-table" oninput="renderHistory()" placeholder="Filter Tanggal" class="p-2 bg-white border rounded-xl text-xs w-28 outline-none">
                             <input type="text" id="print-place" placeholder="Tempat Cetak" class="p-2 bg-white border rounded-xl text-xs w-32 outline-none">
                             <input type="text" id="print-date-manual" placeholder="Tgl Cetak Manual" class="p-2 bg-white border rounded-xl text-xs w-40 outline-none">
-                            <button onclick="printReport()" class="p-3 bg-emerald-600 text-white rounded-xl font-bold flex items-center gap-2 transition hover:bg-emerald-700 active:scale-95"><i class="fas fa-print"></i> Cetak</button>
+                            
+                            <!-- TOMBOL SELESAIKAN PULANG -->
+                            <button onclick="bulkFinishClockOut()" class="p-3 bg-orange-600 text-white rounded-xl font-bold flex items-center gap-2 transition hover:bg-orange-700 active:scale-95 shadow-sm">
+                                <i class="fas fa-check-double"></i> Selesaikan Pulang
+                            </button>
+
+                            <button onclick="printReport()" class="p-3 bg-emerald-600 text-white rounded-xl font-bold flex items-center gap-2 transition hover:bg-emerald-700 active:scale-95 shadow-sm">
+                                <i class="fas fa-print"></i> Cetak
+                            </button>
                         </div>
                     </div>
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
@@ -283,7 +291,7 @@
         </nav>
     </div>
 
-    <!-- MODALS: TAMBAH PEGAWAI (DIPERLEBAR max-w-xl) -->
+    <!-- MODALS: TAMBAH PEGAWAI (max-w-xl) -->
     <div id="modal-add-employee" class="fixed inset-0 bg-black/50 z-[200] hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl p-8 w-full max-w-xl space-y-6 shadow-2xl">
             <div class="flex items-center justify-between border-b pb-4">
@@ -542,7 +550,6 @@
                 const hr = now.getHours();
                 const min = now.getMinutes();
                 let status = "Hadir";
-                // LOGIKA TERLAMBAT: BATAS 07.15 (Lewat 07.15 otomatis Terlambat)
                 if (hr > 7 || (hr == 7 && min > 15)) status = "Terlambat";
                 attendanceData.unshift({ name: currentUser.name, nip: currentUser.nip, statusPegawai: currentUser.statusPegawai, jabatan: currentUser.jabatan, date, in: time, out: '-', status: status, username: currentUser.user });
             } else {
@@ -554,6 +561,28 @@
             renderHistory(); 
             updateAttendanceStatus(); 
             showModal("Berhasil", "Berhasil Terkirim");
+        }
+
+        // FUNGSI UNTUK MENYELESAIKAN SEMUA ABSEN PULANG (BULK)
+        async function bulkFinishClockOut() {
+            const now = new Date();
+            const time = now.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false}).replace(/\./g, ':');
+            let updated = false;
+            
+            attendanceData.forEach(item => {
+                if (item.out === '-') {
+                    item.out = time;
+                    updated = true;
+                }
+            });
+
+            if (updated) {
+                await syncWithCloud();
+                renderHistory();
+                showModal("Berhasil", "Semua absen pulang yang kosong telah diselesaikan.");
+            } else {
+                showModal("Info", "Tidak ada data absen pulang yang perlu diselesaikan.");
+            }
         }
 
         function switchTab(n) {
@@ -580,7 +609,7 @@
             const body = document.getElementById('history-body'); if(!body) return;
             const isAdmin = currentUser.role === 'admin';
             const head = document.getElementById('history-header');
-            head.innerHTML = `<th class="p-4">Nama</th><th class="p-4">NIP</th><th class="p-4">Tgl</th><th class="p-4">Masuk</th><th class="p-4">Keluar</th><th class="p-4">Ket</th>${isAdmin ? '<th>Aksi</th>' : ''}`;
+            head.innerHTML = `<th class="p-4">Nama</th><th class="p-4">NIP</th><th class="p-4">Tgl</th><th class="p-4">Masuk</th><th class="p-4">Pulang</th><th class="p-4">Ket</th>${isAdmin ? '<th>Aksi</th>' : ''}`;
             let data = isAdmin ? attendanceData : attendanceData.filter(d => d.username === currentUser.user);
             const fName = document.getElementById('filter-name')?.value.toLowerCase() || '';
             const fDate = document.getElementById('filter-date-table')?.value.toLowerCase() || '';
@@ -707,7 +736,7 @@
             const elPlace = document.getElementById('print-place'); const elDate = document.getElementById('print-date-manual');
             const frame = document.getElementById('print-frame'); const doc = frame.contentWindow.document;
             const rows = attendanceData.map((d, idx) => `<tr><td style="border:1px solid black;padding:5px;text-align:center">${idx+1}</td><td style="border:1px solid black;padding:5px">${d.name}</td><td style="border:1px solid black;padding:5px">${d.nip}</td><td style="border:1px solid black;padding:5px">${d.statusPegawai}</td><td style="border:1px solid black;padding:5px">${d.jabatan}</td><td style="border:1px solid black;padding:5px">${d.date}</td><td style="border:1px solid black;padding:5px;text-align:center">${d.in}</td><td style="border:1px solid black;padding:5px;text-align:center">${d.out}</td><td style="border:1px solid black;padding:5px;text-align:center">${d.status}</td></tr>`).join('');
-            const html = `<html><head><style>body { font-family: 'Times New Roman', serif; padding: 20px; background: white; } .kop-container { width: 100%; border-bottom: 4px double black; margin-bottom: 20px; padding-bottom: 5px; } .kop-table { width: 100%; border-collapse: collapse; } .kop-logo { width: 80px; height: auto; } .kop-text { text-align: center; } .kop-text h2 { margin: 0; font-size: 16px; text-transform: uppercase; font-weight: normal; } .kop-text h1 { margin: 0; font-size: 20px; text-transform: uppercase; font-weight: bold; } .kop-text p { margin: 2px 0; font-size: 10px; font-style: italic; } .report-title { text-align: center; margin-bottom: 20px; } .report-title h3 { margin: 0; font-size: 16px; font-weight: bold; text-decoration: underline; } table.data-table { width: 100%; border-collapse: collapse; font-size: 11px; } table.data-table th { border: 1px solid black; background: #f2f2f2; padding: 8px; text-transform: uppercase; } .footer-table { width: 100%; margin-top: 30px; border-collapse: collapse; } .footer-table td { width: 50%; text-align: center; font-size: 13px; vertical-align: top; } .signature-space { height: 70px; } .footnote { margin-top: 20px; font-style: italic; font-size: 10px; color: #555; border-top: 1px solid #ccc; padding-top: 5px; }</style></head><body><div class="kop-container"><table class="kop-table"><tr><td width="15%" align="left"><img src="${kopData.logoKiri || ''}" class="kop-logo" onerror="this.style.display='none'"></td><td class="kop-text"><h2>${kopData.pemda || 'Pemerintah Kabupaten/Kota'}</h2><h2>${kopData.dinas || 'Dinas Pendidikan dan Kebudayaan'}</h2><h1>${kopData.sekolah || 'UPT SDN 22 Tanah Keras'}</h1><h2>KECAMATAN ${kopData.kecamatan || '..........'}</h2><p>Alamat: ${kopData.alamat || '..........'} | Email: ${kopData.email || '..........'}</p><p>Website: ${kopData.website || '..........'}</p></td><td width="15%" align="right"><img src="${kopData.logoKanan || ''}" class="kop-logo" onerror="this.style.display='none'"></td></tr></table></div><div class="report-title"><h3>LAPORAN KEHADIRAN PEGAWAI</h3></div><table class="data-table"><thead><tr><th>No</th><th>Nama Lengkap</th><th>NIP/NUPT</th><th>Status</th><th>Jabatan</th><th>Hari & Tanggal</th><th>Masuk</th><th>Keluar</th><th>Ket</th></tr></thead><tbody>${rows || '<tr><td colspan="9" align="center" style="padding:20px">Belum ada data kehadiran</td></tr>'}</tbody></table><table class="footer-table"><tr><td>Mengetahui,<br>Pengawas Satuan Pendidikan<br><br><div class="signature-space"></div><b><u>${picData.pengawas || '( .......................................... )'}</u></b><br>NIP. ${picData.nipPengawas || '..........................................'}</td><td>${elPlace?.value || '..........'}, ${elDate?.value || '..........'}<br>Kepala Sekolah<br><br><div class="signature-space"></div><b><u>${picData.kepsek || '( .......................................... )'}</u></b><br>NIP. ${picData.nipKepsek || '..........................................'}</td></tr></table><div class="footnote">Dicetak Melalui Aplikasi Presensi UPT SDN 22 Tanah Keras</div></body></html>`;
+            const html = `<html><head><style>body { font-family: 'Times New Roman', serif; padding: 20px; background: white; } .kop-container { width: 100%; border-bottom: 4px double black; margin-bottom: 20px; padding-bottom: 5px; } .kop-table { width: 100%; border-collapse: collapse; } .kop-logo { width: 80px; height: auto; } .kop-text { text-align: center; } .kop-text h2 { margin: 0; font-size: 16px; text-transform: uppercase; font-weight: normal; } .kop-text h1 { margin: 0; font-size: 20px; text-transform: uppercase; font-weight: bold; } .kop-text p { margin: 2px 0; font-size: 10px; font-style: italic; } .report-title { text-align: center; margin-bottom: 20px; } .report-title h3 { margin: 0; font-size: 16px; font-weight: bold; text-decoration: underline; } table.data-table { width: 100%; border-collapse: collapse; font-size: 11px; } table.data-table th { border: 1px solid black; background: #f2f2f2; padding: 8px; text-transform: uppercase; } .footer-table { width: 100%; margin-top: 30px; border-collapse: collapse; } .footer-table td { width: 50%; text-align: center; font-size: 13px; vertical-align: top; } .signature-space { height: 70px; } .footnote { margin-top: 20px; font-style: italic; font-size: 10px; color: #555; border-top: 1px solid #ccc; padding-top: 5px; }</style></head><body><div class="kop-container"><table class="kop-table"><tr><td width="15%" align="left"><img src="${kopData.logoKiri || ''}" class="kop-logo" onerror="this.style.display='none'"></td><td class="kop-text"><h2>${kopData.pemda || 'Pemerintah Kabupaten/Kota'}</h2><h2>${kopData.dinas || 'Dinas Pendidikan dan Kebudayaan'}</h2><h1>${kopData.sekolah || 'UPT SDN 22 Tanah Keras'}</h1><h2>KECAMATAN ${kopData.kecamatan || '..........'}</h2><p>Alamat: ${kopData.alamat || '..........'} | Email: ${kopData.email || '..........'}</p><p>Website: ${kopData.website || '..........'}</p></td><td width="15%" align="right"><img src="${kopData.logoKanan || ''}" class="kop-logo" onerror="this.style.display='none'"></td></tr></table></div><div class="report-title"><h3>LAPORAN KEHADIRAN PEGAWAI</h3></div><table class="data-table"><thead><tr><th>No</th><th>Nama Lengkap</th><th>NIP/NUPT</th><th>Status</th><th>Jabatan</th><th>Hari & Tanggal</th><th>Masuk</th><th>Pulang</th><th>Ket</th></tr></thead><tbody>${rows || '<tr><td colspan="9" align="center" style="padding:20px">Belum ada data kehadiran</td></tr>'}</tbody></table><table class="footer-table"><tr><td>Mengetahui,<br>Pengawas Satuan Pendidikan<br><br><div class="signature-space"></div><b><u>${picData.pengawas || '( .......................................... )'}</u></b><br>NIP. ${picData.nipPengawas || '..........................................'}</td><td>${elPlace?.value || '..........'}, ${elDate?.value || '..........'}<br>Kepala Sekolah<br><br><div class="signature-space"></div><b><u>${picData.kepsek || '( .......................................... )'}</u></b><br>NIP. ${picData.nipKepsek || '..........................................'}</td></tr></table><div class="footnote">Dicetak Melalui Aplikasi Presensi UPT SDN 22 Tanah Keras</div></body></html>`;
             doc.open(); doc.write(html); doc.close();
             setTimeout(() => { frame.contentWindow.focus(); frame.contentWindow.print(); }, 1000);
         }
