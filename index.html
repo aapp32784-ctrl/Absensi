@@ -283,28 +283,64 @@
         </nav>
     </div>
 
-    <!-- MODALS -->
+    <!-- MODALS: TAMBAH PEGAWAI (DIPERLEBAR max-w-xl) -->
     <div id="modal-add-employee" class="fixed inset-0 bg-black/50 z-[200] hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl p-6 w-full max-w-md space-y-4 shadow-2xl">
-            <h4 class="text-lg font-bold">Tambah Pegawai</h4>
-            <form onsubmit="addEmployee(event)" class="space-y-3">
-                <input type="text" id="new-name" required placeholder="Nama" class="w-full p-3 bg-slate-50 border rounded-xl text-sm">
-                <input type="text" id="new-nip" required placeholder="NIP" class="w-full p-3 bg-slate-50 border rounded-xl text-sm" oninput="document.getElementById('new-user').value=this.value">
-                <input type="text" id="new-jabatan" required placeholder="Jabatan" class="w-full p-3 bg-slate-50 border rounded-xl text-sm">
-                <select id="new-status" required class="w-full p-3 bg-slate-50 border rounded-xl text-sm">
-                    <option value="PNS">PNS</option>
-                    <option value="PPPK">PPPK</option>
-                    <option value="PPPK Paruh Waktu">PPPK Paruh Waktu</option>
-                    <option value="Honor">Honor</option>
-                </select>
-                <!-- TAMBAHAN: URL FOTO PEGAWAI -->
-                <input type="text" id="new-avatar-url" placeholder="URL Foto Pegawai (Opsional)" class="w-full p-3 bg-slate-50 border rounded-xl text-sm">
-                
-                <div class="grid grid-cols-2 gap-2">
-                    <input type="text" id="new-user" required placeholder="User" class="w-full p-3 bg-slate-50 border rounded-xl text-sm">
-                    <input type="password" id="new-pass" required placeholder="Pass" class="w-full p-3 bg-slate-50 border rounded-xl text-sm">
+        <div class="bg-white rounded-3xl p-8 w-full max-w-xl space-y-6 shadow-2xl">
+            <div class="flex items-center justify-between border-b pb-4">
+                <h4 class="text-xl font-bold text-slate-800">Form Tambah Pegawai Baru</h4>
+                <button onclick="closeAddEmployeeModal()" class="text-slate-400 hover:text-slate-600"><i class="fas fa-times"></i></button>
+            </div>
+            <form onsubmit="addEmployee(event)" class="space-y-5">
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Nama Lengkap</label>
+                    <input type="text" id="new-name" required placeholder="Masukkan Nama Lengkap" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition">
                 </div>
-                <div class="flex gap-2"><button type="button" onclick="closeAddEmployeeModal()" class="flex-1 py-3 bg-slate-100 rounded-xl font-bold">Batal</button><button type="submit" class="flex-1 py-3 bg-indigo-600 text-white rounded-xl font-bold">Simpan</button></div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">NIP / NUPT</label>
+                        <input type="text" id="new-nip" required placeholder="NIP Pegawai" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition" oninput="document.getElementById('new-user').value=this.value">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Jabatan</label>
+                        <input type="text" id="new-jabatan" required placeholder="Contoh: Guru Kelas" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Status Kepegawaian</label>
+                        <select id="new-status" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition">
+                            <option value="PNS">PNS</option>
+                            <option value="PPPK">PPPK</option>
+                            <option value="PPPK Paruh Waktu">PPPK Paruh Waktu</option>
+                            <option value="Honor">Honor</option>
+                        </select>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">URL Foto Pegawai</label>
+                        <input type="text" id="new-avatar-url" placeholder="https://link-foto.com/foto.png" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition">
+                    </div>
+                </div>
+                
+                <div class="p-4 bg-indigo-50 rounded-2xl border border-indigo-100">
+                    <p class="text-[10px] font-bold text-indigo-400 uppercase tracking-widest mb-3">Akun Login</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="space-y-1">
+                            <label class="text-[9px] font-bold text-slate-500 uppercase">Username</label>
+                            <input type="text" id="new-user" required placeholder="User" class="w-full p-3 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[9px] font-bold text-slate-500 uppercase">Kata Sandi</label>
+                            <input type="password" id="new-pass" required placeholder="Pass" class="w-full p-3 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex gap-3 pt-2">
+                    <button type="button" onclick="closeAddEmployeeModal()" class="flex-1 py-3 bg-slate-100 text-slate-600 rounded-xl font-bold hover:bg-slate-200 transition">Batal</button>
+                    <button type="submit" class="flex-1 py-3 bg-indigo-600 text-white rounded-xl font-bold shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition">Simpan Pegawai</button>
+                </div>
             </form>
         </div>
     </div>
@@ -340,7 +376,6 @@
         const OFFICE_LAT = -1.2942335988142928, OFFICE_LNG = 100.52147339164873, MAX_DIST = 1000;
         let users = [], attendanceData = [], picData = {}, kopData = {}, currentUser = null;
 
-        // DEFAULT_ADMIN DENGAN FOTO PROFIL KHUSUS
         const DEFAULT_ADMIN = { 
             id: 1, 
             name: 'Admin', 
