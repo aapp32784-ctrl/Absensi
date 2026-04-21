@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Absensi Digital - UPT SDN 22 Tanah Keras</title>
+    <title>UPT SDN 22 Tanah Keras</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -463,18 +463,26 @@
             return s;
         }
 
-        // FUNGSI UNTUK MEMASTIKAN JAM SELALU DALAM FORMAT HH:mm:ss
+        // FUNGSI UNTUK MEMASTIKAN JAM SELALU DALAM FORMAT HH:mm:ss TANPA PERGESERAN WAKTU
         function formatTimeDisplay(timeStr) {
             if (!timeStr || timeStr === '-') return '-';
-            const s = String(timeStr);
-            // Jika input berupa format ISO, ubah ke jam lokal
-            if (s.includes('T') && s.includes('Z')) {
+            let s = String(timeStr).trim();
+            
+            // Jika sudah berformat HH:mm:ss, biarkan saja
+            if (/^\d{2}:\d{2}:\d{2}$/.test(s)) return s;
+
+            // Jika berisi format ISO (T dan Z), kita ambil komponen jamnya saja secara manual
+            // Ini untuk menghindari 'toLocaleTimeString' yang menyesuaikan zona waktu browser secara paksa
+            if (s.includes('T') || s.includes('Z')) {
                 try {
                     const d = new Date(s);
-                    return d.toLocaleTimeString('id-ID', {hour: '2-digit', minute: '2-digit', second: '2-digit'}).replace(/\./g, ':');
+                    const hh = String(d.getHours()).padStart(2, '0');
+                    const mm = String(d.getMinutes()).padStart(2, '0');
+                    const ss = String(d.getSeconds()).padStart(2, '0');
+                    return `${hh}:${mm}:${ss}`;
                 } catch(e) { return s; }
             }
-            return s; // Kembalikan string asli jika sudah benar
+            return s;
         }
 
         async function syncWithCloud() {
@@ -574,8 +582,7 @@
             document.getElementById('form-admin').classList.toggle('hidden', isP);
         }
 
-        function handleLogin(e, role) {
-            e.preventDefault();
+        function handleLogin(role) {
             const uInput = role === 'admin' ? document.getElementById('a-user').value : document.getElementById('p-user').value;
             const pInput = role === 'admin' ? document.getElementById('a-pass').value : document.getElementById('p-pass').value;
             const found = users.find(x => String(x.user).toLowerCase() === String(uInput).toLowerCase() && String(x.pass) === String(pInput) && x.role === role);
@@ -586,6 +593,10 @@
                 document.getElementById('login-error').classList.add('hidden');
             } else document.getElementById('login-error').classList.remove('hidden'); 
         }
+
+        // Penanganan login dipanggil dari onsubmit form
+        document.getElementById('form-pegawai').onsubmit = (e) => { e.preventDefault(); handleLogin('pegawai'); };
+        document.getElementById('form-admin').onsubmit = (e) => { e.preventDefault(); handleLogin('admin'); };
 
         function initDashboard() {
             const isAdmin = currentUser.role === 'admin';
@@ -656,8 +667,11 @@
 
         async function doAbsen(type) {
             const now = new Date(); 
-            // PERBAIKAN: MENAMBAHKAN DETIK PADA WAKTU ABSEN
-            const time = now.toLocaleTimeString('id-ID', {hour: '2-digit', minute: '2-digit', second: '2-digit'}).replace(/\./g, ':'); 
+            // Jam Lokal dalam format HH:mm:ss
+            const hh = String(now.getHours()).padStart(2, '0');
+            const mm = String(now.getMinutes()).padStart(2, '0');
+            const ss = String(now.getSeconds()).padStart(2, '0');
+            const time = `${hh}:${mm}:${ss}`;
             const dateStr = now.toLocaleDateString('id-ID', {weekday: 'long', day: '2-digit', month: 'long', year: 'numeric'});
             
             if (type === 'Masuk') {
@@ -893,7 +907,10 @@
         // LOGIKA JAM, TANGGAL, DAN SALAM DINAMIS
         setInterval(() => {
             const now = new Date();
-            const t = now.toLocaleTimeString('id-ID', {hour: '2-digit', minute: '2-digit', second: '2-digit'}).replace(/\./g, ':');
+            const hh = String(now.getHours()).padStart(2, '0');
+            const mm = String(now.getMinutes()).padStart(2, '0');
+            const ss = String(now.getSeconds()).padStart(2, '0');
+            const t = `${hh}:${mm}:${ss}`;
             const hour = now.getHours();
 
             const elD = document.getElementById('clock-desktop');
