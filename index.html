@@ -17,6 +17,11 @@
         }
         .loading-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.8); z-index: 9999; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 1rem; }
         #print-frame { position: absolute; width: 0; height: 0; border: none; visibility: hidden; }
+        
+        /* State Tombol */
+        .btn-active-in { background-color: #4f46e5; color: white; opacity: 1; cursor: pointer; }
+        .btn-active-out { background-color: #ea580c; color: white; opacity: 1; cursor: pointer; }
+        .btn-disabled { background-color: #e2e8f0; color: #94a3b8; opacity: 0.7; cursor: not-allowed; pointer-events: none; }
     </style>
 </head>
 <body class="text-slate-800">
@@ -25,7 +30,7 @@
 
     <div id="loading-overlay" class="loading-overlay hidden">
         <div class="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
-        <p class="font-bold text-indigo-600 animate-pulse">Menyingkronkan Data Jam...</p>
+        <p class="font-bold text-indigo-600 animate-pulse">Menyingkronkan Data...</p>
     </div>
 
     <!-- HALAMAN LOGIN -->
@@ -140,8 +145,8 @@
                         
                         <div class="flex flex-col gap-4 max-w-lg mx-auto">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <button id="btn-in" onclick="startAbsenceProcess('Masuk')" class="group px-8 py-6 bg-indigo-600 text-white rounded-2xl font-bold hover:bg-indigo-700 transition flex flex-col items-center justify-center gap-2 active:scale-95 shadow-lg shadow-indigo-100"><i class="fas fa-sign-in-alt text-2xl"></i><span>Absen Masuk</span></button>
-                                <button id="btn-out" onclick="startAbsenceProcess('Pulang')" disabled class="group px-8 py-6 bg-slate-200 text-slate-400 cursor-not-allowed rounded-2xl font-bold transition flex flex-col items-center justify-center gap-2"><i class="fas fa-sign-out-alt text-2xl"></i><span>Absen Pulang</span></button>
+                                <button id="btn-in" onclick="startAbsenceProcess('Masuk')" class="group px-8 py-6 rounded-2xl font-bold transition flex flex-col items-center justify-center gap-2 active:scale-95 shadow-lg"><i class="fas fa-sign-in-alt text-2xl"></i><span>Absen Masuk</span></button>
+                                <button id="btn-out" onclick="startAbsenceProcess('Pulang')" class="group px-8 py-6 rounded-2xl font-bold transition flex flex-col items-center justify-center gap-2 active:scale-95 shadow-lg"><i class="fas fa-sign-out-alt text-2xl"></i><span>Absen Pulang</span></button>
                             </div>
                             <div id="admin-manual-area" class="hidden pt-4 border-t border-slate-100">
                                 <button onclick="openManualAbsenModal()" class="w-full py-4 bg-emerald-600 text-white rounded-2xl font-bold shadow-lg shadow-emerald-100 hover:bg-emerald-700 transition flex items-center justify-center gap-3"><i class="fas fa-user-edit text-xl"></i><span>Input Presensi Manual (Admin)</span></button>
@@ -306,7 +311,6 @@
             if (!val || val === '-') return '-';
             let s = String(val).trim();
             if (s.includes('T')) {
-                // Ekstraksi teks jam secara harfiah agar sama dengan Google Sheet
                 const timePart = s.split('T')[1];
                 return timePart.substring(0, 8);
             }
@@ -376,42 +380,74 @@
             });
             switchTab(isAdmin ? 'dashboard' : 'attendance');
             renderHistory();
+            updateAttendanceStatus();
         }
 
         function updateAttendanceStatus() {
             if (!currentUser || currentUser.role === 'admin') return;
             const today = new Date().toLocaleDateString('id-ID', {weekday: 'long', day: '2-digit', month: 'long', year: 'numeric'});
             const rec = attendanceData.find(x => x.username === currentUser.user && x.date === today);
-            document.getElementById('btn-in').disabled = !!rec;
-            document.getElementById('btn-out').disabled = !rec || rec.out !== '-';
-            document.getElementById('label-status').innerText = !rec ? "Belum Absen" : (rec.out === '-' ? "Sudah Absen Masuk" : "Selesai");
+            
+            const btnIn = document.getElementById('btn-in');
+            const btnOut = document.getElementById('btn-out');
+            const labelStatus = document.getElementById('label-status');
+
+            if (!rec) {
+                // Belum absen sama sekali
+                btnIn.disabled = false;
+                btnIn.className = "group px-8 py-6 rounded-2xl font-bold transition flex flex-col items-center justify-center gap-2 active:scale-95 shadow-lg btn-active-in";
+                btnOut.disabled = true;
+                btnOut.className = "group px-8 py-6 rounded-2xl font-bold transition flex flex-col items-center justify-center gap-2 active:scale-95 shadow-lg btn-disabled";
+                labelStatus.innerText = "Belum Absen Hari Ini";
+            } else if (rec.out === '-') {
+                // Sudah masuk tapi belum pulang
+                btnIn.disabled = true;
+                btnIn.className = "group px-8 py-6 rounded-2xl font-bold transition flex flex-col items-center justify-center gap-2 active:scale-95 shadow-lg btn-disabled";
+                btnOut.disabled = false;
+                btnOut.className = "group px-8 py-6 rounded-2xl font-bold transition flex flex-col items-center justify-center gap-2 active:scale-95 shadow-lg btn-active-out";
+                labelStatus.innerText = "Sudah Absen Masuk";
+            } else {
+                // Sudah selesai absen keduanya
+                btnIn.disabled = true;
+                btnIn.className = "group px-8 py-6 rounded-2xl font-bold transition flex flex-col items-center justify-center gap-2 active:scale-95 shadow-lg btn-disabled";
+                btnOut.disabled = true;
+                btnOut.className = "group px-8 py-6 rounded-2xl font-bold transition flex flex-col items-center justify-center gap-2 active:scale-95 shadow-lg btn-disabled";
+                labelStatus.innerText = "Absensi Selesai";
+            }
         }
 
         async function startAbsenceProcess(type) {
+            const btn = type === 'Masuk' ? document.getElementById('btn-in') : document.getElementById('btn-out');
+            if (btn.disabled) return;
+
             navigator.geolocation.getCurrentPosition(pos => {
                 const dist = getDistance(pos.coords.latitude, pos.coords.longitude, OFFICE_LAT, OFFICE_LNG);
-                if (dist > MAX_DIST) showModal("Gagal", "Lokasi terlalu jauh.");
+                if (dist > MAX_DIST) showModal("Gagal", "Lokasi terlalu jauh dari sekolah.");
                 else doAbsen(type);
-            }, () => showModal("Error", "GPS tidak aktif."), {enableHighAccuracy: true});
+            }, () => showModal("Error", "GPS tidak aktif. Aktifkan lokasi untuk absen."), {enableHighAccuracy: true});
         }
 
         async function doAbsen(type) {
             const now = new Date();
             const time = now.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false}).replace(/\./g, ':');
             const date = now.toLocaleDateString('id-ID', {weekday: 'long', day: '2-digit', month: 'long', year: 'numeric'});
+            
             if (type === 'Masuk') {
                 attendanceData.unshift({ name: currentUser.name, nip: currentUser.nip, statusPegawai: currentUser.statusPegawai, jabatan: currentUser.jabatan, date, in: time, out: '-', status: 'Hadir', username: currentUser.user });
             } else {
                 const rec = attendanceData.find(x => x.username === currentUser.user && x.date === date && x.out === '-');
                 if (rec) rec.out = time;
+                else return; // Tidak ditemukan record masuk yang gantung
             }
-            await syncWithCloud(); renderHistory(); updateAttendanceStatus(); showModal("Berhasil", "Data tersimpan.");
+            
+            await syncWithCloud(); 
+            renderHistory(); 
+            updateAttendanceStatus(); 
+            showModal("Berhasil", "Data absen " + type + " tersimpan.");
         }
 
         function renderHistory() {
-            // PERBAIKAN: Tambahkan cek currentUser agar tidak error saat load awal
             if (!currentUser) return;
-
             const body = document.getElementById('history-body'); if(!body) return;
             const isAdmin = currentUser.role === 'admin';
             const head = document.getElementById('history-header');
@@ -449,21 +485,11 @@
 
         async function addEmployee(e) {
             e.preventDefault();
-            users.push({ 
-                id: Date.now(), 
-                name: document.getElementById('new-name').value, 
-                user: document.getElementById('new-user').value, 
-                pass: document.getElementById('new-pass').value, 
-                role: 'pegawai', 
-                nip: document.getElementById('new-nip').value, 
-                statusPegawai: document.getElementById('new-status').value, 
-                jabatan: document.getElementById('new-jabatan').value 
-            });
+            users.push({ id: Date.now(), name: document.getElementById('new-name').value, user: document.getElementById('new-user').value, pass: document.getElementById('new-pass').value, role: 'pegawai', nip: document.getElementById('new-nip').value, statusPegawai: document.getElementById('new-status').value, jabatan: document.getElementById('new-jabatan').value });
             await syncWithCloud(); renderEmployeeList(); closeAddEmployeeModal(); e.target.reset();
         }
 
         async function deleteUser(id) { users = users.filter(u => u.id !== id); await syncWithCloud(); renderEmployeeList(); }
-
         async function deleteRow(idx) { attendanceData.splice(idx, 1); await syncWithCloud(); renderHistory(); }
 
         function openManualAbsenModal() {
@@ -485,14 +511,7 @@
             const u = document.getElementById('manual-select-user').value;
             const emp = users.find(x => x.user === u);
             if(!emp) return;
-            attendanceData.unshift({
-                name: emp.name, nip: emp.nip, statusPegawai: emp.statusPegawai, jabatan: emp.jabatan,
-                date: document.getElementById('manual-date').value,
-                in: document.getElementById('manual-in').value || '-',
-                out: document.getElementById('manual-out').value || '-',
-                status: document.getElementById('manual-status').value,
-                username: emp.user
-            });
+            attendanceData.unshift({ name: emp.name, nip: emp.nip, statusPegawai: emp.statusPegawai, jabatan: emp.jabatan, date: document.getElementById('manual-date').value, in: document.getElementById('manual-in').value || '-', out: document.getElementById('manual-out').value || '-', status: document.getElementById('manual-status').value, username: emp.user });
             await syncWithCloud(); renderHistory(); closeManualAbsenModal(); showModal("Berhasil", "Data manual tersimpan.");
         }
 
@@ -519,32 +538,16 @@
 
         async function handleSaveKop(e) {
             e.preventDefault();
-            kopData = { 
-                logoKiri: document.getElementById('kop-logo-kiri').value, 
-                logoKanan: document.getElementById('kop-logo-kanan').value,
-                pemda: document.getElementById('kop-pemda').value,
-                dinas: document.getElementById('kop-dinas').value,
-                sekolah: document.getElementById('kop-sekolah').value,
-                kecamatan: document.getElementById('kop-kecamatan').value,
-                alamat: document.getElementById('kop-alamat').value,
-                email: document.getElementById('kop-email').value,
-                website: document.getElementById('kop-website').value
-            };
+            kopData = { logoKiri: document.getElementById('kop-logo-kiri').value, logoKanan: document.getElementById('kop-logo-kanan').value, pemda: document.getElementById('kop-pemda').value, dinas: document.getElementById('kop-dinas').value, sekolah: document.getElementById('kop-sekolah').value, kecamatan: document.getElementById('kop-kecamatan').value, alamat: document.getElementById('kop-alamat').value, email: document.getElementById('kop-email').value, website: document.getElementById('kop-website').value };
             await syncWithCloud(); showModal("Berhasil", "Data Kop Surat disimpan.");
         }
 
         async function handleSavePIC(e) {
             e.preventDefault();
-            picData = {
-                pengawas: document.getElementById('pic-pengawas-nama').value,
-                nipPengawas: document.getElementById('pic-pengawas-nip').value,
-                kepsek: document.getElementById('pic-kepsek-nama').value,
-                nipKepsek: document.getElementById('pic-kepsek-nip').value
-            };
+            picData = { pengawas: document.getElementById('pic-pengawas-nama').value, nipPengawas: document.getElementById('pic-pengawas-nip').value, kepsek: document.getElementById('pic-kepsek-nama').value, nipKepsek: document.getElementById('pic-kepsek-nip').value };
             await syncWithCloud(); showModal("Berhasil", "Data Penanggung Jawab disimpan.");
         }
 
-        // FUNGSI CETAK LAPORAN (DITAMBAHKAN KEMBALI)
         async function printReport() {
             const elPlace = document.getElementById('print-place');
             const elDate = document.getElementById('print-date-manual');
@@ -552,85 +555,10 @@
             const tanggalVal = elDate ? elDate.value : '';
             const frame = document.getElementById('print-frame');
             const doc = frame.contentWindow.document;
-            
-            const rows = attendanceData.map((d, idx) => `
-                <tr>
-                    <td style="border:1px solid black;padding:5px;text-align:center">${idx+1}</td>
-                    <td style="border:1px solid black;padding:5px">${d.name}</td>
-                    <td style="border:1px solid black;padding:5px">${d.nip}</td>
-                    <td style="border:1px solid black;padding:5px">${d.statusPegawai}</td>
-                    <td style="border:1px solid black;padding:5px">${d.jabatan}</td>
-                    <td style="border:1px solid black;padding:5px">${d.date}</td>
-                    <td style="border:1px solid black;padding:5px;text-align:center">${d.in}</td>
-                    <td style="border:1px solid black;padding:5px;text-align:center">${d.out}</td>
-                    <td style="border:1px solid black;padding:5px;text-align:center">${d.status}</td>
-                </tr>`).join('');
-
-            const html = `
-                <html>
-                <head>
-                    <style>
-                        body { font-family: 'Times New Roman', serif; padding: 20px; background: white; }
-                        .kop-container { width: 100%; border-bottom: 4px double black; margin-bottom: 20px; padding-bottom: 5px; }
-                        .kop-table { width: 100%; border-collapse: collapse; }
-                        .kop-logo { width: 80px; height: auto; }
-                        .kop-text { text-align: center; }
-                        .kop-text h2 { margin: 0; font-size: 16px; text-transform: uppercase; font-weight: normal; }
-                        .kop-text h1 { margin: 0; font-size: 20px; text-transform: uppercase; font-weight: bold; }
-                        .kop-text p { margin: 2px 0; font-size: 10px; font-style: italic; }
-                        .report-title { text-align: center; margin-bottom: 20px; }
-                        .report-title h3 { margin: 0; font-size: 16px; font-weight: bold; text-decoration: underline; }
-                        table.data-table { width: 100%; border-collapse: collapse; font-size: 11px; }
-                        table.data-table th { border: 1px solid black; background: #f2f2f2; padding: 8px; text-transform: uppercase; }
-                        .footer-table { width: 100%; margin-top: 30px; border-collapse: collapse; }
-                        .footer-table td { width: 50%; text-align: center; font-size: 13px; vertical-align: top; }
-                        .signature-space { height: 70px; }
-                        .footnote { margin-top: 20px; font-style: italic; font-size: 10px; color: #555; border-top: 1px solid #ccc; padding-top: 5px; }
-                    </style>
-                </head>
-                <body>
-                    <div class="kop-container">
-                        <table class="kop-table">
-                            <tr>
-                                <td width="15%" align="left"><img src="${kopData.logoKiri || ''}" class="kop-logo" onerror="this.style.display='none'"></td>
-                                <td class="kop-text">
-                                    <h2>${kopData.pemda || 'Pemerintah Kabupaten/Kota'}</h2>
-                                    <h2>${kopData.dinas || 'Dinas Pendidikan dan Kebudayaan'}</h2>
-                                    <h1>${kopData.sekolah || 'UPT SDN 22 Tanah Keras'}</h1>
-                                    <h2>KECAMATAN ${kopData.kecamatan || '..........'}</h2>
-                                    <p>Alamat: ${kopData.alamat || '..........'} | Email: ${kopData.email || '..........'}</p>
-                                    <p>Website: ${kopData.website || '..........'}</p>
-                                </td>
-                                <td width="15%" align="right"><img src="${kopData.logoKanan || ''}" class="kop-logo" onerror="this.style.display='none'"></td>
-                            </tr>
-                        </table>
-                    </div>
-                    <div class="report-title"><h3>LAPORAN KEHADIRAN PEGAWAI</h3></div>
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>No</th><th>Nama Lengkap</th><th>NIP/NUPT</th><th>Status</th><th>Jabatan</th><th>Hari & Tanggal</th><th>Masuk</th><th>Keluar</th><th>Ket</th>
-                            </tr>
-                        </thead>
-                        <tbody>${rows || '<tr><td colspan="9" align="center" style="padding:20px">Belum ada data kehadiran</td></tr>'}</tbody>
-                    </table>
-                    <table class="footer-table">
-                        <tr>
-                            <td>Mengetahui,<br>Pengawas Satuan Pendidikan<br><br><div class="signature-space"></div><b><u>${picData.pengawas || '( .......................................... )'}</u></b><br>NIP. ${picData.nipPengawas || '..........................................'}</td>
-                            <td>${tempatVal || '..........'}, ${tanggalVal || '..........'}<br>Kepala Sekolah<br><br><div class="signature-space"></div><b><u>${picData.kepsek || '( .......................................... )'}</u></b><br>NIP. ${picData.nipKepsek || '..........................................'}</td>
-                        </tr>
-                    </table>
-                    <div class="footnote">Dicetak Melalui Aplikasi Presensi UPT SDN 22 Tanah Keras</div>
-                </body>
-                </html>`;
-            
-            doc.open();
-            doc.write(html);
-            doc.close();
-            setTimeout(() => {
-                frame.contentWindow.focus();
-                frame.contentWindow.print();
-            }, 1000);
+            const rows = attendanceData.map((d, idx) => `<tr><td style="border:1px solid black;padding:5px;text-align:center">${idx+1}</td><td style="border:1px solid black;padding:5px">${d.name}</td><td style="border:1px solid black;padding:5px">${d.nip}</td><td style="border:1px solid black;padding:5px">${d.statusPegawai}</td><td style="border:1px solid black;padding:5px">${d.jabatan}</td><td style="border:1px solid black;padding:5px">${d.date}</td><td style="border:1px solid black;padding:5px;text-align:center">${d.in}</td><td style="border:1px solid black;padding:5px;text-align:center">${d.out}</td><td style="border:1px solid black;padding:5px;text-align:center">${d.status}</td></tr>`).join('');
+            const html = `<html><head><style>body { font-family: 'Times New Roman', serif; padding: 20px; background: white; } .kop-container { width: 100%; border-bottom: 4px double black; margin-bottom: 20px; padding-bottom: 5px; } .kop-table { width: 100%; border-collapse: collapse; } .kop-logo { width: 80px; height: auto; } .kop-text { text-align: center; } .kop-text h2 { margin: 0; font-size: 16px; text-transform: uppercase; font-weight: normal; } .kop-text h1 { margin: 0; font-size: 20px; text-transform: uppercase; font-weight: bold; } .kop-text p { margin: 2px 0; font-size: 10px; font-style: italic; } .report-title { text-align: center; margin-bottom: 20px; } .report-title h3 { margin: 0; font-size: 16px; font-weight: bold; text-decoration: underline; } table.data-table { width: 100%; border-collapse: collapse; font-size: 11px; } table.data-table th { border: 1px solid black; background: #f2f2f2; padding: 8px; text-transform: uppercase; } .footer-table { width: 100%; margin-top: 30px; border-collapse: collapse; } .footer-table td { width: 50%; text-align: center; font-size: 13px; vertical-align: top; } .signature-space { height: 70px; } .footnote { margin-top: 20px; font-style: italic; font-size: 10px; color: #555; border-top: 1px solid #ccc; padding-top: 5px; }</style></head><body><div class="kop-container"><table class="kop-table"><tr><td width="15%" align="left"><img src="${kopData.logoKiri || ''}" class="kop-logo" onerror="this.style.display='none'"></td><td class="kop-text"><h2>${kopData.pemda || 'Pemerintah Kabupaten/Kota'}</h2><h2>${kopData.dinas || 'Dinas Pendidikan dan Kebudayaan'}</h2><h1>${kopData.sekolah || 'UPT SDN 22 Tanah Keras'}</h1><h2>KECAMATAN ${kopData.kecamatan || '..........'}</h2><p>Alamat: ${kopData.alamat || '..........'} | Email: ${kopData.email || '..........'}</p><p>Website: ${kopData.website || '..........'}</p></td><td width="15%" align="right"><img src="${kopData.logoKanan || ''}" class="kop-logo" onerror="this.style.display='none'"></td></tr></table></div><div class="report-title"><h3>LAPORAN KEHADIRAN PEGAWAI</h3></div><table class="data-table"><thead><tr><th>No</th><th>Nama Lengkap</th><th>NIP/NUPT</th><th>Status</th><th>Jabatan</th><th>Hari & Tanggal</th><th>Masuk</th><th>Keluar</th><th>Ket</th></tr></thead><tbody>${rows || '<tr><td colspan="9" align="center" style="padding:20px">Belum ada data kehadiran</td></tr>'}</tbody></table><table class="footer-table"><tr><td>Mengetahui,<br>Pengawas Satuan Pendidikan<br><br><div class="signature-space"></div><b><u>${picData.pengawas || '( .......................................... )'}</u></b><br>NIP. ${picData.nipPengawas || '..........................................'}</td><td>${tempatVal || '..........'}, ${tanggalVal || '..........'}<br>Kepala Sekolah<br><br><div class="signature-space"></div><b><u>${picData.kepsek || '( .......................................... )'}</u></b><br>NIP. ${picData.nipKepsek || '..........................................'}</td></tr></table><div class="footnote">Dicetak Melalui Aplikasi Presensi UPT SDN 22 Tanah Keras</div></body></html>`;
+            doc.open(); doc.write(html); doc.close();
+            setTimeout(() => { frame.contentWindow.focus(); frame.contentWindow.print(); }, 1000);
         }
 
         setInterval(() => {
@@ -638,13 +566,11 @@
             const t = now.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false}).replace(/\./g, ':');
             document.getElementById('clock-desktop').innerText = t;
             document.getElementById('clock-mobile').innerText = t;
-            
             const hr = now.getHours();
             let msg = "Selamat Pagi";
             if(hr >= 11 && hr < 15) msg = "Selamat Siang";
             else if(hr >= 15 && hr < 18) msg = "Selamat Sore";
             else if(hr >= 18 || hr < 5) msg = "Selamat Malam";
-            
             document.getElementById('mobile-greeting').innerText = msg;
             document.getElementById('date-now').innerText = now.toLocaleDateString('id-ID', {weekday: 'long', day: '2-digit', month: 'long', year: 'numeric'});
             document.getElementById('date-mobile').innerText = now.toLocaleDateString('id-ID', {day: '2-digit', month: 'short', year: 'numeric'});
