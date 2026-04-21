@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Absensi Digital - UPT SDN 22 Tanah Keras</title>
+    <title>UPT SDN 22 Tanah Keras</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -216,8 +216,8 @@
                                 </div>
                                 <div class="space-y-4 p-5 bg-slate-50 rounded-2xl border border-slate-200">
                                     <h4 class="text-sm font-bold text-slate-500 uppercase">Kepala Sekolah</h4>
-                                    <input type="text" id="pic-kepsek-nama" placeholder="Nama Kepala Sekolah" class="w-full p-3 bg-white border border-slate-200 rounded-xl outline-none text-sm">
-                                    <input type="text" id="pic-kepsek-nip" placeholder="NIP/NUPT Kepala Sekolah" class="w-full p-3 bg-white border border-slate-200 rounded-xl outline-none text-sm">
+                                    <input type="text" id="pic-kepsek-nama" placeholder="Nama Kepala Sekolah" class="w-full p-3 bg-white border border-slate-200 rounded-xl none text-sm">
+                                    <input type="text" id="pic-kepsek-nip" placeholder="NIP/NUPT Kepala Sekolah" class="w-full p-3 bg-white border border-slate-200 rounded-xl none text-sm">
                                 </div>
                             </div>
                             <button type="submit" class="w-full py-4 bg-indigo-600 text-white rounded-xl font-bold">Simpan Data Penanggung Jawab</button>
@@ -463,24 +463,31 @@
             return s;
         }
 
-        // FUNGSI PERBAIKAN: MENGAMBIL JAM SECARA LITERAL TANPA PERGESERAN TIMEZONE
+        // FUNGSI PERBAIKAN: MENYESUAIKAN JAM UTC KEMBALI KE JAM LOKAL (GMT+7)
         function formatTimeDisplay(timeStr) {
             if (!timeStr || timeStr === '-') return '-';
             let s = String(timeStr).trim();
             
-            // JIKA FORMATNYA ISO (Contoh: "2026-03-07T07:54:28.000Z")
-            // Kita potong teksnya langsung di bagian jam untuk menghindari pergeseran otomatis browser
-            if (s.includes('T')) {
+            // JIKA FORMATNYA ISO (Contoh: "2026-03-07T01:18:49.000Z")
+            // Kita gunakan toLocaleTimeString agar browser otomatis menambah +7 jam (menjadi 08:18:49)
+            if (s.includes('T') || s.includes('Z') || s.length > 10) {
                 try {
-                    const timePart = s.split('T')[1]; // Ambil "07:54:28.000Z"
-                    const hms = timePart.split('.')[0].replace('Z', ''); // Ambil "07:54:28"
-                    return hms;
+                    const d = new Date(s);
+                    if (!isNaN(d.getTime())) {
+                        // id-ID secara otomatis menangani pergeseran timezone perangkat (WIB = +7)
+                        return d.toLocaleTimeString('id-ID', {
+                            hour: '2-digit', 
+                            minute: '2-digit', 
+                            second: '2-digit',
+                            hour12: false
+                        }).replace(/\./g, ':');
+                    }
                 } catch(e) { 
                     return s; 
                 }
             }
             
-            // Jika sudah format jam HH:mm:ss, biarkan saja
+            // Jika sudah format jam HH:mm:ss biasa, biarkan saja
             return s;
         }
 
@@ -665,6 +672,7 @@
 
         async function doAbsen(type) {
             const now = new Date(); 
+            // Jam Lokal dalam format HH:mm:ss
             const hh = String(now.getHours()).padStart(2, '0');
             const mm = String(now.getMinutes()).padStart(2, '0');
             const ss = String(now.getSeconds()).padStart(2, '0');
