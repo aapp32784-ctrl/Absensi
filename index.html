@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UPT SDN 22 Tanah Keras</title>
+    <title>Sistem Absensi Digital - UPT SDN 22 Tanah Keras</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -371,9 +371,16 @@
         }
 
         function initDashboard() {
+            // SET DATA PROFIL DAN NAMA
             document.getElementById('display-name').innerText = currentUser.name;
+            document.getElementById('mobile-display-name').innerText = currentUser.name;
             document.getElementById('profile-name').innerText = currentUser.name;
+            document.getElementById('profile-nip').innerText = currentUser.nip || '-';
+            document.getElementById('profile-status').innerText = currentUser.statusPegawai || '-';
+            document.getElementById('profile-role-text').innerText = currentUser.jabatan || '-';
             document.getElementById('side-avatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.name)}`;
+            document.getElementById('profile-avatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.name)}`;
+            
             const isAdmin = currentUser.role === 'admin';
             ['side-dashboard', 'side-history', 'side-manage', 'side-pic', 'side-kop', 'side-sync', 'print-controls-admin', 'admin-manual-area'].forEach(id => {
                 document.getElementById(id)?.classList.toggle('hidden', !isAdmin);
@@ -393,21 +400,18 @@
             const labelStatus = document.getElementById('label-status');
 
             if (!rec) {
-                // Belum absen sama sekali
                 btnIn.disabled = false;
                 btnIn.className = "group px-8 py-6 rounded-2xl font-bold transition flex flex-col items-center justify-center gap-2 active:scale-95 shadow-lg btn-active-in";
                 btnOut.disabled = true;
                 btnOut.className = "group px-8 py-6 rounded-2xl font-bold transition flex flex-col items-center justify-center gap-2 active:scale-95 shadow-lg btn-disabled";
                 labelStatus.innerText = "Belum Absen Hari Ini";
             } else if (rec.out === '-') {
-                // Sudah masuk tapi belum pulang
                 btnIn.disabled = true;
                 btnIn.className = "group px-8 py-6 rounded-2xl font-bold transition flex flex-col items-center justify-center gap-2 active:scale-95 shadow-lg btn-disabled";
                 btnOut.disabled = false;
                 btnOut.className = "group px-8 py-6 rounded-2xl font-bold transition flex flex-col items-center justify-center gap-2 active:scale-95 shadow-lg btn-active-out";
                 labelStatus.innerText = "Sudah Absen Masuk";
             } else {
-                // Sudah selesai absen keduanya
                 btnIn.disabled = true;
                 btnIn.className = "group px-8 py-6 rounded-2xl font-bold transition flex flex-col items-center justify-center gap-2 active:scale-95 shadow-lg btn-disabled";
                 btnOut.disabled = true;
@@ -433,11 +437,27 @@
             const date = now.toLocaleDateString('id-ID', {weekday: 'long', day: '2-digit', month: 'long', year: 'numeric'});
             
             if (type === 'Masuk') {
-                attendanceData.unshift({ name: currentUser.name, nip: currentUser.nip, statusPegawai: currentUser.statusPegawai, jabatan: currentUser.jabatan, date, in: time, out: '-', status: 'Hadir', username: currentUser.user });
+                // Jam Masuk Terlambat (Contoh: > 07:30)
+                const hr = now.getHours();
+                const min = now.getMinutes();
+                let status = "Hadir";
+                if (hr > 7 || (hr == 7 && min > 30)) status = "Terlambat";
+
+                attendanceData.unshift({ 
+                    name: currentUser.name, 
+                    nip: currentUser.nip, 
+                    statusPegawai: currentUser.statusPegawai, 
+                    jabatan: currentUser.jabatan, 
+                    date, 
+                    in: time, 
+                    out: '-', 
+                    status: status, 
+                    username: currentUser.user 
+                });
             } else {
                 const rec = attendanceData.find(x => x.username === currentUser.user && x.date === date && x.out === '-');
                 if (rec) rec.out = time;
-                else return; // Tidak ditemukan record masuk yang gantung
+                else return;
             }
             
             await syncWithCloud(); 
@@ -469,8 +489,12 @@
                 ${isAdmin ? `<td class="p-4 text-center"><button onclick="deleteRow(${attendanceData.indexOf(i)})" class="text-red-500"><i class="fas fa-trash"></i></button></td>` : ''}
             </tr>`).join('');
             
+            // STATISTIK BERANDA
             const statsHadir = document.getElementById('stats-hadir');
             if (statsHadir) statsHadir.innerText = data.filter(x => x.status === 'Hadir').length;
+            
+            const statsLate = document.getElementById('stats-late');
+            if (statsLate) statsLate.innerText = data.filter(x => x.status === 'Terlambat').length;
         }
 
         function renderEmployeeList() {
