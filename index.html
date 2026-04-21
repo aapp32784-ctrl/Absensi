@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Absensi Digital - UPT SDN 22 Tanah Keras</title>
+    <title>UPT SDN 22 Tanah Keras</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -446,43 +446,48 @@
             id: 1, name: 'Admin Utama', user: 'admin', pass: '12345', role: 'admin', dept: 'System Management', nip: 'ADMIN-001', statusPegawai: 'Administrator', jabatan: 'IT Manager', photoUrl: '' 
         };
 
-        // FUNGSI PEMBERSIH TANGGAL: LITERAL EXTRACTION UNTUK MENGHINDARI PERGESERAN HARI
+        // FUNGSI PEMBERSIH TANGGAL: KONVERSI UTC KE TANGGAL LOKAL INDONESIA
         function cleanDate(dateString) {
             if (!dateString) return '';
             const s = String(dateString).trim();
             if (s.includes('T')) {
                 try {
-                    // Ambil bagian YYYY-MM-DD saja untuk diolah
-                    const datePart = s.split('T')[0];
-                    const [y, m, d] = datePart.split('-');
-                    const dObj = new Date(parseInt(y), parseInt(m) - 1, parseInt(d));
-                    return dObj.toLocaleDateString('id-ID', {weekday: 'long', day: '2-digit', month: 'long', year: 'numeric'});
+                    const d = new Date(s);
+                    if (!isNaN(d.getTime())) {
+                        return d.toLocaleDateString('id-ID', {weekday: 'long', day: '2-digit', month: 'long', year: 'numeric'});
+                    }
                 } catch(e) {}
             }
             return s;
         }
 
-        // FUNGSI PERBAIKAN: EKSTRAKSI LITERAL AGAR SAMA DENGAN GOOGLE SHEET
+        // FUNGSI PERBAIKAN: KONVERSI UTC KE WAKTU LOKAL (GMT+7) SECARA DINAMIS
         function formatTimeDisplay(val) {
             if (!val || val === '-') return '-';
             let s = String(val).trim();
             
-            // JIKA FORMAT ISO (Ada T): Contoh "2026-03-07T08:14:32.000Z"
-            if (s.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/)) {
-                // Langsung ambil potongan teks jam (karakter ke 11 sampai 19)
-                // Ini mengabaikan zona waktu browser sepenuhnya
-                return s.substring(11, 19); 
+            // JIKA FORMAT ISO (Ada T): Contoh "2026-03-07T01:24:46.000Z"
+            // Browser akan otomatis menambah 7 jam sesuai zona waktu WIB jika kita menggunakan objek Date
+            if (s.includes('T') || s.includes('Z') || s.length > 12) {
+                try {
+                    const d = new Date(s);
+                    if (!isNaN(d.getTime())) {
+                        // Menggunakan toLocaleTimeString agar otomatis menyesuaikan Timezone perangkat (WIB)
+                        return d.toLocaleTimeString('id-ID', {
+                            hour: '2-digit', 
+                            minute: '2-digit', 
+                            second: '2-digit',
+                            hour12: false
+                        }).replace(/\./g, ':');
+                    }
+                } catch(e) {}
             }
             
-            // JIKA SUDAH FORMAT JAM BIASA: "HH:mm:ss"
+            // Jika sudah format jam HH:mm:ss biasa, biarkan saja
             if (s.match(/^\d{1,2}:\d{1,2}(:\d{1,2})?$/)) {
                 return s;
             }
             
-            // Fallback terakhir: Coba deteksi bagian jam menggunakan Regex jika string berantakan
-            const match = s.match(/(\d{2}:\d{2}:\d{2})/);
-            if (match) return match[1];
-
             return s;
         }
 
@@ -525,6 +530,7 @@
                 if (!hasAdmin) users.push(DEFAULT_ADMIN);
 
                 if (data.history) {
+                    // SEBELUM RENDER: Semua jam (in/out) diproses melalui formatTimeDisplay yang baru
                     attendanceData = data.history.map(item => ({
                         ...item,
                         date: cleanDate(item.date),
@@ -576,7 +582,8 @@
             document.getElementById('form-admin').classList.toggle('hidden', isP);
         }
 
-        function handleLogin(role) {
+        function handleLogin(e, role) {
+            e.preventDefault();
             const uInput = role === 'admin' ? document.getElementById('a-user').value : document.getElementById('p-user').value;
             const pInput = role === 'admin' ? document.getElementById('a-pass').value : document.getElementById('p-pass').value;
             const found = users.find(x => String(x.user).toLowerCase() === String(uInput).toLowerCase() && String(x.pass) === String(pInput) && x.role === role);
@@ -587,9 +594,6 @@
                 document.getElementById('login-error').classList.add('hidden');
             } else document.getElementById('login-error').classList.remove('hidden'); 
         }
-
-        document.getElementById('form-pegawai').onsubmit = (e) => { e.preventDefault(); handleLogin('pegawai'); };
-        document.getElementById('form-admin').onsubmit = (e) => { e.preventDefault(); handleLogin('admin'); };
 
         function initDashboard() {
             const isAdmin = currentUser.role === 'admin';
@@ -705,8 +709,8 @@
                     <td class="p-4"><span class="px-2 py-1 bg-slate-100 rounded text-[10px] font-bold">${i.statusPegawai}</span></td>
                     <td class="p-4 text-slate-500">${i.jabatan}</td>
                     <td class="p-4 text-slate-600">${i.date}</td>
-                    <td class="p-4 text-center font-mono font-bold text-indigo-600">${formatTimeDisplay(i.in)}</td>
-                    <td class="p-4 text-center font-mono font-bold text-orange-600">${formatTimeDisplay(i.out)}</td>
+                    <td class="p-4 text-center font-mono font-bold text-indigo-600">${i.in}</td>
+                    <td class="p-4 text-center font-mono font-bold text-orange-600">${i.out}</td>
                     <td class="p-4 font-bold ${i.status === 'Hadir' ? 'text-green-600' : 'text-red-600'}">${i.status}</td>`;
                 if(isAdmin) {
                     const realIndex = attendanceData.indexOf(i);
@@ -868,7 +872,7 @@
             const tanggalVal = elDate ? elDate.value : '';
             const frame = document.getElementById('print-frame');
             const doc = frame.contentWindow.document;
-            const rows = attendanceData.map((d, idx) => `<tr><td style="border:1px solid black;padding:5px;text-align:center">${idx+1}</td><td style="border:1px solid black;padding:5px">${d.name}</td><td style="border:1px solid black;padding:5px">${d.nip}</td><td style="border:1px solid black;padding:5px">${d.statusPegawai}</td><td style="border:1px solid black;padding:5px">${d.jabatan}</td><td style="border:1px solid black;padding:5px">${d.date}</td><td style="border:1px solid black;padding:5px;text-align:center">${formatTimeDisplay(d.in)}</td><td style="border:1px solid black;padding:5px;text-align:center">${formatTimeDisplay(d.out)}</td><td style="border:1px solid black;padding:5px;text-align:center">${d.status}</td></tr>`).join('');
+            const rows = attendanceData.map((d, idx) => `<tr><td style="border:1px solid black;padding:5px;text-align:center">${idx+1}</td><td style="border:1px solid black;padding:5px">${d.name}</td><td style="border:1px solid black;padding:5px">${d.nip}</td><td style="border:1px solid black;padding:5px">${d.statusPegawai}</td><td style="border:1px solid black;padding:5px">${d.jabatan}</td><td style="border:1px solid black;padding:5px">${d.date}</td><td style="border:1px solid black;padding:5px;text-align:center">${d.in}</td><td style="border:1px solid black;padding:5px;text-align:center">${d.out}</td><td style="border:1px solid black;padding:5px;text-align:center">${d.status}</td></tr>`).join('');
             const html = `<html><head><style>body { font-family: 'Times New Roman', serif; padding: 20px; background: white; } .kop-container { width: 100%; border-bottom: 4px double black; margin-bottom: 20px; padding-bottom: 5px; } .kop-table { width: 100%; border-collapse: collapse; } .kop-logo { width: 80px; height: auto; } .kop-text { text-align: center; } .kop-text h2 { margin: 0; font-size: 16px; text-transform: uppercase; font-weight: normal; } .kop-text h1 { margin: 0; font-size: 20px; text-transform: uppercase; font-weight: bold; } .kop-text p { margin: 2px 0; font-size: 10px; font-style: italic; } .report-title { text-align: center; margin-bottom: 20px; } .report-title h3 { margin: 0; font-size: 16px; font-weight: bold; text-decoration: underline; } table.data-table { width: 100%; border-collapse: collapse; font-size: 11px; } table.data-table th { border: 1px solid black; background: #f2f2f2; padding: 8px; text-transform: uppercase; } .footer-table { width: 100%; margin-top: 30px; border-collapse: collapse; } .footer-table td { width: 50%; text-align: center; font-size: 13px; vertical-align: top; } .signature-space { height: 70px; } .footnote { margin-top: 20px; font-style: italic; font-size: 10px; color: #555; border-top: 1px solid #ccc; padding-top: 5px; }</style></head><body><div class="kop-container"><table class="kop-table"><tr><td width="15%" align="left"><img src="${kopData.logoKiri || ''}" class="kop-logo" onerror="this.style.display='none'"></td><td class="kop-text"><h2>${kopData.pemda || 'Pemerintah Kabupaten/Kota'}</h2><h2>${kopData.dinas || 'Dinas Pendidikan dan Kebudayaan'}</h2><h1>${kopData.sekolah || OFFICE_NAME}</h1><h2>KECAMATAN ${kopData.kecamatan || '..........'}</h2><p>Alamat: ${kopData.alamat || '..........'} | Email: ${kopData.email || '..........'}</p><p>Website: ${kopData.website || '..........'}</p></td><td width="15%" align="right"><img src="${kopData.logoKanan || ''}" class="kop-logo" onerror="this.style.display='none'"></td></tr></table></div><div class="report-title"><h3>LAPORAN KEHADIRAN PEGAWAI</h3></div><table class="data-table"><thead><tr><th>No</th><th>Nama Lengkap</th><th>NIP/NUPT</th><th>Status</th><th>Jabatan</th><th>Hari & Tanggal</th><th>Masuk</th><th>Keluar</th><th>Ket</th></tr></thead><tbody>${rows || '<tr><td colspan="9" align="center" style="padding:20px">Belum ada data kehadiran</td></tr>'}</tbody></table><table class="footer-table"><tr><td>Mengetahui,<br>Pengawas Satuan Pendidikan<br><br><div class="signature-space"></div><b><u>${picData.pengawas || '( .......................................... )'}</u></b><br>NIP. ${picData.nipPengawas || '..........................................'}</td><td>${tempatVal || '..........'}, ${tanggalVal || '..........'}<br>Kepala Sekolah<br><br><div class="signature-space"></div><b><u>${picData.kepsek || '( .......................................... )'}</u></b><br>NIP. ${picData.nipKepsek || '..........................................'}</td></tr></table><div class="footnote">Dicetak Melalui Aplikasi Presensi UPT SDN 22 Tanah Keras</div></body></html>`;
             doc.open(); doc.write(html); doc.close();
             setTimeout(() => { frame.contentWindow.focus(); frame.contentWindow.print(); }, 1000);
