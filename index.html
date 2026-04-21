@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Absensi Digital - UPT SDN 22 Tanah Keras</title>
+    <title>UPT SDN 22 Tanah Keras</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -247,11 +247,20 @@
             </div>
         </main>
 
+        <!-- NAVIGASI BAWAH MOBILE -->
         <nav id="bottom-nav" class="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t flex justify-around p-3 z-50">
-            <button id="nav-btn-dashboard" onclick="switchTab('dashboard')" class="mobile-nav-btn flex flex-col items-center gap-1 text-indigo-600"><i class="fas fa-th-large text-xl"></i><span class="text-[9px] font-bold">Home</span></button>
-            <button id="nav-btn-attendance" onclick="switchTab('attendance')" class="mobile-nav-btn flex flex-col items-center gap-1 text-slate-400"><i class="fas fa-camera text-xl"></i><span class="text-[9px] font-bold">Absen</span></button>
-            <button id="nav-btn-history" onclick="switchTab('history')" class="mobile-nav-btn flex flex-col items-center gap-1 text-slate-400"><i class="fas fa-history text-xl"></i><span class="text-[9px] font-bold">Riwayat</span></button>
-            <button id="nav-btn-profile" onclick="switchTab('profile')" class="mobile-nav-btn flex flex-col items-center gap-1 text-slate-400"><i class="fas fa-user text-xl"></i><span class="text-[9px] font-bold">Profil</span></button>
+            <button id="nav-btn-dashboard" onclick="switchTab('dashboard')" class="mobile-nav-btn flex flex-col items-center gap-1 text-slate-400 transition-colors duration-200">
+                <i class="fas fa-th-large text-xl"></i><span class="text-[9px] font-bold">Home</span>
+            </button>
+            <button id="nav-btn-attendance" onclick="switchTab('attendance')" class="mobile-nav-btn flex flex-col items-center gap-1 text-slate-400 transition-colors duration-200">
+                <i class="fas fa-camera text-xl"></i><span class="text-[9px] font-bold">Absen</span>
+            </button>
+            <button id="nav-btn-history" onclick="switchTab('history')" class="mobile-nav-btn flex flex-col items-center gap-1 text-slate-400 transition-colors duration-200">
+                <i class="fas fa-history text-xl"></i><span class="text-[9px] font-bold">Riwayat</span>
+            </button>
+            <button id="nav-btn-profile" onclick="switchTab('profile')" class="mobile-nav-btn flex flex-col items-center gap-1 text-slate-400 transition-colors duration-200">
+                <i class="fas fa-user text-xl"></i><span class="text-[9px] font-bold">Profil</span>
+            </button>
         </nav>
     </div>
 
@@ -437,7 +446,6 @@
             const date = now.toLocaleDateString('id-ID', {weekday: 'long', day: '2-digit', month: 'long', year: 'numeric'});
             
             if (type === 'Masuk') {
-                // Jam Masuk Terlambat (Contoh: > 07:30)
                 const hr = now.getHours();
                 const min = now.getMinutes();
                 let status = "Hadir";
@@ -466,6 +474,34 @@
             showModal("Berhasil", "Data absen " + type + " tersimpan.");
         }
 
+        // FUNGSI PINDAH TAB & NAVIGASI HIGHLIGHT
+        function switchTab(n) {
+            ['dashboard', 'attendance', 'history', 'manage', 'pic', 'kop', 'profile'].forEach(t => {
+                const tabEl = document.getElementById('tab-' + t);
+                if (tabEl) tabEl.classList.add('hidden');
+            });
+            const targetTab = document.getElementById('tab-' + n);
+            if (targetTab) targetTab.classList.remove('hidden');
+            
+            const titleEl = document.getElementById('tab-title');
+            if (titleEl) titleEl.innerText = n.charAt(0).toUpperCase() + n.slice(1);
+
+            // Update Highlight Navigasi Bawah (Mobile)
+            const navIds = ['dashboard', 'attendance', 'history', 'profile'];
+            navIds.forEach(id => {
+                const btn = document.getElementById('nav-btn-' + id);
+                if (btn) {
+                    if (id === n) {
+                        btn.classList.remove('text-slate-400');
+                        btn.classList.add('text-indigo-600');
+                    } else {
+                        btn.classList.remove('text-indigo-600');
+                        btn.classList.add('text-slate-400');
+                    }
+                }
+            });
+        }
+
         function renderHistory() {
             if (!currentUser) return;
             const body = document.getElementById('history-body'); if(!body) return;
@@ -489,7 +525,6 @@
                 ${isAdmin ? `<td class="p-4 text-center"><button onclick="deleteRow(${attendanceData.indexOf(i)})" class="text-red-500"><i class="fas fa-trash"></i></button></td>` : ''}
             </tr>`).join('');
             
-            // STATISTIK BERANDA
             const statsHadir = document.getElementById('stats-hadir');
             if (statsHadir) statsHadir.innerText = data.filter(x => x.status === 'Hadir').length;
             
@@ -537,12 +572,6 @@
             if(!emp) return;
             attendanceData.unshift({ name: emp.name, nip: emp.nip, statusPegawai: emp.statusPegawai, jabatan: emp.jabatan, date: document.getElementById('manual-date').value, in: document.getElementById('manual-in').value || '-', out: document.getElementById('manual-out').value || '-', status: document.getElementById('manual-status').value, username: emp.user });
             await syncWithCloud(); renderHistory(); closeManualAbsenModal(); showModal("Berhasil", "Data manual tersimpan.");
-        }
-
-        function switchTab(n) {
-            ['dashboard', 'attendance', 'history', 'manage', 'pic', 'kop', 'profile'].forEach(t => document.getElementById('tab-'+t)?.classList.add('hidden'));
-            document.getElementById('tab-'+n).classList.remove('hidden');
-            document.getElementById('tab-title').innerText = n.charAt(0).toUpperCase() + n.slice(1);
         }
 
         function getDistance(lat1, lon1, lat2, lon2) {
