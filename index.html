@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UPT SDN 22 Tanah Keras</title>
+    <title>E-Absensi</title>
+    
+    <!-- FAVICON -->
+    <link rel="icon" type="image/png" href="https://iili.io/Bra9Tb4.png">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -49,12 +53,17 @@
             </div>
             <div class="p-8">
                 <div id="login-error" class="hidden mb-4 p-3 bg-red-50 text-red-600 text-xs font-bold rounded-xl border border-red-100 flex items-center gap-2"><i class="fas fa-exclamation-circle"></i> Username atau sandi salah!</div>
+                
+                <!-- FORM PEGAWAI DENGAN DROPDOWN USERNAME -->
                 <form id="form-pegawai" onsubmit="handleLogin(event, 'pegawai')" class="space-y-5">
                     <div class="space-y-1">
-                        <label class="text-xs font-bold text-slate-500 uppercase">Username Pegawai</label>
+                        <label class="text-xs font-bold text-slate-500 uppercase">Pilih Username Pegawai</label>
                         <div class="relative">
-                            <i class="fas fa-user absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                            <input type="text" id="p-user" placeholder="Username (NIP/NUPT)" required class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition">
+                            <i class="fas fa-user absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 z-10"></i>
+                            <select id="p-user" required class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition appearance-none">
+                                <option value="">-- Memuat Data... --</option>
+                            </select>
+                            <i class="fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
                         </div>
                     </div>
                     <div class="space-y-1">
@@ -66,6 +75,7 @@
                     </div>
                     <button type="submit" class="w-full py-4 bg-indigo-600 text-white rounded-xl font-bold shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition-all active:scale-[0.98]">Masuk Pegawai</button>
                 </form>
+
                 <form id="form-admin" onsubmit="handleLogin(event, 'admin')" class="hidden space-y-5">
                     <div class="space-y-1">
                         <label class="text-xs font-bold text-slate-500 uppercase">Username Admin</label>
@@ -328,7 +338,18 @@
         const OFFICE_LAT = -1.2942335988142928, OFFICE_LNG = 100.52147339164873, MAX_DIST = 1000;
         let users = [], attendanceData = [], picData = {}, kopData = {}, currentUser = null;
 
-        const DEFAULT_ADMIN = { id: 1, name: 'Admin', user: 'admin', pass: '12345', role: 'admin', nip: 'ADM', jabatan: 'Admin', statusPegawai: 'Admin' };
+        // DEFAULT_ADMIN DENGAN FOTO PROFIL KHUSUS
+        const DEFAULT_ADMIN = { 
+            id: 1, 
+            name: 'Admin', 
+            user: 'admin', 
+            pass: '12345', 
+            role: 'admin', 
+            nip: 'ADM', 
+            jabatan: 'Admin', 
+            statusPegawai: 'Admin',
+            avatar: 'https://iili.io/Bra9Tb4.png' 
+        };
 
         // FUNGSI UTAMA: Hanya menampilkan apa adanya (Literal)
         function formatTimeDisplay(val) {
@@ -356,6 +377,9 @@
                 const res = await fetch(SCRIPT_URL);
                 const data = await res.json();
                 users = (data.users && data.users.length) ? data.users : [DEFAULT_ADMIN];
+                
+                // Pastikan admin selalu punya avatar yang benar
+                users = users.map(u => u.user === 'admin' ? { ...u, avatar: DEFAULT_ADMIN.avatar } : u);
                 if (!users.some(u => u.user === 'admin')) users.push(DEFAULT_ADMIN);
                 
                 attendanceData = (data.history || []).map(i => ({ ...i, in: formatTimeDisplay(i.in), out: formatTimeDisplay(i.out) }));
@@ -365,6 +389,7 @@
                 renderEmployeeList(); 
                 loadKopDataUI(); 
                 loadPICDataUI();
+                populateLoginUsernames(); 
                 
                 if(currentUser) updateAttendanceStatus();
             } catch (e) {
@@ -372,6 +397,22 @@
             } finally { 
                 document.getElementById('loading-overlay').classList.add('hidden'); 
             }
+        }
+
+        function populateLoginUsernames() {
+            const select = document.getElementById('p-user');
+            if (!select) return;
+            const currentVal = select.value;
+            select.innerHTML = '<option value="">-- Pilih Username --</option>';
+            
+            users.filter(u => u.role === 'pegawai').forEach(u => {
+                const opt = document.createElement('option');
+                opt.value = u.user;
+                opt.textContent = `${u.name} (${u.user})`;
+                select.appendChild(opt);
+            });
+            
+            if (currentVal) select.value = currentVal;
         }
 
         function switchLoginForm(t) {
@@ -395,15 +436,17 @@
         }
 
         function initDashboard() {
-            // SET DATA PROFIL DAN NAMA
             document.getElementById('display-name').innerText = currentUser.name;
             document.getElementById('mobile-display-name').innerText = currentUser.name;
             document.getElementById('profile-name').innerText = currentUser.name;
             document.getElementById('profile-nip').innerText = currentUser.nip || '-';
             document.getElementById('profile-status').innerText = currentUser.statusPegawai || '-';
             document.getElementById('profile-role-text').innerText = currentUser.jabatan || '-';
-            document.getElementById('side-avatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.name)}`;
-            document.getElementById('profile-avatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.name)}`;
+            
+            // LOGIKA AVATAR: Menggunakan avatar khusus jika tersedia, jika tidak pakai UI Avatars
+            const avatarUrl = currentUser.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.name)}`;
+            document.getElementById('side-avatar').src = avatarUrl;
+            document.getElementById('profile-avatar').src = avatarUrl;
             
             const isAdmin = currentUser.role === 'admin';
             ['side-dashboard', 'side-history', 'side-manage', 'side-pic', 'side-kop', 'side-sync', 'print-controls-admin', 'admin-manual-area'].forEach(id => {
@@ -448,7 +491,6 @@
             const btn = type === 'Masuk' ? document.getElementById('btn-in') : document.getElementById('btn-out');
             if (btn.disabled) return;
 
-            // NOTIFIKASI SEDANG ABSEN
             const displayType = type === 'Pulang' ? 'Keluar' : type;
             showModal("Proses", "Sedang Absen " + displayType);
 
@@ -480,7 +522,6 @@
             await syncWithCloud(); 
             renderHistory(); 
             updateAttendanceStatus(); 
-            // NOTIFIKASI BERHASIL
             showModal("Berhasil", "Berhasil Terkirim");
         }
 
@@ -554,7 +595,11 @@
         async function addEmployee(e) {
             e.preventDefault();
             users.push({ id: Date.now(), name: document.getElementById('new-name').value, user: document.getElementById('new-user').value, pass: document.getElementById('new-pass').value, role: 'pegawai', nip: document.getElementById('new-nip').value, statusPegawai: document.getElementById('new-status').value, jabatan: document.getElementById('new-jabatan').value });
-            await syncWithCloud(); renderEmployeeList(); closeAddEmployeeModal(); e.target.reset();
+            await syncWithCloud(); 
+            renderEmployeeList(); 
+            populateLoginUsernames(); 
+            closeAddEmployeeModal(); 
+            e.target.reset();
         }
 
         async function deleteUser(id) { 
@@ -562,6 +607,7 @@
             users = users.filter(u => u.id !== id); 
             await syncWithCloud(); 
             renderEmployeeList(); 
+            populateLoginUsernames(); 
         }
         
         async function deleteRow(idx) { 
