@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Absensi Digital - UPT SDN 22 Tanah Keras</title>
+    <title>UPT SDN 22 Tanah Keras</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -282,7 +282,12 @@
                 <input type="text" id="new-name" required placeholder="Nama" class="w-full p-3 bg-slate-50 border rounded-xl text-sm">
                 <input type="text" id="new-nip" required placeholder="NIP" class="w-full p-3 bg-slate-50 border rounded-xl text-sm" oninput="document.getElementById('new-user').value=this.value">
                 <input type="text" id="new-jabatan" required placeholder="Jabatan" class="w-full p-3 bg-slate-50 border rounded-xl text-sm">
-                <select id="new-status" required class="w-full p-3 bg-slate-50 border rounded-xl text-sm"><option value="PNS">PNS</option><option value="PPPK">PPPK</option><option value="Honor">Honor</option></select>
+                <select id="new-status" required class="w-full p-3 bg-slate-50 border rounded-xl text-sm">
+                    <option value="PNS">PNS</option>
+                    <option value="PPPK">PPPK</option>
+                    <option value="PPPK Paruh Waktu">PPPK Paruh Waktu</option>
+                    <option value="Honor">Honor</option>
+                </select>
                 <div class="grid grid-cols-2 gap-2">
                     <input type="text" id="new-user" required placeholder="User" class="w-full p-3 bg-slate-50 border rounded-xl text-sm">
                     <input type="password" id="new-pass" required placeholder="Pass" class="w-full p-3 bg-slate-50 border rounded-xl text-sm">
@@ -390,6 +395,7 @@
         }
 
         function initDashboard() {
+            // SET DATA PROFIL DAN NAMA
             document.getElementById('display-name').innerText = currentUser.name;
             document.getElementById('mobile-display-name').innerText = currentUser.name;
             document.getElementById('profile-name').innerText = currentUser.name;
@@ -602,7 +608,6 @@
 
         function closeModal() { 
             document.getElementById('modal-alert').classList.add('hidden'); 
-            // Jika konteksnya logout, maka reload setelah modal ditutup
             if (window.isLoggingOut) location.reload();
         }
 
