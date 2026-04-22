@@ -84,15 +84,13 @@
                 <p class="text-slate-500 text-sm">UPT SDN 22 TANAH KERAS</p>
             </div>
             
-            <div class="hidden md:flex border-b">
-                <button onclick="switchLoginForm('pegawai')" id="tab-login-pegawai" class="flex-1 py-4 text-sm font-bold border-b-2 border-indigo-600 text-indigo-600 transition">Pegawai</button>
-                <button onclick="switchLoginForm('admin')" id="tab-login-admin" class="flex-1 py-4 text-sm font-bold border-b-2 border-transparent text-slate-400 hover:text-slate-600 transition items-center justify-center">Admin</button>
-            </div>
+            <!-- NAVIGASI TAB DIHILANGKAN AGAR LOGIN DIPISAH OTOMATIS BERDASARKAN PERANGKAT -->
 
             <div class="p-8">
                 <div id="login-error" class="hidden mb-4 p-3 bg-red-50 text-red-600 text-xs font-bold rounded-xl border border-red-100 flex items-center gap-2"><i class="fas fa-exclamation-circle"></i> Username atau sandi salah!</div>
                 
-                <form id="form-pegawai" onsubmit="handleLogin(event, 'pegawai')" class="space-y-4">
+                <!-- LOGIN PEGAWAI: HANYA MUNCUL DI MOBILE (md:hidden) -->
+                <form id="form-pegawai" onsubmit="handleLogin(event, 'pegawai')" class="space-y-4 md:hidden">
                     <div class="space-y-1">
                         <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Username Pegawai</label>
                         <div class="relative">
@@ -111,9 +109,11 @@
                         </div>
                     </div>
                     <button type="submit" class="w-full py-4 bg-indigo-600 text-white rounded-xl font-bold shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition-all active:scale-[0.98]">Masuk Pegawai</button>
+                    <p class="text-center text-[10px] text-slate-400 mt-4 italic">Login Pegawai Khusus Perangkat HP/Android</p>
                 </form>
 
-                <form id="form-admin" onsubmit="handleLogin(event, 'admin')" class="hidden space-y-4">
+                <!-- LOGIN ADMIN: HANYA MUNCUL DI DESKTOP (md:block) -->
+                <form id="form-admin" onsubmit="handleLogin(event, 'admin')" class="hidden md:block space-y-4">
                     <div class="space-y-1">
                         <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Username Admin</label>
                         <div class="relative">
@@ -129,6 +129,7 @@
                         </div>
                     </div>
                     <button type="submit" class="w-full py-4 bg-purple-600 text-white rounded-xl font-bold shadow-lg shadow-purple-200 hover:bg-purple-700 transition-all active:scale-[0.98]">Login Admin</button>
+                    <p class="text-center text-[10px] text-slate-400 mt-4 italic">Dibuat Oleh Admin SDN 22 Tanah Keras</p>
                 </form>
             </div>
         </div>
@@ -503,13 +504,6 @@
             const isP = t === 'pegawai';
             document.getElementById('form-pegawai').classList.toggle('hidden', !isP);
             document.getElementById('form-admin').classList.toggle('hidden', isP);
-            
-            const tabP = document.getElementById('tab-login-pegawai');
-            const tabA = document.getElementById('tab-login-admin');
-            if (tabP && tabA) {
-                tabP.className = isP ? 'flex-1 py-4 text-sm font-bold border-b-2 border-indigo-600 text-indigo-600' : 'flex-1 py-4 text-sm font-bold border-b-2 border-transparent text-slate-400';
-                tabA.className = !isP ? 'flex-1 py-4 text-sm font-bold border-b-2 border-purple-600 text-purple-600' : 'flex-1 py-4 text-sm font-bold border-b-2 border-transparent text-slate-400';
-            }
         }
 
         function handleLogin(e, role) {
