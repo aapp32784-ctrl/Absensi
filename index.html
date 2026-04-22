@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>UPT SDN 22 Tanah Keras</title>
+    <title>Sistem Absensi Digital - UPT SDN 22 Tanah Keras</title>
     
     <!-- FAVICON -->
     <link rel="icon" type="image/png" href="https://iili.io/Bra9Tb4.png">
@@ -29,7 +29,6 @@
             padding: 2rem;
         }
 
-        /* Hanya tampilkan overlay portrait lock pada layar kecil (HP) */
         @media screen and (orientation: landscape) and (max-width: 950px) {
             #portrait-lock-overlay { display: flex; }
             body { overflow: hidden; }
@@ -46,12 +45,10 @@
         .loading-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.8); z-index: 9999; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 1rem; }
         #print-frame { position: absolute; width: 0; height: 0; border: none; visibility: hidden; }
         
-        /* State Tombol */
         .btn-active-in { background-color: #4f46e5; color: white; opacity: 1; cursor: pointer; }
         .btn-active-out { background-color: #ea580c; color: white; opacity: 1; cursor: pointer; }
         .btn-disabled { background-color: #e2e8f0; color: #94a3b8; opacity: 0.7; cursor: not-allowed; pointer-events: none; }
 
-        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         
@@ -63,7 +60,6 @@
 </head>
 <body class="text-slate-800">
 
-    <!-- LAYAR PENGUNCI PORTRAIT (HP ONLY) -->
     <div id="portrait-lock-overlay">
         <div class="animate-bounce mb-4 text-6xl"><i class="fas fa-mobile-alt"></i></div>
         <h2 class="text-2xl font-bold mb-2">Gunakan Mode Potret</h2>
@@ -89,7 +85,7 @@
             </div>
             <div class="flex border-b">
                 <button onclick="switchLoginForm('pegawai')" id="tab-login-pegawai" class="flex-1 py-4 text-sm font-bold border-b-2 border-indigo-600 text-indigo-600 transition">Pegawai</button>
-                <button onclick="switchLoginForm('admin')" id="tab-login-admin" class="hidden md:flex flex-1 py-4 text-sm font-bold border-b-2 border-transparent text-slate-400 hover:text-slate-600 transition items-center justify-center">Admin</button>
+                <button onclick="switchLoginForm('admin')" id="tab-login-admin" class="md:flex flex-1 py-4 text-sm font-bold border-b-2 border-transparent text-slate-400 hover:text-slate-600 transition items-center justify-center">Admin</button>
             </div>
             <div class="p-8">
                 <div id="login-error" class="hidden mb-4 p-3 bg-red-50 text-red-600 text-xs font-bold rounded-xl border border-red-100 flex items-center gap-2"><i class="fas fa-exclamation-circle"></i> Username atau sandi salah!</div>
@@ -179,7 +175,6 @@
             </header>
 
             <main class="flex-1 p-5 md:p-8 space-y-8 overflow-y-auto pb-32 md:pb-8">
-                
                 <section id="tab-dashboard" class="space-y-8 animate-fadeIn">
                     <div class="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
                         <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex items-center gap-5">
@@ -266,7 +261,7 @@
                             <input type="text" id="kop-sekolah" placeholder="Nama Sekolah" class="w-full p-4 bg-slate-50 border rounded-2xl text-sm">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <input type="text" id="kop-kecamatan" placeholder="Kecamatan" class="w-full p-4 bg-slate-50 border rounded-2xl text-sm">
-                                <input type="text" id="kop-alamat" placeholder="Alamat Lengkap (cth: Tanah Keras - Gurun Panjang Barat, Kode Pos : 25652)" class="w-full p-4 bg-slate-50 border rounded-2xl text-sm">
+                                <input type="text" id="kop-alamat" placeholder="Alamat Lengkap" class="w-full p-4 bg-slate-50 border rounded-2xl text-sm">
                             </div>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <input type="text" id="kop-email" placeholder="Email Sekolah" class="w-full p-4 bg-slate-50 border rounded-2xl text-sm">
@@ -282,7 +277,7 @@
                         <h3 class="text-2xl font-black mb-8 flex items-center gap-3"><i class="fas fa-user-shield text-indigo-600"></i> Penanggung Jawab Laporan</h3>
                         <form onsubmit="handleSavePIC(event)" class="space-y-8">
                             <div class="space-y-4">
-                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2">Pengawas</label>
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2">Pengawas Satuan Pendidikan</label>
                                 <input type="text" id="pic-pengawas-nama" placeholder="Nama Pengawas" class="w-full p-4 bg-slate-50 border rounded-2xl text-sm">
                                 <input type="text" id="pic-pengawas-nip" placeholder="NIP Pengawas" class="w-full p-4 bg-slate-50 border rounded-2xl text-sm">
                             </div>
@@ -290,6 +285,13 @@
                                 <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2">Kepala Sekolah</label>
                                 <input type="text" id="pic-kepsek-nama" placeholder="Nama Kepala Sekolah" class="w-full p-4 bg-slate-50 border rounded-2xl text-sm">
                                 <input type="text" id="pic-kepsek-nip" placeholder="NIP Kepala Sekolah" class="w-full p-4 bg-slate-50 border rounded-2xl text-sm">
+                            </div>
+                            <div class="space-y-4 pt-4 border-t">
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2">Guru Piket</label>
+                                <select id="pic-piket-nama" onchange="autoFillPiketNIP()" class="w-full p-4 bg-slate-50 border rounded-2xl text-sm appearance-none outline-none">
+                                    <option value="">-- Pilih Guru Piket --</option>
+                                </select>
+                                <input type="text" id="pic-piket-nip" placeholder="NIP Guru Piket" readonly class="w-full p-4 bg-slate-200 border rounded-2xl text-sm text-slate-500">
                             </div>
                             <button type="submit" class="w-full py-4 bg-indigo-600 text-white rounded-2xl font-black shadow-lg">Simpan Penanggung Jawab</button>
                         </form>
@@ -317,79 +319,6 @@
         </div>
     </div>
 
-    <!-- MODAL PRESENSI MANUAL -->
-    <div id="modal-manual-absen" class="fixed inset-0 bg-black/60 z-[300] hidden flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-white rounded-[2.5rem] p-8 w-full max-w-md space-y-6 shadow-2xl animate-scaleIn">
-            <h4 class="text-xl font-black border-b pb-4">Presensi Manual</h4>
-            <form onsubmit="handleManualAbsenSubmit(event)" class="space-y-4">
-                <select id="manual-select-user" required class="w-full p-4 bg-slate-50 border rounded-2xl text-sm outline-none"></select>
-                <input type="text" id="manual-date" required placeholder="Senin, 01 Jan 2024" class="w-full p-4 bg-slate-50 border rounded-2xl text-sm">
-                <div class="grid grid-cols-2 gap-4">
-                    <input type="text" id="manual-in" placeholder="07:30" class="p-4 bg-slate-50 border rounded-2xl text-sm">
-                    <input type="text" id="manual-out" placeholder="14:00" class="p-4 bg-slate-50 border rounded-2xl text-sm">
-                </div>
-                <select id="manual-status" required class="w-full p-4 bg-slate-50 border rounded-2xl text-sm">
-                    <option value="Hadir">Hadir</option>
-                    <option value="Terlambat">Terlambat</option>
-                    <option value="Izin">Izin</option>
-                    <option value="Sakit">Sakit</option>
-                </select>
-                <div class="flex gap-4 pt-4">
-                    <button type="button" onclick="closeManualAbsenModal()" class="flex-1 py-4 bg-slate-100 rounded-2xl font-bold">Batal</button>
-                    <button type="submit" class="flex-1 py-4 bg-emerald-600 text-white rounded-2xl font-bold">Simpan</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- MODAL EDIT DATA -->
-    <div id="modal-edit-attendance" class="fixed inset-0 bg-black/60 z-[300] hidden flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-white rounded-[2.5rem] p-8 w-full max-w-md space-y-6 shadow-2xl animate-scaleIn">
-            <h4 class="text-xl font-black border-b pb-4">Koreksi Data</h4>
-            <form onsubmit="handleEditAttendanceSubmit(event)" class="space-y-4">
-                <input type="hidden" id="edit-index">
-                <input type="text" id="edit-date" required class="w-full p-4 bg-slate-50 border rounded-2xl text-sm">
-                <div class="grid grid-cols-2 gap-4">
-                    <input type="text" id="edit-in" placeholder="Jam Masuk" class="p-4 bg-slate-50 border rounded-2xl text-sm">
-                    <input type="text" id="edit-out" placeholder="Jam Pulang" class="p-4 bg-slate-50 border rounded-2xl text-sm">
-                </div>
-                <select id="edit-status" required class="w-full p-4 bg-slate-50 border rounded-2xl text-sm">
-                    <option value="Hadir">Hadir</option><option value="Terlambat">Terlambat</option><option value="Izin">Izin</option><option value="Sakit">Sakit</option>
-                </select>
-                <div class="flex gap-4 pt-4">
-                    <button type="button" onclick="closeEditAttendanceModal()" class="flex-1 py-4 bg-slate-100 rounded-2xl font-bold">Batal</button>
-                    <button type="submit" class="flex-1 py-4 bg-indigo-600 text-white rounded-2xl font-bold">Update</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- MODAL TAMBAH PEGAWAI -->
-    <div id="modal-add-employee" class="fixed inset-0 bg-black/60 z-[200] hidden flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-white rounded-[2.5rem] p-8 w-full max-w-xl space-y-6 shadow-2xl animate-scaleIn">
-            <h4 class="text-xl font-black border-b pb-4">Tambah Pegawai</h4>
-            <form onsubmit="addEmployee(event)" class="space-y-4">
-                <input type="text" id="new-name" required placeholder="Nama Lengkap" class="w-full p-4 bg-slate-50 border rounded-2xl text-sm">
-                <div class="grid grid-cols-2 gap-4">
-                    <input type="text" id="new-nip" required placeholder="NIP / NUPT" class="p-4 bg-slate-50 border rounded-2xl text-sm" oninput="document.getElementById('new-user').value=this.value">
-                    <input type="text" id="new-jabatan" required placeholder="Jabatan" class="p-4 bg-slate-50 border rounded-2xl text-sm">
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <select id="new-status" required class="p-4 bg-slate-50 border rounded-2xl text-sm">
-                        <option value="PNS">PNS</option><option value="PPPK">PPPK</option><option value="Honor">Honor</option>
-                    </select>
-                    <input type="text" id="new-avatar-url" placeholder="URL Foto" class="p-4 bg-slate-50 border rounded-2xl text-sm">
-                </div>
-                <div class="grid grid-cols-2 gap-4 p-4 bg-indigo-50 rounded-2xl">
-                    <input type="text" id="new-user" required placeholder="Username" class="p-3 bg-white border rounded-xl text-sm">
-                    <input type="password" id="new-pass" required placeholder="Password" class="p-3 bg-white border rounded-xl text-sm">
-                </div>
-                <button type="submit" class="w-full py-5 bg-indigo-600 text-white rounded-3xl font-black">Simpan Pegawai</button>
-                <button type="button" onclick="closeAddEmployeeModal()" class="w-full text-slate-400 font-bold text-sm">Batal</button>
-            </form>
-        </div>
-    </div>
-
     <div id="modal-alert" class="fixed inset-0 bg-black/60 z-[400] hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white rounded-[2rem] p-8 w-72 text-center space-y-4 shadow-2xl animate-scaleIn">
             <div id="modal-icon" class="text-5xl text-green-500"><i class="fas fa-check-circle"></i></div>
@@ -400,7 +329,7 @@
     </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx6_XP29RUlnxLkr02uFU1THADtO17e4lQGeq8YqTscrZ_sDcMnvnLvVX-eU4JUhPQnDA/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzBMAcfmgF_HK4C4VfweFFJPF29rzQYgo7Prft7Ou_gQBKMlFzXdBeiQ71FDdyfpkdtHA/exec";
         const OFFICE_LAT = -1.2942335988142928, OFFICE_LNG = 100.52147339164873, MAX_DIST = 1000;
         let users = [], attendanceData = [], picData = {}, kopData = {}, currentUser = null;
 
@@ -430,7 +359,13 @@
                 if (!users.some(u => u.user === 'admin')) users.push(DEFAULT_ADMIN);
                 attendanceData = (data.history || []).map(i => ({ ...i, in: formatTimeDisplay(i.in), out: formatTimeDisplay(i.out) }));
                 picData = data.pic || {}; kopData = data.kop || {};
-                loadKopDataUI(); loadPICDataUI(); renderHistory(); renderEmployeeList(); populateLoginUsernames(); 
+                
+                populateLoginUsernames();
+                populatePiketDropdown();
+                loadKopDataUI(); 
+                loadPICDataUI(); 
+                renderHistory(); 
+                renderEmployeeList(); 
                 if(currentUser) updateAttendanceStatus();
             } catch(e) { console.error("Cloud Error:", e); } 
             finally { document.getElementById('loading-overlay').classList.add('hidden'); }
@@ -444,6 +379,24 @@
                 const opt = document.createElement('option');
                 opt.value = u.user; opt.textContent = u.name; select.appendChild(opt);
             });
+        }
+
+        function populatePiketDropdown() {
+            const select = document.getElementById('pic-piket-nama');
+            if (!select) return;
+            select.innerHTML = '<option value="">-- Pilih Guru Piket --</option>';
+            users.filter(u => u.role === 'pegawai').forEach(u => {
+                const opt = document.createElement('option');
+                opt.value = u.name; 
+                opt.textContent = u.name; 
+                select.appendChild(opt);
+            });
+        }
+
+        function autoFillPiketNIP() {
+            const name = document.getElementById('pic-piket-nama').value;
+            const emp = users.find(u => u.name === name);
+            document.getElementById('pic-piket-nip').value = emp ? (emp.nip || '-') : '';
         }
 
         function switchLoginForm(t) {
@@ -532,23 +485,10 @@
             const now = new Date();
             const time = now.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false}).replace(/\./g, ':');
             const today = now.toLocaleDateString('id-ID', {weekday: 'long', day: '2-digit', month: 'long', year: 'numeric'});
-            
             let count = 0;
-            attendanceData.forEach(i => { 
-                // Cek apakah tanggal hari ini DAN belum ada jam keluar
-                if (i.date === today && i.out === '-') { 
-                    i.out = time; 
-                    count++; 
-                } 
-            });
-            
-            if (count > 0) { 
-                await syncWithCloud(); 
-                renderHistory(); 
-                showModal("Berhasil", `${count} pegawai telah diabsen pulang secara otomatis.`); 
-            } else { 
-                showModal("Info", "Tidak ada pegawai yang perlu dipulangkan untuk hari ini."); 
-            }
+            attendanceData.forEach(i => { if (i.date === today && i.out === '-') { i.out = time; count++; } });
+            if (count > 0) { await syncWithCloud(); renderHistory(); showModal("Berhasil", `${count} pegawai telah dipulangkan.`); } 
+            else { showModal("Info", "Tidak ada pegawai yang perlu dipulangkan."); }
         }
 
         function switchTab(n) {
@@ -562,51 +502,6 @@
             const btnSide = document.getElementById('side-' + n); if(btnSide) btnSide.classList.add('bg-indigo-600', 'shadow-lg');
             const titleEl = document.getElementById('tab-header-title');
             if(titleEl) titleEl.innerText = n === 'manage' ? 'Kelola Pegawai' : n.charAt(0).toUpperCase() + n.slice(1);
-        }
-
-        function openEditAttendanceModal(idx) {
-            const i = attendanceData[idx];
-            document.getElementById('edit-index').value = idx;
-            document.getElementById('edit-date').value = i.date;
-            document.getElementById('edit-in').value = i.in;
-            document.getElementById('edit-out').value = i.out;
-            document.getElementById('edit-status').value = i.status;
-            document.getElementById('modal-edit-attendance').classList.remove('hidden');
-        }
-        function closeEditAttendanceModal() { document.getElementById('modal-edit-attendance').classList.add('hidden'); }
-
-        async function handleEditAttendanceSubmit(e) {
-            e.preventDefault();
-            const idx = document.getElementById('edit-index').value;
-            attendanceData[idx].date = document.getElementById('edit-date').value;
-            attendanceData[idx].in = document.getElementById('edit-in').value;
-            attendanceData[idx].out = document.getElementById('edit-out').value;
-            attendanceData[idx].status = document.getElementById('edit-status').value;
-            await syncWithCloud(); renderHistory(); closeEditAttendanceModal(); showModal("Update", "Data diperbaiki.");
-        }
-
-        function openManualAbsenModal() {
-            const select = document.getElementById('manual-select-user');
-            select.innerHTML = '<option value="">-- Pilih Pegawai --</option>';
-            users.filter(u => u.role === 'pegawai').forEach(emp => {
-                const opt = document.createElement('option'); opt.value = emp.user; opt.textContent = emp.name; select.appendChild(opt);
-            });
-            document.getElementById('modal-manual-absen').classList.remove('hidden');
-        }
-        function closeManualAbsenModal() { document.getElementById('modal-manual-absen').classList.add('hidden'); }
-
-        async function handleManualAbsenSubmit(e) {
-            e.preventDefault();
-            const username = document.getElementById('manual-select-user').value;
-            const emp = users.find(u => u.user === username); if (!emp) return;
-            attendanceData.unshift({ 
-                name: emp.name, nip: emp.nip, statusPegawai: emp.statusPegawai, jabatan: emp.jabatan, 
-                date: document.getElementById('manual-date').value, 
-                in: document.getElementById('manual-in').value || '-', 
-                out: document.getElementById('manual-out').value || '-', 
-                status: document.getElementById('manual-status').value, username: emp.user 
-            });
-            await syncWithCloud(); renderHistory(); closeManualAbsenModal(); showModal("Berhasil", "Data disimpan.");
         }
 
         function renderHistory() {
@@ -649,16 +544,42 @@
         async function addEmployee(e) {
             e.preventDefault();
             users.push({ id: Date.now(), name: document.getElementById('new-name').value, user: document.getElementById('new-user').value, pass: document.getElementById('new-pass').value, role: 'pegawai', nip: document.getElementById('new-nip').value, statusPegawai: document.getElementById('new-status').value, jabatan: document.getElementById('new-jabatan').value, avatar: document.getElementById('new-avatar-url').value });
-            await syncWithCloud(); renderEmployeeList(); populateLoginUsernames(); closeAddEmployeeModal(); showModal("Sukses", "Berhasil.");
+            await syncWithCloud(); renderEmployeeList(); populateLoginUsernames(); populatePiketDropdown(); closeAddEmployeeModal(); showModal("Sukses", "Berhasil.");
         }
+
         function openAddEmployeeModal() { document.getElementById('modal-add-employee').classList.remove('hidden'); }
         function closeAddEmployeeModal() { document.getElementById('modal-add-employee').classList.add('hidden'); }
-        async function deleteUser(id) { if(confirm("Hapus?")) { users = users.filter(u => u.id !== id); await syncWithCloud(); renderEmployeeList(); } }
+        async function deleteUser(id) { if(confirm("Hapus?")) { users = users.filter(u => u.id !== id); await syncWithCloud(); renderEmployeeList(); populatePiketDropdown(); } }
         async function deleteRow(idx) { if(confirm("Hapus?")) { attendanceData.splice(idx, 1); await syncWithCloud(); renderHistory(); } }
+        
         function loadKopDataUI() { if(kopData) Object.keys(kopData).forEach(k => { const el = document.getElementById('kop-'+k); if(el) el.value = kopData[k]; }); }
-        function loadPICDataUI() { if(picData) Object.keys(picData).forEach(k => { const el = document.getElementById('pic-'+k); if(el) el.value = picData[k]; }); }
+        
+        function loadPICDataUI() { 
+            if(picData) {
+                document.getElementById('pic-pengawas-nama').value = picData.pengawas || '';
+                document.getElementById('pic-pengawas-nip').value = picData.nipPengawas || '';
+                document.getElementById('pic-kepsek-nama').value = picData.kepsek || '';
+                document.getElementById('pic-kepsek-nip').value = picData.nipKepsek || '';
+                document.getElementById('pic-piket-nama').value = picData.piket || '';
+                document.getElementById('pic-piket-nip').value = picData.nipPiket || '';
+            }
+        }
+
         async function handleSaveKop(e) { e.preventDefault(); kopData = { logoKiri: document.getElementById('kop-logo-kiri').value, logoKanan: document.getElementById('kop-logo-kanan').value, pemda: document.getElementById('kop-pemda').value, dinas: document.getElementById('kop-dinas').value, sekolah: document.getElementById('kop-sekolah').value, kecamatan: document.getElementById('kop-kecamatan').value, alamat: document.getElementById('kop-alamat').value, email: document.getElementById('kop-email').value, website: document.getElementById('kop-website').value }; await syncWithCloud(); showModal("Simpan", "Kop Surat Terupdate."); }
-        async function handleSavePIC(e) { e.preventDefault(); picData = { pengawas: document.getElementById('pic-pengawas-nama').value, nipPengawas: document.getElementById('pic-pengawas-nip').value, kepsek: document.getElementById('pic-kepsek-nama').value, nipKepsek: document.getElementById('pic-kepsek-nip').value }; await syncWithCloud(); showModal("Simpan", "PIC Terupdate."); }
+        
+        async function handleSavePIC(e) { 
+            e.preventDefault(); 
+            picData = { 
+                pengawas: document.getElementById('pic-pengawas-nama').value, 
+                nipPengawas: document.getElementById('pic-pengawas-nip').value, 
+                kepsek: document.getElementById('pic-kepsek-nama').value, 
+                nipKepsek: document.getElementById('pic-kepsek-nip').value,
+                piket: document.getElementById('pic-piket-nama').value,
+                nipPiket: document.getElementById('pic-piket-nip').value
+            }; 
+            await syncWithCloud(); 
+            showModal("Simpan", "PIC Terupdate."); 
+        }
 
         async function printReport() {
             const pVal = document.getElementById('print-place')?.value || kopData.kecamatan || '...';
@@ -681,7 +602,7 @@
                 table.data-table td, table.data-table th { border:1px solid black; padding:5px; } 
                 table.data-table th { background-color: #f2f2f2; text-align: center; }
                 .footer { margin-top:30px; width:100%; font-size: 12px; } 
-                .footer td { border:none; text-align:center; width: 50%; }
+                .footer td { border:none; text-align:center; width: 33.3%; vertical-align: top; padding: 10px 5px; }
                 .footnote { margin-top: 40px; border-top: 1px solid #ccc; padding-top: 5px; font-size: 9px; font-style: italic; color: #555; text-align: left; }
             </style></head><body>
                 <table class="kop-table">
@@ -703,17 +624,14 @@
                 </table>
                 <h3 style="text-align:center; text-decoration: underline; font-size: 16px; margin-bottom: 20px;">LAPORAN KEHADIRAN PEGAWAI</h3>
                 <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>No</th><th>Nama</th><th>NIP</th><th>Status</th><th>Jabatan</th><th>Tgl</th><th>Masuk</th><th>Pulang</th><th>Ket</th>
-                        </tr>
-                    </thead>
+                    <thead><tr><th>No</th><th>Nama</th><th>NIP</th><th>Status</th><th>Jabatan</th><th>Tgl</th><th>Masuk</th><th>Pulang</th><th>Ket</th></tr></thead>
                     <tbody>${rows || '<tr><td colspan="9" align="center">Tidak ada data</td></tr>'}</tbody>
                 </table>
                 <table class="footer">
                     <tr>
-                        <td>Mengetahui,<br>Pengawas Satuan Pendidikan<br><br><br><br><b><u>${picData.pengawas || '...'}</u></b><br>NIP. ${picData.nipPengawas || '...'}</td>
-                        <td>${pVal}, ${dVal}<br>Kepala Sekolah<br><br><br><br><b><u>${picData.kepsek || '...'}</u></b><br>NIP. ${picData.nipKepsek || '...'}</td>
+                        <td>Mengetahui,<br>Pengawas Satuan Pendidikan<br><br><br><br><br><b><u>${picData.pengawas || '...'}</u></b><br>NIP. ${picData.nipPengawas || '...'}</td>
+                        <td>Mengetahui,<br>Kepala Sekolah<br><br><br><br><br><b><u>${picData.kepsek || '...'}</u></b><br>NIP. ${picData.nipKepsek || '...'}</td>
+                        <td>${pVal}, ${dVal}<br>Guru Piket<br><br><br><br><br><b><u>${picData.piket || '...'}</u></b><br>NIP. ${picData.nipPiket || '...'}</td>
                     </tr>
                 </table>
                 <div class="footnote">Dicetak Oleh Aplikasi Presensi Digital ${kopData.sekolah || 'UPT SDN 22 Tanah Keras'}</div>
@@ -728,6 +646,7 @@
         function handleLogout() { window.isLoggingOut = true; showModal("Keluar", "Terima kasih."); }
         function closeModal() { document.getElementById('modal-alert').classList.add('hidden'); if (window.isLoggingOut) location.reload(); }
         function getDistance(la1, lo1, la2, lo2) { const R = 6371e3; const dLa = (la2-la1)*Math.PI/180, dLo = (lo2-lo1)*Math.PI/180; const a = Math.sin(dLa/2)**2 + Math.cos(la1*Math.PI/180)*Math.cos(la2*Math.PI/180)*Math.sin(dLo/2)**2; return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)); }
+        function showModal(t, m) { document.getElementById('modal-title').innerText = t; document.getElementById('modal-message').innerText = m; document.getElementById('modal-alert').classList.remove('hidden'); }
 
         setInterval(() => {
             const now = new Date(), t = now.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false}).replace(/\./g, ':');
