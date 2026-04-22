@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sistem Absensi Digital - UPT SDN 22 Tanah Keras</title>
+    <title>E-Absensi</title>
     
     <!-- FAVICON -->
     <link rel="icon" type="image/png" href="https://iili.io/Bra9Tb4.png">
@@ -379,14 +379,26 @@
             <form onsubmit="addEmployee(event)" class="space-y-4">
                 <input type="text" id="new-name" required placeholder="Nama Lengkap" class="w-full p-4 bg-slate-50 border rounded-2xl text-sm">
                 <div class="grid grid-cols-2 gap-4">
-                    <input type="text" id="new-nip" required placeholder="NIP / NUPT" class="p-4 bg-slate-50 border rounded-2xl text-sm">
+                    <input type="text" id="new-nip" required placeholder="NIP / NUPTK" class="p-4 bg-slate-50 border rounded-2xl text-sm">
                     <input type="text" id="new-jabatan" required placeholder="Jabatan" class="p-4 bg-slate-50 border rounded-2xl text-sm">
                 </div>
+                <!-- Dropdown Status Pegawai -->
+                <select id="new-status" required class="w-full p-4 bg-slate-50 border rounded-2xl text-sm appearance-none outline-none">
+                    <option value="">-- Pilih Status Pegawai --</option>
+                    <option value="PNS">PNS</option>
+                    <option value="PPPK">PPPK</option>
+                    <option value="PPPK Paru Waktu">PPPK Paru Waktu</option>
+                    <option value="Kontrak">Kontrak</option>
+                    <option value="Honor">Honor</option>
+                </select>
+                <!-- Kolom URL Foto -->
+                <input type="text" id="new-avatar-url" placeholder="URL Foto Pegawai (Contoh: https://iili.io/xyz.png)" class="w-full p-4 bg-slate-50 border rounded-2xl text-sm">
+                
                 <div class="grid grid-cols-2 gap-4 p-4 bg-indigo-50 rounded-2xl">
                     <input type="text" id="new-user" required placeholder="Username" class="p-3 bg-white border rounded-xl text-sm">
                     <input type="password" id="new-pass" required placeholder="Password" class="p-3 bg-white border rounded-xl text-sm">
                 </div>
-                <button type="submit" class="w-full py-5 bg-indigo-600 text-white rounded-3xl font-black">Simpan Pegawai</button>
+                <button type="submit" class="w-full py-5 bg-indigo-600 text-white rounded-3xl font-black shadow-lg hover:bg-indigo-700 transition">Simpan Pegawai</button>
                 <button type="button" onclick="closeAddEmployeeModal()" class="w-full text-slate-400 font-bold text-sm">Batal</button>
             </form>
         </div>
@@ -435,6 +447,13 @@
                 const data = await res.json();
                 users = (data.users && data.users.length) ? data.users : [DEFAULT_ADMIN];
                 if (!users.some(u => u.user === 'admin')) users.push(DEFAULT_ADMIN);
+                
+                // Map the data correctly from Google Sheet headers (photoUrl to avatar)
+                users = users.map(u => ({
+                    ...u,
+                    avatar: u.photoUrl || u.avatar || ""
+                }));
+
                 attendanceData = (data.history || []).map(i => ({ ...i, in: formatTimeDisplay(i.in), out: formatTimeDisplay(i.out) }));
                 picData = data.pic || {}; kopData = data.kop || {};
                 
@@ -692,8 +711,30 @@
 
         async function addEmployee(e) {
             e.preventDefault();
-            users.push({ id: Date.now(), name: document.getElementById('new-name').value, user: document.getElementById('new-user').value, pass: document.getElementById('new-pass').value, role: 'pegawai', nip: document.getElementById('new-nip').value, jabatan: document.getElementById('new-jabatan').value });
-            await syncWithCloud(); renderEmployeeList(); populateLoginUsernames(); populatePiketDropdown(); closeAddEmployeeModal(); showModal("Sukses", "Berhasil.");
+            const avatarUrl = document.getElementById('new-avatar-url').value;
+            const status = document.getElementById('new-status').value;
+            
+            const newUser = { 
+                id: Date.now(), 
+                name: document.getElementById('new-name').value, 
+                user: document.getElementById('new-user').value, 
+                pass: document.getElementById('new-pass').value, 
+                role: 'pegawai', 
+                nip: document.getElementById('new-nip').value, 
+                jabatan: document.getElementById('new-jabatan').value,
+                statusPegawai: status,
+                photoUrl: avatarUrl, // for GS
+                avatar: avatarUrl    // for internal UI
+            };
+            
+            users.push(newUser);
+            await syncWithCloud(); 
+            renderEmployeeList(); 
+            populateLoginUsernames(); 
+            populatePiketDropdown(); 
+            closeAddEmployeeModal(); 
+            document.getElementById('modal-add-employee').querySelector('form').reset();
+            showModal("Sukses", "Data pegawai baru berhasil disimpan.");
         }
 
         function openAddEmployeeModal() { document.getElementById('modal-add-employee').classList.remove('hidden'); }
