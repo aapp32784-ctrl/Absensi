@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sistem Absensi Digital - UPT SDN 22 Tanah Keras</title>
+    <title>E-Absensi</title>
     
     <!-- FAVICON -->
     <link rel="icon" type="image/png" href="https://iili.io/Bra9Tb4.png">
@@ -88,8 +88,10 @@
                 <p class="text-slate-500 text-sm">Sistem Absensi Kehadiran Terpadu</p>
             </div>
             <div class="flex border-b">
+                <!-- Tab Pegawai selalu tampil -->
                 <button onclick="switchLoginForm('pegawai')" id="tab-login-pegawai" class="flex-1 py-4 text-sm font-bold border-b-2 border-indigo-600 text-indigo-600 transition">Pegawai</button>
-                <button onclick="switchLoginForm('admin')" id="tab-login-admin" class="flex-1 py-4 text-sm font-bold border-b-2 border-transparent text-slate-400 hover:text-slate-600 transition items-center justify-center">Admin</button>
+                <!-- Tab Admin disembunyikan di HP (hidden), muncul di Laptop (md:flex) -->
+                <button onclick="switchLoginForm('admin')" id="tab-login-admin" class="hidden md:flex flex-1 py-4 text-sm font-bold border-b-2 border-transparent text-slate-400 hover:text-slate-600 transition items-center justify-center">Admin</button>
             </div>
             <div class="p-8">
                 <div id="login-error" class="hidden mb-4 p-3 bg-red-50 text-red-600 text-xs font-bold rounded-xl border border-red-100 flex items-center gap-2"><i class="fas fa-exclamation-circle"></i> Username atau sandi salah!</div>
@@ -513,7 +515,11 @@
             document.getElementById('form-pegawai').classList.toggle('hidden', !isP);
             document.getElementById('form-admin').classList.toggle('hidden', isP);
             document.getElementById('tab-login-pegawai').className = isP ? 'flex-1 py-4 text-sm font-bold border-b-2 border-indigo-600 text-indigo-600' : 'flex-1 py-4 text-sm font-bold border-b-2 border-transparent text-slate-400';
-            document.getElementById('tab-login-admin').className = !isP ? 'flex-1 py-4 text-sm font-bold border-b-2 border-purple-600 text-purple-600' : 'flex-1 py-4 text-sm font-bold border-b-2 border-transparent text-slate-400';
+            
+            const adminTab = document.getElementById('tab-login-admin');
+            if (adminTab && !adminTab.classList.contains('hidden')) {
+                adminTab.className = !isP ? 'flex-1 py-4 text-sm font-bold border-b-2 border-purple-600 text-purple-600' : 'flex-1 py-4 text-sm font-bold border-b-2 border-transparent text-slate-400';
+            }
         }
 
         function handleLogin(e, role) {
@@ -522,7 +528,8 @@
             const p = role === 'admin' ? document.getElementById('a-pass').value : document.getElementById('p-pass').value;
             const found = users.find(x => String(x.user).toLowerCase() === u.toLowerCase() && String(x.pass) === p && x.role === role);
             if (found) { 
-                currentUser = found; initDashboard(); 
+                currentUser = found; 
+                initDashboard(); 
                 document.getElementById('login-page').classList.add('hidden'); 
                 document.getElementById('main-app').classList.remove('hidden'); 
             } else {
@@ -554,7 +561,8 @@
             });
 
             switchTab(isAdmin ? 'dashboard' : 'attendance');
-            renderHistory(); updateAttendanceStatus();
+            renderHistory(); 
+            updateAttendanceStatus();
         }
 
         function updateAttendanceStatus() {
@@ -699,10 +707,11 @@
         }
 
         function renderHistory() {
-            const body = document.getElementById('history-body'); if(!body) return;
-            const isAdmin = currentUser?.role === 'admin';
+            const body = document.getElementById('history-body'); 
+            if(!body || !currentUser) return; // FIX: Menghindari error saat belum login
+
+            const isAdmin = currentUser.role === 'admin';
             const head = document.getElementById('history-header');
-            // Header dipisah MASUK dan PULANG
             head.innerHTML = `<th class="p-6">Nama Pegawai</th><th class="p-6">Hari & Tgl</th><th class="p-6 text-center">MASUK</th><th class="p-6 text-center">PULANG</th><th class="p-6">Status</th>${isAdmin ? '<th class="p-6 text-center">Aksi</th>' : ''}`;
             
             let data = isAdmin ? attendanceData : attendanceData.filter(d => d.username === currentUser.user);
@@ -716,9 +725,7 @@
                 return `<tr class="hover:bg-slate-50 transition">
                     <td class="p-6"><span class="font-bold text-slate-800">${i.name}</span><br><span class="text-[10px] text-slate-400 font-bold">${i.nip}</span></td>
                     <td class="p-6 text-xs text-slate-500">${i.date}</td>
-                    <!-- Kolom Masuk -->
                     <td class="p-6 text-center"><span class="bg-indigo-50 text-indigo-700 px-3 py-1.5 rounded-lg font-mono font-bold text-xs border border-indigo-100">${i.in}</span></td>
-                    <!-- Kolom Pulang -->
                     <td class="p-6 text-center"><span class="bg-orange-50 text-orange-700 px-3 py-1.5 rounded-lg font-mono font-bold text-xs border border-orange-100">${i.out}</span></td>
                     <td class="p-6"><span class="px-3 py-1 rounded-full text-[10px] font-black uppercase ${i.status === 'Hadir' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">${i.status}</span></td>
                     ${isAdmin ? `<td class="p-6 text-center"><div class="flex gap-4 justify-center"><button onclick="openEditAttendanceModal(${gIdx})" class="text-blue-500 hover:text-blue-700"><i class="fas fa-edit"></i></button><button onclick="deleteRow(${gIdx})" class="text-red-400 hover:text-red-600"><i class="fas fa-trash-alt"></i></button></div></td>` : ''}
@@ -780,11 +787,9 @@
             setTimeout(() => { frame.contentWindow.focus(); frame.contentWindow.print(); }, 1000);
         }
 
-        function openAddEmployeeModal() { document.getElementById('modal-add-employee').classList.remove('hidden'); }
-        function closeAddEmployeeModal() { document.getElementById('modal-add-employee').classList.add('hidden'); }
+        function handleLogout() { window.isLoggingOut = true; showModal("Keluar", "Terima kasih atas dedikasinya hari ini!"); }
         function showModal(t, m) { document.getElementById('modal-title').innerText=t; document.getElementById('modal-message').innerText=m; document.getElementById('modal-alert').classList.remove('hidden'); }
         function closeModal() { document.getElementById('modal-alert').classList.add('hidden'); if (window.isLoggingOut) location.reload(); }
-        function handleLogout() { window.isLoggingOut = true; showModal("Keluar", "Terima kasih atas dedikasinya hari ini!"); }
         function getDistance(la1, lo1, la2, lo2) { const R = 6371e3; const dLa = (la2-la1)*Math.PI/180, dLo = (lo2-lo1)*Math.PI/180; const a = Math.sin(dLa/2)**2 + Math.cos(la1*Math.PI/180)*Math.cos(la2*Math.PI/180)*Math.sin(dLo/2)**2; return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)); }
 
         setInterval(() => {
