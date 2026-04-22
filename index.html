@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sistem Absensi Digital - UPT SDN 22 Tanah Keras</title>
+    <title>E-Absensi</title>
     
     <!-- FAVICON -->
     <link rel="icon" type="image/png" href="https://iili.io/Bra9Tb4.png">
@@ -83,10 +83,13 @@
                 <h2 class="text-2xl font-bold text-slate-800">AbsenKU</h2>
                 <p class="text-slate-500 text-sm">Sistem Absensi Kehadiran Terpadu</p>
             </div>
-            <div class="flex border-b">
+            
+            <!-- NAVIGASI TAB LOGIN: HANYA MUNCUL DI DESKTOP (md:) -->
+            <div class="hidden md:flex border-b">
                 <button onclick="switchLoginForm('pegawai')" id="tab-login-pegawai" class="flex-1 py-4 text-sm font-bold border-b-2 border-indigo-600 text-indigo-600 transition">Pegawai</button>
-                <button onclick="switchLoginForm('admin')" id="tab-login-admin" class="md:flex flex-1 py-4 text-sm font-bold border-b-2 border-transparent text-slate-400 hover:text-slate-600 transition items-center justify-center">Admin</button>
+                <button onclick="switchLoginForm('admin')" id="tab-login-admin" class="flex-1 py-4 text-sm font-bold border-b-2 border-transparent text-slate-400 hover:text-slate-600 transition items-center justify-center">Admin</button>
             </div>
+
             <div class="p-8">
                 <div id="login-error" class="hidden mb-4 p-3 bg-red-50 text-red-600 text-xs font-bold rounded-xl border border-red-100 flex items-center gap-2"><i class="fas fa-exclamation-circle"></i> Username atau sandi salah!</div>
                 
@@ -403,10 +406,13 @@
             const isP = t === 'pegawai';
             document.getElementById('form-pegawai').classList.toggle('hidden', !isP);
             document.getElementById('form-admin').classList.toggle('hidden', isP);
-            document.getElementById('tab-login-pegawai').className = isP ? 'flex-1 py-4 text-sm font-bold border-b-2 border-indigo-600 text-indigo-600' : 'flex-1 py-4 text-sm font-bold border-b-2 border-transparent text-slate-400';
-            const adminTab = document.getElementById('tab-login-admin');
-            if (adminTab && !adminTab.classList.contains('hidden')) {
-                adminTab.className = !isP ? 'flex-1 py-4 text-sm font-bold border-b-2 border-purple-600 text-purple-600' : 'flex-1 py-4 text-sm font-bold border-b-2 border-transparent text-slate-400';
+            
+            // Only update tab colors if elements are visible (Desktop)
+            const tabP = document.getElementById('tab-login-pegawai');
+            const tabA = document.getElementById('tab-login-admin');
+            if (tabP && tabA) {
+                tabP.className = isP ? 'flex-1 py-4 text-sm font-bold border-b-2 border-indigo-600 text-indigo-600' : 'flex-1 py-4 text-sm font-bold border-b-2 border-transparent text-slate-400';
+                tabA.className = !isP ? 'flex-1 py-4 text-sm font-bold border-b-2 border-purple-600 text-purple-600' : 'flex-1 py-4 text-sm font-bold border-b-2 border-transparent text-slate-400';
             }
         }
 
