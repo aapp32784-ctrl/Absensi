@@ -70,7 +70,7 @@
 
     <div id="loading-overlay" class="loading-overlay hidden">
         <div class="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
-        <p class="font-bold text-indigo-600 animate-pulse">Menyingkronkan Data...</p>
+        <p class="font-bold text-indigo-600 animate-pulse">SINGKRONISASI</p>
     </div>
 
     <!-- HALAMAN LOGIN -->
@@ -80,8 +80,8 @@
                 <div class="mb-4 mx-auto">
                     <img src="https://iili.io/3b1SedN.png" alt="Logo AbsenKU" class="h-28 w-auto mx-auto object-contain drop-shadow-md">
                 </div>
-                <h2 class="text-2xl font-bold text-slate-800">AbsenKU</h2>
-                <p class="text-slate-500 text-sm">Sistem Absensi Kehadiran Terpadu</p>
+                <h2 class="text-2xl font-bold text-slate-800">PRESENSI DIGITAL</h2>
+                <p class="text-slate-500 text-sm">UPT SDN 22 TANAH KERAS</p>
             </div>
             
             <div class="hidden md:flex border-b">
@@ -139,7 +139,7 @@
         
         <!-- SIDEBAR -->
         <aside class="hidden md:flex w-72 bg-indigo-700 text-white flex-col sticky top-0 h-screen shadow-xl">
-            <div class="p-8"><h1 class="text-2xl font-black flex items-center gap-3"><i class="fas fa-fingerprint text-indigo-300"></i> AbsenKU</h1></div>
+            <div class="p-8"><h1 class="text-2xl font-black flex items-center gap-3"><i class="fas fa-fingerprint text-indigo-300"></i>PRESENSI DIGITAL</h1></div>
             <nav class="flex-1 px-4 space-y-2 overflow-y-auto">
                 <button onclick="switchTab('dashboard')" id="side-dashboard" class="tab-btn w-full flex items-center gap-4 p-4 rounded-xl hover:bg-indigo-600 transition font-medium"><i class="fas fa-home w-5"></i> Beranda</button>
                 <button onclick="switchTab('attendance')" id="side-attendance" class="tab-btn w-full flex items-center gap-4 p-4 rounded-xl hover:bg-indigo-600 transition font-medium"><i class="fas fa-clock w-5"></i> Absensi</button>
@@ -217,7 +217,7 @@
                             <button id="btn-out" onclick="startAbsenceProcess('Pulang')" class="px-8 py-6 rounded-3xl font-bold transition flex flex-col items-center justify-center gap-3 shadow-lg btn-disabled active:scale-95"><i class="fas fa-sign-out-alt text-3xl"></i><span>Absen Pulang</span></button>
                         </div>
                         <div id="admin-manual-area" class="hidden pt-6 border-t">
-                            <button onclick="openManualAbsenModal()" class="w-full py-4 bg-emerald-600 text-white rounded-2xl font-bold shadow-md hover:bg-emerald-700 transition flex items-center justify-center gap-3"><i class="fas fa-user-edit"></i><span>Input Presensi Manual (Admin)</span></button>
+                            <button onclick="openManualAbsenModal()" class="w-full py-4 bg-emerald-600 text-white rounded-2xl font-bold shadow-md hover:bg-emerald-700 transition flex items-center justify-center gap-3"><i class="fas fa-user-edit"></i><span>Absen Manual</span></button>
                         </div>
                     </div>
                 </section>
