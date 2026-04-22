@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>E-Absensi</title>
+    <title>Sistem Absensi Digital - UPT SDN 22 Tanah Keras</title>
     
     <!-- FAVICON -->
     <link rel="icon" type="image/png" href="https://iili.io/Bra9Tb4.png">
@@ -45,9 +45,9 @@
         .loading-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.8); z-index: 9999; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 1rem; }
         #print-frame { position: absolute; width: 0; height: 0; border: none; visibility: hidden; }
         
-        .btn-active-in { background-color: #4f46e5; color: white; opacity: 1; cursor: pointer; }
-        .btn-active-out { background-color: #ea580c; color: white; opacity: 1; cursor: pointer; }
-        .btn-disabled { background-color: #e2e8f0; color: #94a3b8; opacity: 0.7; cursor: not-allowed; pointer-events: none; }
+        .btn-active-in { background-color: #4f46e5; color: white; cursor: pointer; }
+        .btn-active-out { background-color: #ea580c; color: white; cursor: pointer; }
+        .btn-disabled { background-color: #e2e8f0; color: #94a3b8; cursor: not-allowed; pointer-events: none; }
 
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
@@ -84,7 +84,6 @@
                 <p class="text-slate-500 text-sm">Sistem Absensi Kehadiran Terpadu</p>
             </div>
             
-            <!-- NAVIGASI TAB LOGIN: HANYA MUNCUL DI DESKTOP (md:) -->
             <div class="hidden md:flex border-b">
                 <button onclick="switchLoginForm('pegawai')" id="tab-login-pegawai" class="flex-1 py-4 text-sm font-bold border-b-2 border-indigo-600 text-indigo-600 transition">Pegawai</button>
                 <button onclick="switchLoginForm('admin')" id="tab-login-admin" class="flex-1 py-4 text-sm font-bold border-b-2 border-transparent text-slate-400 hover:text-slate-600 transition items-center justify-center">Admin</button>
@@ -178,6 +177,7 @@
             </header>
 
             <main class="flex-1 p-5 md:p-8 space-y-8 overflow-y-auto pb-32 md:pb-8">
+                
                 <section id="tab-dashboard" class="space-y-8 animate-fadeIn">
                     <div class="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
                         <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex items-center gap-5">
@@ -322,12 +322,76 @@
         </div>
     </div>
 
-    <div id="modal-alert" class="fixed inset-0 bg-black/60 z-[400] hidden flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-white rounded-[2rem] p-8 w-72 text-center space-y-4 shadow-2xl animate-scaleIn">
-            <div id="modal-icon" class="text-5xl text-green-500"><i class="fas fa-check-circle"></i></div>
-            <h4 id="modal-title" class="text-lg font-black">Berhasil</h4>
-            <p id="modal-message" class="text-slate-500 text-xs">Aksi selesai.</p>
-            <button onclick="closeModal()" class="w-full py-3 bg-indigo-600 text-white rounded-xl font-bold shadow-lg">Mengerti</button>
+    <!-- MODAL PRESENSI MANUAL -->
+    <div id="modal-manual-absen" class="fixed inset-0 bg-black/60 z-[300] hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl p-8 w-full max-w-md shadow-2xl">
+            <h4 class="text-xl font-black border-b pb-4 mb-4">Input Presensi Manual</h4>
+            <form id="form-manual-input" onsubmit="handleManualAbsenSubmit(event)" class="space-y-4">
+                <select id="manual-select-user" required class="w-full p-3 bg-slate-50 border rounded-xl text-sm"></select>
+                <input type="text" id="manual-date" required placeholder="Senin, 22 April 2026" class="w-full p-3 bg-slate-50 border rounded-xl text-sm">
+                <div class="grid grid-cols-2 gap-4">
+                    <input type="text" id="manual-in" placeholder="Masuk (07:00)" class="p-3 bg-slate-50 border rounded-xl text-sm">
+                    <input type="text" id="manual-out" placeholder="Pulang (14:00)" class="p-3 bg-slate-50 border rounded-xl text-sm">
+                </div>
+                <select id="manual-status" required class="w-full p-3 bg-slate-50 border rounded-xl text-sm">
+                    <option value="Hadir">Hadir</option><option value="Terlambat">Terlambat</option>
+                    <option value="Izin">Izin</option><option value="Sakit">Sakit</option>
+                </select>
+                <div class="flex gap-4 pt-4">
+                    <button type="button" onclick="closeManualAbsenModal()" class="flex-1 py-3 bg-slate-100 rounded-xl font-bold">Batal</button>
+                    <button type="submit" class="flex-1 py-3 bg-emerald-600 text-white rounded-xl font-bold">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL EDIT DATA -->
+    <div id="modal-edit-attendance" class="fixed inset-0 bg-black/60 z-[300] hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-[2.5rem] p-8 w-full max-w-md space-y-6 shadow-2xl animate-scaleIn">
+            <h4 class="text-xl font-black border-b pb-4">Koreksi Data</h4>
+            <form onsubmit="handleEditAttendanceSubmit(event)" class="space-y-4">
+                <input type="hidden" id="edit-index">
+                <input type="text" id="edit-date" required class="w-full p-4 bg-slate-50 border rounded-2xl text-sm">
+                <div class="grid grid-cols-2 gap-4">
+                    <input type="text" id="edit-in" placeholder="Jam Masuk" class="p-4 bg-slate-50 border rounded-2xl text-sm">
+                    <input type="text" id="edit-out" placeholder="Jam Pulang" class="p-4 bg-slate-50 border rounded-2xl text-sm">
+                </div>
+                <select id="edit-status" required class="w-full p-4 bg-slate-50 border rounded-2xl text-sm">
+                    <option value="Hadir">Hadir</option><option value="Terlambat">Terlambat</option><option value="Izin">Izin</option><option value="Sakit">Sakit</option>
+                </select>
+                <div class="flex gap-4 pt-4">
+                    <button type="button" onclick="closeEditAttendanceModal()" class="flex-1 py-4 bg-slate-100 rounded-2xl font-bold">Batal</button>
+                    <button type="submit" class="flex-1 py-4 bg-indigo-600 text-white rounded-2xl font-bold">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL TAMBAH PEGAWAI -->
+    <div id="modal-add-employee" class="fixed inset-0 bg-black/60 z-[200] hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-[2.5rem] p-8 w-full max-w-xl space-y-6 shadow-2xl animate-scaleIn">
+            <h4 class="text-xl font-black border-b pb-4">Tambah Pegawai</h4>
+            <form onsubmit="addEmployee(event)" class="space-y-4">
+                <input type="text" id="new-name" required placeholder="Nama Lengkap" class="w-full p-4 bg-slate-50 border rounded-2xl text-sm">
+                <div class="grid grid-cols-2 gap-4">
+                    <input type="text" id="new-nip" required placeholder="NIP / NUPT" class="p-4 bg-slate-50 border rounded-2xl text-sm">
+                    <input type="text" id="new-jabatan" required placeholder="Jabatan" class="p-4 bg-slate-50 border rounded-2xl text-sm">
+                </div>
+                <div class="grid grid-cols-2 gap-4 p-4 bg-indigo-50 rounded-2xl">
+                    <input type="text" id="new-user" required placeholder="Username" class="p-3 bg-white border rounded-xl text-sm">
+                    <input type="password" id="new-pass" required placeholder="Password" class="p-3 bg-white border rounded-xl text-sm">
+                </div>
+                <button type="submit" class="w-full py-5 bg-indigo-600 text-white rounded-3xl font-black">Simpan Pegawai</button>
+                <button type="button" onclick="closeAddEmployeeModal()" class="w-full text-slate-400 font-bold text-sm">Batal</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-alert" class="fixed inset-0 bg-black/60 z-[400] hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl p-8 w-72 text-center space-y-4 shadow-2xl">
+            <h4 id="modal-title" class="text-lg font-black">Pemberitahuan</h4>
+            <p id="modal-message" class="text-slate-500 text-xs"></p>
+            <button onclick="closeModal()" class="w-full py-3 bg-indigo-600 text-white rounded-xl font-bold">Mengerti</button>
         </div>
     </div>
 
@@ -348,7 +412,13 @@
         async function syncWithCloud() {
             if (!SCRIPT_URL) return;
             document.getElementById('loading-overlay').classList.remove('hidden');
-            try { await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ type: "sync_all", users, history: attendanceData, pic: picData, kop: kopData }) }); } 
+            try { 
+                await fetch(SCRIPT_URL, { 
+                    method: 'POST', 
+                    mode: 'no-cors', 
+                    body: JSON.stringify({ type: "sync_all", users, history: attendanceData, pic: picData, kop: kopData }) 
+                }); 
+            } 
             finally { document.getElementById('loading-overlay').classList.add('hidden'); }
         }
 
@@ -370,7 +440,10 @@
                 renderHistory(); 
                 renderEmployeeList(); 
                 if(currentUser) updateAttendanceStatus();
-            } catch(e) { console.error("Cloud Error:", e); } 
+            } catch(e) { 
+                console.error("Cloud Error:", e);
+                showModal("Error Sinkronisasi", "Gagal memuat data dari cloud.");
+            } 
             finally { document.getElementById('loading-overlay').classList.add('hidden'); }
         }
 
@@ -407,7 +480,6 @@
             document.getElementById('form-pegawai').classList.toggle('hidden', !isP);
             document.getElementById('form-admin').classList.toggle('hidden', isP);
             
-            // Only update tab colors if elements are visible (Desktop)
             const tabP = document.getElementById('tab-login-pegawai');
             const tabA = document.getElementById('tab-login-admin');
             if (tabP && tabA) {
@@ -421,20 +493,25 @@
             const u = role === 'admin' ? document.getElementById('a-user').value : document.getElementById('p-user').value;
             const p = role === 'admin' ? document.getElementById('a-pass').value : document.getElementById('p-pass').value;
             const found = users.find(x => String(x.user).toLowerCase() === u.toLowerCase() && String(x.pass) === p && x.role === role);
-            if (found) { currentUser = found; initDashboard(); document.getElementById('login-page').classList.add('hidden'); document.getElementById('main-app').classList.remove('hidden'); } 
-            else { document.getElementById('login-error').classList.remove('hidden'); setTimeout(() => document.getElementById('login-error').classList.add('hidden'), 3000); }
+            if (found) { 
+                currentUser = found; 
+                initDashboard(); 
+                document.getElementById('login-page').classList.add('hidden'); 
+                document.getElementById('main-app').classList.remove('hidden'); 
+            } 
+            else { 
+                document.getElementById('login-error').classList.remove('hidden'); 
+                setTimeout(() => document.getElementById('login-error').classList.add('hidden'), 3000); 
+            }
         }
 
         function initDashboard() {
             const name = currentUser.name;
-            document.getElementById('mobile-display-name').innerText = name;
             document.getElementById('display-name').innerText = name;
             document.getElementById('profile-name').innerText = name;
             document.getElementById('profile-role-text').innerText = currentUser.jabatan || '-';
             const avatarUrl = currentUser.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random&color=fff&bold=true`;
             document.getElementById('side-avatar').src = avatarUrl;
-            document.getElementById('header-avatar').src = avatarUrl;
-            document.getElementById('header-avatar').classList.remove('hidden');
             document.getElementById('profile-avatar').src = avatarUrl;
             
             const isAdmin = currentUser.role === 'admin';
@@ -442,7 +519,8 @@
                 const el = document.getElementById(id); if(el) el.classList.toggle('hidden', !isAdmin);
             });
             switchTab(isAdmin ? 'dashboard' : 'attendance');
-            renderHistory(); updateAttendanceStatus();
+            renderHistory(); 
+            updateAttendanceStatus();
         }
 
         function updateAttendanceStatus() {
@@ -451,16 +529,16 @@
             const rec = attendanceData.find(x => x.username === currentUser.user && x.date === today);
             const btnIn = document.getElementById('btn-in'), btnOut = document.getElementById('btn-out'), label = document.getElementById('label-status');
             if (!rec) {
-                btnIn.disabled = false; btnIn.className = "px-8 py-6 rounded-3xl font-bold transition flex flex-col items-center justify-center gap-3 shadow-lg btn-active-in active:scale-95";
-                btnOut.disabled = true; btnOut.className = "px-8 py-6 rounded-3xl font-bold transition flex flex-col items-center justify-center gap-3 shadow-lg btn-disabled";
+                btnIn.disabled = false; btnIn.className = "px-8 py-6 rounded-3xl font-bold shadow-lg btn-active-in";
+                btnOut.disabled = true; btnOut.className = "px-8 py-6 rounded-3xl font-bold shadow-lg btn-disabled";
                 label.innerText = "Sesi Belum Dimulai";
             } else if (rec.out === '-') {
-                btnIn.disabled = true; btnIn.className = "px-8 py-6 rounded-3xl font-bold transition flex flex-col items-center justify-center gap-3 shadow-lg btn-disabled";
-                btnOut.disabled = false; btnOut.className = "px-8 py-6 rounded-3xl font-bold transition flex flex-col items-center justify-center gap-3 shadow-lg btn-active-out active:scale-95";
+                btnIn.disabled = true; btnIn.className = "px-8 py-6 rounded-3xl font-bold shadow-lg btn-disabled";
+                btnOut.disabled = false; btnOut.className = "px-8 py-6 rounded-3xl font-bold shadow-lg btn-active-out";
                 label.innerText = "Sudah Absen Masuk";
             } else {
-                btnIn.disabled = true; btnIn.className = "px-8 py-6 rounded-3xl font-bold transition flex flex-col items-center justify-center gap-3 shadow-lg btn-disabled";
-                btnOut.disabled = true; btnOut.className = "px-8 py-6 rounded-3xl font-bold transition flex flex-col items-center justify-center gap-3 shadow-lg btn-disabled";
+                btnIn.disabled = true; btnIn.className = "px-8 py-6 rounded-3xl font-bold shadow-lg btn-disabled";
+                btnOut.disabled = true; btnOut.className = "px-8 py-6 rounded-3xl font-bold shadow-lg btn-disabled";
                 label.innerText = "Selesai Hari Ini";
             }
         }
@@ -500,46 +578,92 @@
         function switchTab(n) {
             ['dashboard', 'attendance', 'history', 'manage', 'kop', 'pic', 'profile'].forEach(t => {
                 const tab = document.getElementById('tab-' + t); if (tab) tab.classList.add('hidden');
-                const btnM = document.getElementById('nav-btn-' + t); if (btnM) btnM.classList.replace('text-indigo-600', 'text-slate-400');
                 const btnD = document.getElementById('side-' + t); if (btnD) btnD.classList.remove('bg-indigo-600', 'shadow-lg');
             });
             document.getElementById('tab-' + n)?.classList.remove('hidden');
-            const btnNav = document.getElementById('nav-btn-' + n); if(btnNav) btnNav.classList.replace('text-slate-400', 'text-indigo-600');
             const btnSide = document.getElementById('side-' + n); if(btnSide) btnSide.classList.add('bg-indigo-600', 'shadow-lg');
-            const titleEl = document.getElementById('tab-header-title');
-            if(titleEl) titleEl.innerText = n === 'manage' ? 'Kelola Pegawai' : n.charAt(0).toUpperCase() + n.slice(1);
+        }
+
+        function openEditAttendanceModal(idx) {
+            const i = attendanceData[idx];
+            document.getElementById('edit-index').value = idx;
+            document.getElementById('edit-date').value = i.date;
+            document.getElementById('edit-in').value = i.in;
+            document.getElementById('edit-out').value = i.out;
+            document.getElementById('edit-status').value = i.status;
+            document.getElementById('modal-edit-attendance').classList.remove('hidden');
+        }
+
+        function closeEditAttendanceModal() { document.getElementById('modal-edit-attendance').classList.add('hidden'); }
+
+        async function handleEditAttendanceSubmit(e) {
+            e.preventDefault();
+            const idx = document.getElementById('edit-index').value;
+            attendanceData[idx].date = document.getElementById('edit-date').value;
+            attendanceData[idx].in = document.getElementById('edit-in').value;
+            attendanceData[idx].out = document.getElementById('edit-out').value;
+            attendanceData[idx].status = document.getElementById('edit-status').value;
+            await syncWithCloud(); renderHistory(); closeEditAttendanceModal(); showModal("Update", "Data diperbaiki.");
+        }
+
+        function openManualAbsenModal() {
+            const select = document.getElementById('manual-select-user');
+            select.innerHTML = '<option value="">-- Pilih Pegawai --</option>';
+            users.filter(u => u.role === 'pegawai').forEach(emp => {
+                const opt = document.createElement('option'); opt.value = emp.user; opt.textContent = emp.name; select.appendChild(opt);
+            });
+            document.getElementById('manual-date').value = new Date().toLocaleDateString('id-ID', {weekday: 'long', day: '2-digit', month: 'long', year: 'numeric'});
+            document.getElementById('modal-manual-absen').classList.remove('hidden');
+        }
+
+        function closeManualAbsenModal() { document.getElementById('modal-manual-absen').classList.add('hidden'); }
+
+        async function handleManualAbsenSubmit(e) {
+            e.preventDefault();
+            const username = document.getElementById('manual-select-user').value;
+            const emp = users.find(u => u.user === username);
+            if (!emp) { showModal("Error", "Pegawai tidak valid."); return; }
+            attendanceData.unshift({ 
+                name: emp.name, nip: emp.nip, statusPegawai: emp.statusPegawai, jabatan: emp.jabatan, 
+                date: document.getElementById('manual-date').value, 
+                in: document.getElementById('manual-in').value || '-', 
+                out: document.getElementById('manual-out').value || '-', 
+                status: document.getElementById('manual-status').value, username: emp.user 
+            });
+            await syncWithCloud(); renderHistory(); closeManualAbsenModal(); document.getElementById('form-manual-input').reset(); showModal("Berhasil", "Data disimpan.");
         }
 
         function renderHistory() {
             const body = document.getElementById('history-body'); if(!body || !currentUser) return;
             const isAdmin = currentUser.role === 'admin';
             const head = document.getElementById('history-header');
-            head.innerHTML = `<th class="p-6">Nama</th><th class="p-6">Tgl</th><th class="p-6 text-center">MASUK</th><th class="p-6 text-center">PULANG</th><th class="p-6">Keterangan</th>${isAdmin ? '<th class="p-6 text-center">Aksi</th>' : ''}`;
+            head.innerHTML = `<th class="p-6">Nama</th><th class="p-6">Tgl</th><th class="p-6 text-center">MASUK</th><th class="p-6 text-center">PULANG</th><th class="p-6">Ket</th>${isAdmin ? '<th class="p-6 text-center">Aksi</th>' : ''}`;
             
             let data = isAdmin ? attendanceData : attendanceData.filter(d => d.username === currentUser.user);
             const fN = document.getElementById('filter-name')?.value.toLowerCase() || '';
             const fD = document.getElementById('filter-date-table')?.value.toLowerCase() || '';
             if (fN) data = data.filter(d => d.name.toLowerCase().includes(fN));
             if (fD) data = data.filter(d => d.date.toLowerCase().includes(fD));
-            
+
             body.innerHTML = data.map((i) => {
                 const gIdx = attendanceData.indexOf(i);
-                const displayStatus = i.status === 'Terlambat' ? 'Hadir / Terlambat' : i.status;
-                const statusColor = (i.status === 'Hadir' || i.status === 'Terlambat') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700';
-
                 return `<tr class="hover:bg-slate-50 transition">
-                    <td class="p-6"><span class="font-bold text-slate-800">${i.name}</span></td>
+                    <td class="p-6 font-bold text-slate-800">${i.name}</td>
                     <td class="p-6 text-xs text-slate-500">${i.date}</td>
-                    <td class="p-6 text-center"><span class="bg-indigo-50 text-indigo-700 px-3 py-1.5 rounded-lg font-mono font-bold text-xs">${i.in}</span></td>
-                    <td class="p-6 text-center"><span class="bg-orange-50 text-orange-700 px-3 py-1.5 rounded-lg font-mono font-bold text-xs">${i.out}</span></td>
-                    <td class="p-6"><span class="px-3 py-1 rounded-full text-[9px] font-black uppercase ${statusColor}">${displayStatus}</span></td>
-                    ${isAdmin ? `<td class="p-6 text-center"><button onclick="openEditAttendanceModal(${gIdx})" class="text-blue-500 mr-4"><i class="fas fa-edit"></i></button><button onclick="deleteRow(${gIdx})" class="text-red-400"><i class="fas fa-trash-alt"></i></button></td>` : ''}
+                    <td class="p-6 text-center font-mono font-bold">${i.in}</td>
+                    <td class="p-6 text-center font-mono font-bold">${i.out}</td>
+                    <td class="p-6 text-xs uppercase font-bold text-indigo-600">${i.status}</td>
+                    ${isAdmin ? `<td class="p-6 text-center">
+                        <button onclick="openEditAttendanceModal(${gIdx})" class="text-blue-500 mr-4 hover:scale-110 transition"><i class="fas fa-edit"></i></button>
+                        <button onclick="deleteRow(${gIdx})" class="text-red-400 hover:scale-110 transition"><i class="fas fa-trash"></i></button>
+                    </td>` : ''}
                 </tr>`;
             }).join('');
-            
-            document.getElementById('stats-hadir').innerText = data.filter(x => x.status === 'Hadir').length;
-            document.getElementById('stats-late').innerText = data.filter(x => x.status === 'Terlambat').length;
-            document.getElementById('stats-izin').innerText = data.filter(x => x.status === 'Izin' || x.status === 'Sakit').length;
+
+            // Update stats di dashboard
+            const sH = document.getElementById('stats-hadir'); if(sH) sH.innerText = data.filter(x => x.status === 'Hadir').length;
+            const sL = document.getElementById('stats-late'); if(sL) sL.innerText = data.filter(x => x.status === 'Terlambat').length;
+            const sI = document.getElementById('stats-izin'); if(sI) sI.innerText = data.filter(x => x.status === 'Izin' || x.status === 'Sakit').length;
         }
 
         function renderEmployeeList() {
@@ -549,103 +673,27 @@
 
         async function addEmployee(e) {
             e.preventDefault();
-            users.push({ id: Date.now(), name: document.getElementById('new-name').value, user: document.getElementById('new-user').value, pass: document.getElementById('new-pass').value, role: 'pegawai', nip: document.getElementById('new-nip').value, statusPegawai: document.getElementById('new-status').value, jabatan: document.getElementById('new-jabatan').value, avatar: document.getElementById('new-avatar-url').value });
+            users.push({ id: Date.now(), name: document.getElementById('new-name').value, user: document.getElementById('new-user').value, pass: document.getElementById('new-pass').value, role: 'pegawai', nip: document.getElementById('new-nip').value, jabatan: document.getElementById('new-jabatan').value });
             await syncWithCloud(); renderEmployeeList(); populateLoginUsernames(); populatePiketDropdown(); closeAddEmployeeModal(); showModal("Sukses", "Berhasil.");
         }
 
         function openAddEmployeeModal() { document.getElementById('modal-add-employee').classList.remove('hidden'); }
         function closeAddEmployeeModal() { document.getElementById('modal-add-employee').classList.add('hidden'); }
-        async function deleteUser(id) { if(confirm("Hapus?")) { users = users.filter(u => u.id !== id); await syncWithCloud(); renderEmployeeList(); populatePiketDropdown(); } }
-        async function deleteRow(idx) { if(confirm("Hapus?")) { attendanceData.splice(idx, 1); await syncWithCloud(); renderHistory(); } }
+        async function deleteUser(id) { if(confirm("Hapus?")) { users = users.filter(u => u.id !== id); await syncWithCloud(); renderEmployeeList(); } }
+        async function deleteRow(idx) { if(confirm("Hapus baris ini?")) { attendanceData.splice(idx, 1); await syncWithCloud(); renderHistory(); } }
         
         function loadKopDataUI() { if(kopData) Object.keys(kopData).forEach(k => { const el = document.getElementById('kop-'+k); if(el) el.value = kopData[k]; }); }
-        
-        function loadPICDataUI() { 
-            if(picData) {
-                document.getElementById('pic-pengawas-nama').value = picData.pengawas || '';
-                document.getElementById('pic-pengawas-nip').value = picData.nipPengawas || '';
-                document.getElementById('pic-kepsek-nama').value = picData.kepsek || '';
-                document.getElementById('pic-kepsek-nip').value = picData.nipKepsek || '';
-                document.getElementById('pic-piket-nama').value = picData.piket || '';
-                document.getElementById('pic-piket-nip').value = picData.nipPiket || '';
-            }
-        }
+        function loadPICDataUI() { if(picData) Object.keys(picData).forEach(k => { const el = document.getElementById('pic-'+k); if(el) el.value = picData[k]; }); }
 
         async function handleSaveKop(e) { e.preventDefault(); kopData = { logoKiri: document.getElementById('kop-logo-kiri').value, logoKanan: document.getElementById('kop-logo-kanan').value, pemda: document.getElementById('kop-pemda').value, dinas: document.getElementById('kop-dinas').value, sekolah: document.getElementById('kop-sekolah').value, kecamatan: document.getElementById('kop-kecamatan').value, alamat: document.getElementById('kop-alamat').value, email: document.getElementById('kop-email').value, website: document.getElementById('kop-website').value }; await syncWithCloud(); showModal("Simpan", "Kop Surat Terupdate."); }
-        
-        async function handleSavePIC(e) { 
-            e.preventDefault(); 
-            picData = { 
-                pengawas: document.getElementById('pic-pengawas-nama').value, 
-                nipPengawas: document.getElementById('pic-pengawas-nip').value, 
-                kepsek: document.getElementById('pic-kepsek-nama').value, 
-                nipKepsek: document.getElementById('pic-kepsek-nip').value,
-                piket: document.getElementById('pic-piket-nama').value,
-                nipPiket: document.getElementById('pic-piket-nip').value
-            }; 
-            await syncWithCloud(); 
-            showModal("Simpan", "PIC Terupdate."); 
-        }
+        async function handleSavePIC(e) { e.preventDefault(); picData = { pengawas: document.getElementById('pic-pengawas-nama').value, nipPengawas: document.getElementById('pic-pengawas-nip').value, kepsek: document.getElementById('pic-kepsek-nama').value, nipKepsek: document.getElementById('pic-kepsek-nip').value, piket: document.getElementById('pic-piket-nama').value, nipPiket: document.getElementById('pic-piket-nip').value }; await syncWithCloud(); showModal("Simpan", "PIC Terupdate."); }
 
         async function printReport() {
             const pVal = document.getElementById('print-place')?.value || kopData.kecamatan || '...';
             const dVal = document.getElementById('print-date-manual')?.value || new Date().toLocaleDateString('id-ID', {day:'2-digit', month:'long', year:'numeric'});
-            
-            const rows = attendanceData.map((d, idx) => {
-                const statusDisplay = d.status === 'Terlambat' ? 'Hadir / Terlambat' : d.status;
-                return `<tr><td style="border:1px solid black;text-align:center">${idx+1}</td><td style="border:1px solid black">${d.name}</td><td style="border:1px solid black">${d.nip}</td><td style="border:1px solid black">${d.statusPegawai}</td><td style="border:1px solid black">${d.jabatan}</td><td style="border:1px solid black">${d.date}</td><td style="border:1px solid black;text-align:center">${d.in}</td><td style="border:1px solid black;text-align:center">${d.out}</td><td style="border:1px solid black;text-align:center">${statusDisplay}</td></tr>`;
-            }).join('');
-
-            const html = `<html><head><style>
-                body { font-family: serif; padding: 20px; color: black; } 
-                .kop-table { width: 100%; border-collapse: collapse; border-bottom: 4px double black; margin-bottom: 20px; }
-                .kop-logo { width: 85px; height: auto; }
-                .kop-text { text-align: center; padding: 0 10px; }
-                .kop-text h2 { margin: 0; font-size: 16px; font-weight: normal; text-transform: uppercase; }
-                .kop-text h1 { margin: 2px 0; font-size: 22px; font-weight: bold; text-transform: uppercase; }
-                .kop-text p { margin: 1px 0; font-size: 11px; font-style: italic; }
-                table.data-table { width:100%; border-collapse:collapse; margin-top:20px; font-size:10px; text-align: left; } 
-                table.data-table td, table.data-table th { border:1px solid black; padding:5px; } 
-                table.data-table th { background-color: #f2f2f2; text-align: center; }
-                .footer { margin-top:30px; width:100%; font-size: 12px; } 
-                .footer td { border:none; text-align:center; width: 33.3%; vertical-align: top; padding: 10px 5px; }
-                .footnote { margin-top: 40px; border-top: 1px solid #ccc; padding-top: 5px; font-size: 9px; font-style: italic; color: #555; text-align: left; }
-            </style></head><body>
-                <table class="kop-table">
-                    <tr>
-                        <td width="15%" align="left">
-                            ${kopData.logoKiri ? `<img src="${kopData.logoKiri}" class="kop-logo" onerror="this.style.display='none'">` : ''}
-                        </td>
-                        <td class="kop-text">
-                            <h2>${kopData.pemda || 'PEMERINTAH KABUPATEN/KOTA'}</h2>
-                            <h2>${kopData.dinas || 'DINAS PENDIDIKAN DAN KEBUDAYAAN'}</h2>
-                            <h1>${kopData.sekolah || 'SEKOLAH'}</h1>
-                            <p>Alamat: ${kopData.alamat || '..........'}</p>
-                            <p>Email: ${kopData.email || '..........'} | Website: ${kopData.website || '..........'}</p>
-                        </td>
-                        <td width="15%" align="right">
-                            ${kopData.logoKanan ? `<img src="${kopData.logoKanan}" class="kop-logo" onerror="this.style.display='none'">` : ''}
-                        </td>
-                    </tr>
-                </table>
-                <h3 style="text-align:center; text-decoration: underline; font-size: 16px; margin-bottom: 20px;">LAPORAN KEHADIRAN PEGAWAI</h3>
-                <table class="data-table">
-                    <thead><tr><th>No</th><th>Nama</th><th>NIP</th><th>Status</th><th>Jabatan</th><th>Tgl</th><th>Masuk</th><th>Pulang</th><th>Ket</th></tr></thead>
-                    <tbody>${rows || '<tr><td colspan="9" align="center">Tidak ada data</td></tr>'}</tbody>
-                </table>
-                <table class="footer">
-                    <tr>
-                        <td>Mengetahui,<br>Pengawas Satuan Pendidikan<br><br><br><br><br><b><u>${picData.pengawas || '...'}</u></b><br>NIP. ${picData.nipPengawas || '...'}</td>
-                        <td>Mengetahui,<br>Kepala Sekolah<br><br><br><br><br><b><u>${picData.kepsek || '...'}</u></b><br>NIP. ${picData.nipKepsek || '...'}</td>
-                        <td>${pVal}, ${dVal}<br>Guru Piket<br><br><br><br><br><b><u>${picData.piket || '...'}</u></b><br>NIP. ${picData.nipPiket || '...'}</td>
-                    </tr>
-                </table>
-                <div class="footnote">Dicetak Oleh Aplikasi Presensi Digital ${kopData.sekolah || 'UPT SDN 22 Tanah Keras'}</div>
-            </body></html>`;
-
-            const frame = document.getElementById('print-frame'); 
-            const doc = frame.contentWindow.document; 
-            doc.open(); doc.write(html); doc.close();
+            const rows = attendanceData.map((d, idx) => `<tr><td>${idx+1}</td><td>${d.name}</td><td>${d.nip}</td><td>${d.statusPegawai}</td><td>${d.jabatan}</td><td>${d.date}</td><td>${d.in}</td><td>${d.out}</td><td>${d.status}</td></tr>`).join('');
+            const html = `<html><head><style>body{font-family:serif;padding:20px}table{width:100%;border-collapse:collapse}td,th{border:1px solid black;padding:5px;font-size:10px}.footer td{border:none;width:33%;text-align:center}</style></head><body><h2 align="center">${kopData.sekolah || 'LAPORAN ABSENSI'}</h2><table><thead><tr><th>No</th><th>Nama</th><th>NIP</th><th>Status</th><th>Jabatan</th><th>Tgl</th><th>Masuk</th><th>Pulang</th><th>Ket</th></tr></thead><tbody>${rows}</tbody></table><table class="footer" style="margin-top:40px"><tr><td>Pengawas<br><br><br>${picData.pengawas}</td><td>Kepala Sekolah<br><br><br>${picData.kepsek}</td><td>${pVal}, ${dVal}<br>Guru Piket<br><br><br>${picData.piket}</td></tr></table></body></html>`;
+            const frame = document.getElementById('print-frame'); const doc = frame.contentWindow.document; doc.open(); doc.write(html); doc.close();
             setTimeout(() => { frame.contentWindow.focus(); frame.contentWindow.print(); }, 1000);
         }
 
@@ -656,10 +704,8 @@
 
         setInterval(() => {
             const now = new Date(), t = now.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false}).replace(/\./g, ':');
-            document.getElementById('clock-mobile').innerText = t; if(document.getElementById('clock-desktop')) document.getElementById('clock-desktop').innerText = t;
-            const dateStr = now.toLocaleDateString('id-ID', {weekday: 'long', day: '2-digit', month: 'long', year: 'numeric'});
-            document.getElementById('date-mobile').innerText = now.toLocaleDateString('id-ID', {day: '2-digit', month: 'short'});
-            if(document.getElementById('date-desktop')) document.getElementById('date-desktop').innerText = dateStr;
+            if(document.getElementById('clock-mobile')) document.getElementById('clock-mobile').innerText = t;
+            if(document.getElementById('clock-desktop')) document.getElementById('clock-desktop').innerText = t;
         }, 1000);
 
         window.onload = loadFromCloud;
