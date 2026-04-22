@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>E-Absensi</title>
+    <title>Sistem Absensi Digital - UPT SDN 22 Tanah Keras</title>
     
     <!-- FAVICON -->
     <link rel="icon" type="image/png" href="https://iili.io/Bra9Tb4.png">
@@ -88,9 +88,7 @@
                 <p class="text-slate-500 text-sm">Sistem Absensi Kehadiran Terpadu</p>
             </div>
             <div class="flex border-b">
-                <!-- Tab Pegawai selalu tampil -->
                 <button onclick="switchLoginForm('pegawai')" id="tab-login-pegawai" class="flex-1 py-4 text-sm font-bold border-b-2 border-indigo-600 text-indigo-600 transition">Pegawai</button>
-                <!-- Tab Admin disembunyikan di HP (hidden), muncul di Laptop (md:flex) -->
                 <button onclick="switchLoginForm('admin')" id="tab-login-admin" class="hidden md:flex flex-1 py-4 text-sm font-bold border-b-2 border-transparent text-slate-400 hover:text-slate-600 transition items-center justify-center">Admin</button>
             </div>
             <div class="p-8">
@@ -138,10 +136,10 @@
         </div>
     </div>
 
-    <!-- APLIKASI UTAMA (DESKTOP & MOBILE RESPONSIVE) -->
+    <!-- APLIKASI UTAMA -->
     <div id="main-app" class="hidden min-h-screen flex flex-col md:flex-row">
         
-        <!-- SIDEBAR (DESKTOP ONLY) -->
+        <!-- SIDEBAR -->
         <aside class="hidden md:flex w-72 bg-indigo-700 text-white flex-col sticky top-0 h-screen shadow-xl">
             <div class="p-8"><h1 class="text-2xl font-black flex items-center gap-3"><i class="fas fa-fingerprint text-indigo-300"></i> AbsenKU</h1></div>
             <nav class="flex-1 px-4 space-y-2 overflow-y-auto">
@@ -164,7 +162,6 @@
 
         <!-- AREA UTAMA -->
         <div class="flex-1 flex flex-col min-w-0">
-            <!-- HEADER MOBILE (Hanya HP) -->
             <header class="md:hidden glass-effect sticky top-0 z-50 px-5 py-4 border-b flex justify-between items-center bg-white/80">
                 <div class="flex items-center gap-3">
                     <img id="header-avatar" src="" class="w-10 h-10 rounded-full border border-indigo-200 object-cover hidden">
@@ -173,7 +170,6 @@
                 <div class="text-right"><div id="clock-mobile" class="text-sm font-mono font-bold text-indigo-700">00:00:00</div><div id="date-mobile" class="text-[9px] text-slate-400 font-medium uppercase tracking-tighter">-</div></div>
             </header>
 
-            <!-- HEADER DESKTOP (Hanya Desktop) -->
             <header class="hidden md:flex items-center justify-between p-8 bg-white border-b sticky top-0 z-10">
                 <div><h2 id="tab-header-title" class="text-2xl font-black text-slate-800">Beranda</h2><p id="desktop-greeting" class="text-slate-500 text-sm">Selamat bekerja di UPT SDN 22 Tanah Keras!</p></div>
                 <div class="flex items-center gap-6">
@@ -182,10 +178,8 @@
                 </div>
             </header>
 
-            <!-- KONTEN UTAMA -->
             <main class="flex-1 p-5 md:p-8 space-y-8 overflow-y-auto pb-32 md:pb-8">
                 
-                <!-- DASHBOARD / BERANDA -->
                 <section id="tab-dashboard" class="space-y-8 animate-fadeIn">
                     <div class="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
                         <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex items-center gap-5">
@@ -203,16 +197,15 @@
                     </div>
                 </section>
 
-                <!-- PANEL ABSENSI -->
                 <section id="tab-attendance" class="hidden space-y-6 animate-fadeIn">
                     <div class="bg-white p-8 md:p-12 rounded-[2.5rem] shadow-xl border border-slate-100 text-center space-y-8 max-w-2xl mx-auto">
                         <div class="bg-amber-50 border border-amber-100 p-5 rounded-3xl text-left flex gap-4">
                             <i class="fas fa-info-circle text-amber-500 text-xl"></i>
-                            <p class="text-xs md:text-sm font-medium text-amber-800 leading-relaxed"><span class="block font-bold mb-1">Informasi Keterlambatan:</span>Batas absen masuk tepat waktu adalah pukul <b>07.15 WIB</b>. Pastikan GPS aktif sebelum absen.</p>
+                            <p class="text-xs md:text-sm font-medium text-amber-800 leading-relaxed"><span class="block font-bold mb-1">Informasi Keterlambatan:</span>Batas absen masuk tepat waktu adalah pukul <b>07.15 WIB</b>.</p>
                         </div>
                         <div class="space-y-2">
                             <h3 class="text-3xl font-black text-slate-800">Presensi Digital</h3>
-                            <p class="text-slate-500 text-sm italic"><i class="fas fa-map-marker-alt text-red-500"></i> <a href="https://www.google.com/maps?q=-1.2942335988142928,100.52147339164873" target="_blank" class="underline decoration-dotted underline-offset-4">UPT SDN 22 Tanah Keras</a></p>
+                            <p class="text-slate-500 text-sm italic"><i class="fas fa-map-marker-alt text-red-500"></i> UPT SDN 22 Tanah Keras</p>
                         </div>
                         <div id="label-status" class="px-8 py-2.5 inline-block rounded-full bg-slate-100 text-slate-500 text-sm font-bold tracking-wide">Mengecek Sesi...</div>
                         
@@ -226,20 +219,18 @@
                     </div>
                 </section>
 
-                <!-- RIWAYAT KEHADIRAN -->
                 <section id="tab-history" class="hidden space-y-6 animate-fadeIn">
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <h3 class="font-black text-2xl text-slate-800">Riwayat Presensi</h3>
                         <div id="admin-history-filters" class="hidden flex flex-wrap gap-3 items-center">
-                            <input type="text" id="filter-name" oninput="renderHistory()" placeholder="Cari Nama..." class="p-3 bg-white border border-slate-200 rounded-2xl text-sm outline-none w-40 md:w-56 focus:ring-2 focus:ring-indigo-500 transition">
-                            <input type="text" id="filter-date-table" oninput="renderHistory()" placeholder="Cari Tanggal..." class="p-3 bg-white border border-slate-200 rounded-2xl text-sm outline-none w-40 focus:ring-2 focus:ring-indigo-500 transition">
+                            <input type="text" id="filter-name" oninput="renderHistory()" placeholder="Cari Nama..." class="p-3 bg-white border border-slate-200 rounded-2xl text-sm outline-none w-40 md:w-56">
+                            <input type="text" id="filter-date-table" oninput="renderHistory()" placeholder="Cari Tanggal..." class="p-3 bg-white border border-slate-200 rounded-2xl text-sm outline-none w-40">
                             
-                            <!-- Input Tambahan untuk Cetak -->
-                            <input type="text" id="print-place" placeholder="Tempat Cetak" class="p-3 bg-white border border-slate-200 rounded-2xl text-sm outline-none w-40 focus:ring-2 focus:ring-indigo-500 transition">
-                            <input type="text" id="print-date-manual" placeholder="Tgl Cetak Manual" class="p-3 bg-white border border-slate-200 rounded-2xl text-sm outline-none w-40 focus:ring-2 focus:ring-indigo-500 transition">
+                            <input type="text" id="print-place" placeholder="Tempat Cetak" class="p-3 bg-white border border-slate-200 rounded-2xl text-sm outline-none w-40">
+                            <input type="text" id="print-date-manual" placeholder="Tgl Cetak Manual" class="p-3 bg-white border border-slate-200 rounded-2xl text-sm outline-none w-40">
                             
-                            <button onclick="bulkFinishClockOut()" class="p-3 bg-orange-500 text-white rounded-2xl font-bold text-xs flex items-center gap-2 hover:bg-orange-600 shadow-lg shadow-orange-100 transition"><i class="fas fa-check-double"></i> Selesaikan Pulang</button>
-                            <button onclick="printReport()" class="p-3 bg-indigo-600 text-white rounded-2xl font-bold text-xs flex items-center gap-2 hover:bg-indigo-700 shadow-lg shadow-indigo-100 transition"><i class="fas fa-print"></i> Cetak</button>
+                            <button onclick="bulkFinishClockOut()" class="p-3 bg-orange-500 text-white rounded-2xl font-bold text-xs flex items-center gap-2 shadow-lg"><i class="fas fa-check-double"></i> Pulangkan Semua</button>
+                            <button onclick="printReport()" class="p-3 bg-indigo-600 text-white rounded-2xl font-bold text-xs flex items-center gap-2 shadow-lg"><i class="fas fa-print"></i> Cetak</button>
                         </div>
                     </div>
                     <div class="bg-white rounded-[2rem] shadow-sm border border-slate-100 overflow-hidden">
@@ -252,9 +243,8 @@
                     </div>
                 </section>
 
-                <!-- KELOLA PEGAWAI (Admin Only) -->
                 <section id="tab-manage" class="hidden space-y-6 animate-fadeIn">
-                    <div class="flex items-center justify-between"><h3 class="font-black text-2xl">Daftar Pegawai</h3><button onclick="openAddEmployeeModal()" class="px-6 py-3 bg-indigo-600 text-white rounded-2xl font-bold flex items-center gap-2 shadow-lg shadow-indigo-100"><i class="fas fa-plus"></i> Tambah Pegawai</button></div>
+                    <div class="flex items-center justify-between"><h3 class="font-black text-2xl">Daftar Pegawai</h3><button onclick="openAddEmployeeModal()" class="px-6 py-3 bg-indigo-600 text-white rounded-2xl font-bold flex items-center gap-2 shadow-lg"><i class="fas fa-plus"></i> Tambah Pegawai</button></div>
                     <div class="bg-white rounded-[2rem] shadow-sm border border-slate-100 overflow-hidden">
                         <table class="w-full text-left">
                             <thead class="bg-slate-50 text-[10px] text-slate-400 uppercase font-black tracking-widest"><tr><th class="p-6">Nama Pegawai</th><th class="p-6">Status Kepegawaian</th><th class="p-6 text-center">Tindakan</th></tr></thead>
@@ -263,7 +253,6 @@
                     </div>
                 </section>
 
-                <!-- PENGATURAN KOP SURAT (Admin Only) -->
                 <section id="tab-kop" class="hidden space-y-6 animate-fadeIn">
                     <div class="bg-white p-8 md:p-12 rounded-[3rem] shadow-xl border border-slate-100 max-w-2xl mx-auto">
                         <h3 class="text-2xl font-black mb-8 flex items-center gap-3"><i class="fas fa-file-invoice text-indigo-600"></i> Pengaturan Kop Surat</h3>
@@ -277,30 +266,29 @@
                             <input type="text" id="kop-sekolah" placeholder="Nama Sekolah" class="w-full p-4 bg-slate-50 border rounded-2xl text-sm">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <input type="text" id="kop-kecamatan" placeholder="Kecamatan" class="w-full p-4 bg-slate-50 border rounded-2xl text-sm">
-                                <input type="text" id="kop-alamat" placeholder="Alamat Lengkap" class="w-full p-4 bg-slate-50 border rounded-2xl text-sm">
+                                <input type="text" id="kop-alamat" placeholder="Alamat Lengkap (cth: Tanah Keras - Gurun Panjang Barat, Kode Pos : 25652)" class="w-full p-4 bg-slate-50 border rounded-2xl text-sm">
                             </div>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <input type="text" id="kop-email" placeholder="Email Sekolah" class="w-full p-4 bg-slate-50 border rounded-2xl text-sm">
                                 <input type="text" id="kop-website" placeholder="Website Sekolah" class="w-full p-4 bg-slate-50 border rounded-2xl text-sm">
                             </div>
-                            <button type="submit" class="w-full py-4 bg-indigo-600 text-white rounded-2xl font-black shadow-lg">Simpan Pengaturan Kop</button>
+                            <button type="submit" class="w-full py-4 bg-indigo-600 text-white rounded-2xl font-black shadow-lg">Simpan Kop</button>
                         </form>
                     </div>
                 </section>
 
-                <!-- PENANGGUNG JAWAB (Admin Only) -->
                 <section id="tab-pic" class="hidden space-y-6 animate-fadeIn">
                     <div class="bg-white p-8 md:p-12 rounded-[3rem] shadow-xl border border-slate-100 max-w-2xl mx-auto">
                         <h3 class="text-2xl font-black mb-8 flex items-center gap-3"><i class="fas fa-user-shield text-indigo-600"></i> Penanggung Jawab Laporan</h3>
                         <form onsubmit="handleSavePIC(event)" class="space-y-8">
                             <div class="space-y-4">
-                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2">Pengawas Sekolah</label>
-                                <input type="text" id="pic-pengawas-nama" placeholder="Nama Lengkap Pengawas" class="w-full p-4 bg-slate-50 border rounded-2xl text-sm">
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2">Pengawas</label>
+                                <input type="text" id="pic-pengawas-nama" placeholder="Nama Pengawas" class="w-full p-4 bg-slate-50 border rounded-2xl text-sm">
                                 <input type="text" id="pic-pengawas-nip" placeholder="NIP Pengawas" class="w-full p-4 bg-slate-50 border rounded-2xl text-sm">
                             </div>
                             <div class="space-y-4">
                                 <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2">Kepala Sekolah</label>
-                                <input type="text" id="pic-kepsek-nama" placeholder="Nama Lengkap Kepala Sekolah" class="w-full p-4 bg-slate-50 border rounded-2xl text-sm">
+                                <input type="text" id="pic-kepsek-nama" placeholder="Nama Kepala Sekolah" class="w-full p-4 bg-slate-50 border rounded-2xl text-sm">
                                 <input type="text" id="pic-kepsek-nip" placeholder="NIP Kepala Sekolah" class="w-full p-4 bg-slate-50 border rounded-2xl text-sm">
                             </div>
                             <button type="submit" class="w-full py-4 bg-indigo-600 text-white rounded-2xl font-black shadow-lg">Simpan Penanggung Jawab</button>
@@ -308,145 +296,106 @@
                     </div>
                 </section>
 
-                <!-- PROFIL -->
                 <section id="tab-profile" class="hidden space-y-6 animate-fadeIn">
                     <div class="bg-white p-8 md:p-12 rounded-[3rem] shadow-xl border border-slate-100 text-center max-w-md mx-auto space-y-6">
-                        <div class="relative inline-block">
-                            <img id="profile-avatar" src="" class="w-32 h-32 mx-auto rounded-full object-cover shadow-2xl border-4 border-white ring-4 ring-indigo-50">
-                            <div class="absolute bottom-2 right-2 w-6 h-6 bg-green-500 border-4 border-white rounded-full"></div>
-                        </div>
+                        <img id="profile-avatar" src="" class="w-32 h-32 mx-auto rounded-full object-cover shadow-2xl border-4 border-white">
                         <div class="space-y-1">
                             <h3 id="profile-name" class="text-2xl font-black text-slate-800">-</h3>
-                            <p id="profile-role-text" class="text-indigo-600 font-bold text-sm tracking-wide uppercase">-</p>
+                            <p id="profile-role-text" class="text-indigo-600 font-bold text-sm uppercase tracking-wide">-</p>
                         </div>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="bg-slate-50 p-4 rounded-3xl"><p class="text-[9px] font-black text-slate-400 uppercase mb-1">NIP/NUPT</p><p id="profile-nip" class="text-sm font-bold text-slate-700">-</p></div>
-                            <div class="bg-slate-50 p-4 rounded-3xl"><p class="text-[9px] font-black text-slate-400 uppercase mb-1">Status</p><p id="profile-status" class="text-sm font-bold text-slate-700">-</p></div>
-                        </div>
-                        <button onclick="handleLogout()" class="w-full py-4 text-red-600 font-bold bg-white border border-red-100 rounded-3xl hover:bg-red-50 transition-all flex items-center justify-center gap-3"><i class="fas fa-sign-out-alt"></i> Keluar Aplikasi</button>
+                        <button onclick="handleLogout()" class="w-full py-4 text-red-600 font-bold bg-white border border-red-100 rounded-3xl flex items-center justify-center gap-3"><i class="fas fa-sign-out-alt"></i> Keluar</button>
                     </div>
                 </section>
             </main>
 
-            <!-- BOTTOM NAV (MOBILE ONLY) -->
-            <nav id="bottom-nav" class="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t flex justify-around p-3 z-50 shadow-inner">
-                <button id="nav-btn-dashboard" onclick="switchTab('dashboard')" class="flex flex-col items-center gap-1 text-slate-400 transition-all"><i class="fas fa-th-large text-xl"></i><span class="text-[9px] font-bold">Home</span></button>
-                <button id="nav-btn-attendance" onclick="switchTab('attendance')" class="flex flex-col items-center gap-1 text-slate-400 transition-all"><i class="fas fa-camera text-xl"></i><span class="text-[9px] font-bold">Absen</span></button>
-                <button id="nav-btn-history" onclick="switchTab('history')" class="flex flex-col items-center gap-1 text-slate-400 transition-all"><i class="fas fa-history text-xl"></i><span class="text-[9px] font-bold">Riwayat</span></button>
-                <button id="nav-btn-profile" onclick="switchTab('profile')" class="flex flex-col items-center gap-1 text-slate-400 transition-all"><i class="fas fa-user text-xl"></i><span class="text-[9px] font-bold">Profil</span></button>
+            <nav id="bottom-nav" class="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t flex justify-around p-3 z-50">
+                <button id="nav-btn-dashboard" onclick="switchTab('dashboard')" class="flex flex-col items-center gap-1 text-slate-400"><i class="fas fa-th-large text-xl"></i><span class="text-[9px] font-bold">Home</span></button>
+                <button id="nav-btn-attendance" onclick="switchTab('attendance')" class="flex flex-col items-center gap-1 text-slate-400"><i class="fas fa-camera text-xl"></i><span class="text-[9px] font-bold">Absen</span></button>
+                <button id="nav-btn-history" onclick="switchTab('history')" class="flex flex-col items-center gap-1 text-slate-400"><i class="fas fa-history text-xl"></i><span class="text-[9px] font-bold">Riwayat</span></button>
+                <button id="nav-btn-profile" onclick="switchTab('profile')" class="flex flex-col items-center gap-1 text-slate-400"><i class="fas fa-user text-xl"></i><span class="text-[9px] font-bold">Profil</span></button>
             </nav>
         </div>
     </div>
 
-    <!-- MODAL PRESENSI MANUAL (ADMIN) -->
+    <!-- MODAL PRESENSI MANUAL -->
     <div id="modal-manual-absen" class="fixed inset-0 bg-black/60 z-[300] hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white rounded-[2.5rem] p-8 w-full max-w-md space-y-6 shadow-2xl animate-scaleIn">
-            <h4 class="text-xl font-black border-b pb-4">Presensi Manual (Admin)</h4>
-            <form id="form-manual-absen" onsubmit="handleManualAbsenSubmit(event)" class="space-y-4">
-                <div class="space-y-1">
-                    <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-2">Pilih Pegawai</label>
-                    <select id="manual-select-user" required class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition appearance-none"></select>
-                </div>
-                <div class="space-y-1">
-                    <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-2">Hari & Tanggal</label>
-                    <input type="text" id="manual-date" required placeholder="Contoh: Senin, 01 Jan 2024" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition">
-                </div>
+            <h4 class="text-xl font-black border-b pb-4">Presensi Manual</h4>
+            <form onsubmit="handleManualAbsenSubmit(event)" class="space-y-4">
+                <select id="manual-select-user" required class="w-full p-4 bg-slate-50 border rounded-2xl text-sm outline-none"></select>
+                <input type="text" id="manual-date" required placeholder="Senin, 01 Jan 2024" class="w-full p-4 bg-slate-50 border rounded-2xl text-sm">
                 <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="text-[9px] font-black text-slate-400 uppercase ml-2">Jam Masuk</label>
-                        <input type="text" id="manual-in" placeholder="07:30" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition">
-                    </div>
-                    <div>
-                        <label class="text-[9px] font-black text-slate-400 uppercase ml-2">Jam Pulang</label>
-                        <input type="text" id="manual-out" placeholder="14:00" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition">
-                    </div>
+                    <input type="text" id="manual-in" placeholder="07:30" class="p-4 bg-slate-50 border rounded-2xl text-sm">
+                    <input type="text" id="manual-out" placeholder="14:00" class="p-4 bg-slate-50 border rounded-2xl text-sm">
                 </div>
-                <div class="space-y-1">
-                    <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-2">Status</label>
-                    <select id="manual-status" required class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition">
-                        <option value="Hadir">Hadir</option>
-                        <option value="Terlambat">Terlambat</option>
-                        <option value="Izin">Izin</option>
-                        <option value="Sakit">Sakit</option>
-                    </select>
-                </div>
+                <select id="manual-status" required class="w-full p-4 bg-slate-50 border rounded-2xl text-sm">
+                    <option value="Hadir">Hadir</option>
+                    <option value="Terlambat">Terlambat</option>
+                    <option value="Izin">Izin</option>
+                    <option value="Sakit">Sakit</option>
+                </select>
                 <div class="flex gap-4 pt-4">
-                    <button type="button" onclick="closeManualAbsenModal()" class="flex-1 py-4 bg-slate-100 rounded-2xl font-bold text-slate-500 transition hover:bg-slate-200">Batal</button>
-                    <button type="submit" class="flex-1 py-4 bg-emerald-600 text-white rounded-2xl font-bold shadow-lg shadow-emerald-100 hover:bg-emerald-700 transition">Simpan</button>
+                    <button type="button" onclick="closeManualAbsenModal()" class="flex-1 py-4 bg-slate-100 rounded-2xl font-bold">Batal</button>
+                    <button type="submit" class="flex-1 py-4 bg-emerald-600 text-white rounded-2xl font-bold">Simpan</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- MODAL EDIT DATA PRESENSI -->
+    <!-- MODAL EDIT DATA -->
     <div id="modal-edit-attendance" class="fixed inset-0 bg-black/60 z-[300] hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white rounded-[2.5rem] p-8 w-full max-w-md space-y-6 shadow-2xl animate-scaleIn">
-            <h4 class="text-xl font-black border-b pb-4">Koreksi Data Presensi</h4>
+            <h4 class="text-xl font-black border-b pb-4">Koreksi Data</h4>
             <form onsubmit="handleEditAttendanceSubmit(event)" class="space-y-4">
                 <input type="hidden" id="edit-index">
-                <input type="text" id="edit-date" required placeholder="Hari, Tanggal" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition">
+                <input type="text" id="edit-date" required class="w-full p-4 bg-slate-50 border rounded-2xl text-sm">
                 <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="text-[9px] font-black text-slate-400 uppercase ml-2">Jam Masuk</label>
-                        <input type="text" id="edit-in" required placeholder="07:00" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition">
-                    </div>
-                    <div>
-                        <label class="text-[9px] font-black text-slate-400 uppercase ml-2">Jam Pulang</label>
-                        <input type="text" id="edit-out" required placeholder="-" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition">
-                    </div>
+                    <input type="text" id="edit-in" placeholder="Jam Masuk" class="p-4 bg-slate-50 border rounded-2xl text-sm">
+                    <input type="text" id="edit-out" placeholder="Jam Pulang" class="p-4 bg-slate-50 border rounded-2xl text-sm">
                 </div>
-                <select id="edit-status" required class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition">
+                <select id="edit-status" required class="w-full p-4 bg-slate-50 border rounded-2xl text-sm">
                     <option value="Hadir">Hadir</option><option value="Terlambat">Terlambat</option><option value="Izin">Izin</option><option value="Sakit">Sakit</option>
                 </select>
                 <div class="flex gap-4 pt-4">
-                    <button type="button" onclick="closeEditAttendanceModal()" class="flex-1 py-4 bg-slate-100 rounded-2xl font-bold text-slate-500 transition hover:bg-slate-200">Batal</button>
-                    <button type="submit" class="flex-1 py-4 bg-indigo-600 text-white rounded-2xl font-bold shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition">Update</button>
+                    <button type="button" onclick="closeEditAttendanceModal()" class="flex-1 py-4 bg-slate-100 rounded-2xl font-bold">Batal</button>
+                    <button type="submit" class="flex-1 py-4 bg-indigo-600 text-white rounded-2xl font-bold">Update</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- MODAL TAMBAH PEGAWAI (WIDE VERSION) -->
+    <!-- MODAL TAMBAH PEGAWAI -->
     <div id="modal-add-employee" class="fixed inset-0 bg-black/60 z-[200] hidden flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-white rounded-[2.5rem] p-8 w-full max-w-xl max-h-[90vh] overflow-y-auto space-y-6 shadow-2xl animate-scaleIn">
-            <div class="flex items-center justify-between border-b pb-4">
-                <h4 class="text-xl font-black text-slate-800">Pendaftaran Pegawai Baru</h4>
-                <button onclick="closeAddEmployeeModal()" class="w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center text-slate-400 hover:text-red-500 transition"><i class="fas fa-times"></i></button>
-            </div>
-            <form onsubmit="addEmployee(event)" class="space-y-5">
-                <div class="space-y-1">
-                    <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-2">Informasi Umum</label>
-                    <input type="text" id="new-name" required placeholder="Nama Lengkap Beserta Gelar" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+        <div class="bg-white rounded-[2.5rem] p-8 w-full max-w-xl space-y-6 shadow-2xl animate-scaleIn">
+            <h4 class="text-xl font-black border-b pb-4">Tambah Pegawai</h4>
+            <form onsubmit="addEmployee(event)" class="space-y-4">
+                <input type="text" id="new-name" required placeholder="Nama Lengkap" class="w-full p-4 bg-slate-50 border rounded-2xl text-sm">
+                <div class="grid grid-cols-2 gap-4">
+                    <input type="text" id="new-nip" required placeholder="NIP / NUPT" class="p-4 bg-slate-50 border rounded-2xl text-sm" oninput="document.getElementById('new-user').value=this.value">
+                    <input type="text" id="new-jabatan" required placeholder="Jabatan" class="p-4 bg-slate-50 border rounded-2xl text-sm">
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <input type="text" id="new-nip" required placeholder="NIP / NUPT" class="p-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm" oninput="document.getElementById('new-user').value=this.value">
-                    <input type="text" id="new-jabatan" required placeholder="Jabatan (Contoh: Guru Kelas IV)" class="p-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm">
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <select id="new-status" required class="p-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm">
-                        <option value="PNS">PNS</option><option value="PPPK">PPPK</option><option value="PPPK Paruh Waktu">PPPK Paruh Waktu</option><option value="Honor">Honor</option>
+                <div class="grid grid-cols-2 gap-4">
+                    <select id="new-status" required class="p-4 bg-slate-50 border rounded-2xl text-sm">
+                        <option value="PNS">PNS</option><option value="PPPK">PPPK</option><option value="Honor">Honor</option>
                     </select>
-                    <input type="text" id="new-avatar-url" placeholder="URL Foto Pegawai (Direct Link)" class="p-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm">
+                    <input type="text" id="new-avatar-url" placeholder="URL Foto" class="p-4 bg-slate-50 border rounded-2xl text-sm">
                 </div>
-                <div class="p-6 bg-indigo-50 rounded-[2rem] space-y-3">
-                    <p class="text-[9px] font-black text-indigo-400 uppercase tracking-widest ml-2">Data Autentikasi</p>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <input type="text" id="new-user" required placeholder="Username" class="p-4 bg-white border border-slate-100 rounded-2xl text-sm">
-                        <input type="password" id="new-pass" required placeholder="Password" class="p-4 bg-white border border-slate-100 rounded-2xl text-sm">
-                    </div>
+                <div class="grid grid-cols-2 gap-4 p-4 bg-indigo-50 rounded-2xl">
+                    <input type="text" id="new-user" required placeholder="Username" class="p-3 bg-white border rounded-xl text-sm">
+                    <input type="password" id="new-pass" required placeholder="Password" class="p-3 bg-white border rounded-xl text-sm">
                 </div>
-                <button type="submit" class="w-full py-5 bg-indigo-600 text-white rounded-3xl font-black shadow-xl shadow-indigo-100 hover:bg-indigo-700 transition-all hover:-translate-y-1">Daftarkan Pegawai</button>
+                <button type="submit" class="w-full py-5 bg-indigo-600 text-white rounded-3xl font-black">Simpan Pegawai</button>
+                <button type="button" onclick="closeAddEmployeeModal()" class="w-full text-slate-400 font-bold text-sm">Batal</button>
             </form>
         </div>
     </div>
 
-    <!-- MODAL ALERT (CENTRALIZED) -->
     <div id="modal-alert" class="fixed inset-0 bg-black/60 z-[400] hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white rounded-[2rem] p-8 w-72 text-center space-y-4 shadow-2xl animate-scaleIn">
             <div id="modal-icon" class="text-5xl text-green-500"><i class="fas fa-check-circle"></i></div>
             <h4 id="modal-title" class="text-lg font-black">Berhasil</h4>
-            <p id="modal-message" class="text-slate-500 text-xs">Aksi selesai dilakukan.</p>
-            <button onclick="closeModal()" class="w-full py-3 bg-indigo-600 text-white rounded-xl font-bold shadow-lg shadow-indigo-100 transition">Mengerti</button>
+            <p id="modal-message" class="text-slate-500 text-xs">Aksi selesai.</p>
+            <button onclick="closeModal()" class="w-full py-3 bg-indigo-600 text-white rounded-xl font-bold shadow-lg">Mengerti</button>
         </div>
     </div>
 
@@ -455,9 +404,7 @@
         const OFFICE_LAT = -1.2942335988142928, OFFICE_LNG = 100.52147339164873, MAX_DIST = 1000;
         let users = [], attendanceData = [], picData = {}, kopData = {}, currentUser = null;
 
-        const DEFAULT_ADMIN = { 
-            id: 1, name: 'Admin', user: 'admin', pass: '12345', role: 'admin', nip: 'ADM', jabatan: 'Administrator', statusPegawai: 'Admin', avatar: 'https://iili.io/Bra9Tb4.png' 
-        };
+        const DEFAULT_ADMIN = { id: 1, name: 'Admin', user: 'admin', pass: '12345', role: 'admin', nip: 'ADM', jabatan: 'Administrator', statusPegawai: 'Admin', avatar: 'https://iili.io/Bra9Tb4.png' };
 
         function formatTimeDisplay(val) {
             if (!val || val === '-') return '-';
@@ -469,9 +416,8 @@
         async function syncWithCloud() {
             if (!SCRIPT_URL) return;
             document.getElementById('loading-overlay').classList.remove('hidden');
-            try {
-                await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ type: "sync_all", users, history: attendanceData, pic: picData, kop: kopData }) });
-            } finally { document.getElementById('loading-overlay').classList.add('hidden'); }
+            try { await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ type: "sync_all", users, history: attendanceData, pic: picData, kop: kopData }) }); } 
+            finally { document.getElementById('loading-overlay').classList.add('hidden'); }
         }
 
         async function loadFromCloud() {
@@ -481,23 +427,13 @@
                 const res = await fetch(SCRIPT_URL);
                 const data = await res.json();
                 users = (data.users && data.users.length) ? data.users : [DEFAULT_ADMIN];
-                users = users.map(u => u.user === 'admin' ? { ...u, avatar: DEFAULT_ADMIN.avatar } : u);
                 if (!users.some(u => u.user === 'admin')) users.push(DEFAULT_ADMIN);
-                
                 attendanceData = (data.history || []).map(i => ({ ...i, in: formatTimeDisplay(i.in), out: formatTimeDisplay(i.out) }));
                 picData = data.pic || {}; kopData = data.kop || {};
-                
-                loadKopDataUI();
-                loadPICDataUI();
-                renderHistory(); 
-                renderEmployeeList(); 
-                populateLoginUsernames(); 
+                loadKopDataUI(); loadPICDataUI(); renderHistory(); renderEmployeeList(); populateLoginUsernames(); 
                 if(currentUser) updateAttendanceStatus();
-            } catch(e) {
-                console.error("Cloud Error:", e);
-            } finally { 
-                document.getElementById('loading-overlay').classList.add('hidden'); 
-            }
+            } catch(e) { console.error("Cloud Error:", e); } 
+            finally { document.getElementById('loading-overlay').classList.add('hidden'); }
         }
 
         function populateLoginUsernames() {
@@ -515,7 +451,6 @@
             document.getElementById('form-pegawai').classList.toggle('hidden', !isP);
             document.getElementById('form-admin').classList.toggle('hidden', isP);
             document.getElementById('tab-login-pegawai').className = isP ? 'flex-1 py-4 text-sm font-bold border-b-2 border-indigo-600 text-indigo-600' : 'flex-1 py-4 text-sm font-bold border-b-2 border-transparent text-slate-400';
-            
             const adminTab = document.getElementById('tab-login-admin');
             if (adminTab && !adminTab.classList.contains('hidden')) {
                 adminTab.className = !isP ? 'flex-1 py-4 text-sm font-bold border-b-2 border-purple-600 text-purple-600' : 'flex-1 py-4 text-sm font-bold border-b-2 border-transparent text-slate-400';
@@ -527,15 +462,8 @@
             const u = role === 'admin' ? document.getElementById('a-user').value : document.getElementById('p-user').value;
             const p = role === 'admin' ? document.getElementById('a-pass').value : document.getElementById('p-pass').value;
             const found = users.find(x => String(x.user).toLowerCase() === u.toLowerCase() && String(x.pass) === p && x.role === role);
-            if (found) { 
-                currentUser = found; 
-                initDashboard(); 
-                document.getElementById('login-page').classList.add('hidden'); 
-                document.getElementById('main-app').classList.remove('hidden'); 
-            } else {
-                document.getElementById('login-error').classList.remove('hidden');
-                setTimeout(() => document.getElementById('login-error').classList.add('hidden'), 3000);
-            }
+            if (found) { currentUser = found; initDashboard(); document.getElementById('login-page').classList.add('hidden'); document.getElementById('main-app').classList.remove('hidden'); } 
+            else { document.getElementById('login-error').classList.remove('hidden'); setTimeout(() => document.getElementById('login-error').classList.add('hidden'), 3000); }
         }
 
         function initDashboard() {
@@ -543,11 +471,7 @@
             document.getElementById('mobile-display-name').innerText = name;
             document.getElementById('display-name').innerText = name;
             document.getElementById('profile-name').innerText = name;
-            document.getElementById('profile-nip').innerText = currentUser.nip || '-';
-            document.getElementById('profile-status').innerText = currentUser.statusPegawai || '-';
             document.getElementById('profile-role-text').innerText = currentUser.jabatan || '-';
-            document.getElementById('user-role-label').innerText = currentUser.role === 'admin' ? 'Administrator' : 'Pegawai Tetap';
-            
             const avatarUrl = currentUser.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random&color=fff&bold=true`;
             document.getElementById('side-avatar').src = avatarUrl;
             document.getElementById('header-avatar').src = avatarUrl;
@@ -556,13 +480,10 @@
             
             const isAdmin = currentUser.role === 'admin';
             ['side-manage', 'side-pic', 'side-kop', 'side-sync', 'admin-history-filters', 'admin-manual-area'].forEach(id => {
-                const el = document.getElementById(id);
-                if(el) el.classList.toggle('hidden', !isAdmin);
+                const el = document.getElementById(id); if(el) el.classList.toggle('hidden', !isAdmin);
             });
-
             switchTab(isAdmin ? 'dashboard' : 'attendance');
-            renderHistory(); 
-            updateAttendanceStatus();
+            renderHistory(); updateAttendanceStatus();
         }
 
         function updateAttendanceStatus() {
@@ -570,7 +491,6 @@
             const today = new Date().toLocaleDateString('id-ID', {weekday: 'long', day: '2-digit', month: 'long', year: 'numeric'});
             const rec = attendanceData.find(x => x.username === currentUser.user && x.date === today);
             const btnIn = document.getElementById('btn-in'), btnOut = document.getElementById('btn-out'), label = document.getElementById('label-status');
-
             if (!rec) {
                 btnIn.disabled = false; btnIn.className = "px-8 py-6 rounded-3xl font-bold transition flex flex-col items-center justify-center gap-3 shadow-lg btn-active-in active:scale-95";
                 btnOut.disabled = true; btnOut.className = "px-8 py-6 rounded-3xl font-bold transition flex flex-col items-center justify-center gap-3 shadow-lg btn-disabled";
@@ -582,7 +502,7 @@
             } else {
                 btnIn.disabled = true; btnIn.className = "px-8 py-6 rounded-3xl font-bold transition flex flex-col items-center justify-center gap-3 shadow-lg btn-disabled";
                 btnOut.disabled = true; btnOut.className = "px-8 py-6 rounded-3xl font-bold transition flex flex-col items-center justify-center gap-3 shadow-lg btn-disabled";
-                label.innerText = "Presensi Hari Ini Selesai";
+                label.innerText = "Selesai Hari Ini";
             }
         }
 
@@ -590,62 +510,42 @@
             showModal("Verifikasi", "Mengakses GPS...");
             navigator.geolocation.getCurrentPosition(pos => {
                 const dist = getDistance(pos.coords.latitude, pos.coords.longitude, OFFICE_LAT, OFFICE_LNG);
-                if (dist > MAX_DIST) showModal("Gagal", "Lokasi Anda terlalu jauh dari sekolah.");
-                else doAbsen(type);
-            }, () => showModal("Error", "GPS Gagal! Aktifkan izin lokasi di browser."), {enableHighAccuracy: true});
+                if (dist > MAX_DIST) showModal("Gagal", "Terlalu jauh dari sekolah."); else doAbsen(type);
+            }, () => showModal("Error", "GPS Gagal! Aktifkan izin lokasi."), {enableHighAccuracy: true});
         }
 
         async function doAbsen(type) {
-            const now = new Date();
-            const time = now.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false}).replace(/\./g, ':');
+            const now = new Date(), time = now.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false}).replace(/\./g, ':');
             const date = now.toLocaleDateString('id-ID', {weekday: 'long', day: '2-digit', month: 'long', year: 'numeric'});
-            
             if (type === 'Masuk') {
                 const hr = now.getHours(), min = now.getMinutes();
                 let status = (hr > 7 || (hr == 7 && min > 15)) ? "Terlambat" : "Hadir";
-                attendanceData.unshift({ 
-                    name: currentUser.name, nip: currentUser.nip, statusPegawai: currentUser.statusPegawai, 
-                    jabatan: currentUser.jabatan, date, in: time, out: '-', status, username: currentUser.user 
-                });
+                attendanceData.unshift({ name: currentUser.name, nip: currentUser.nip, statusPegawai: currentUser.statusPegawai, jabatan: currentUser.jabatan, date, in: time, out: '-', status, username: currentUser.user });
             } else {
                 const rec = attendanceData.find(x => x.username === currentUser.user && x.date === date && x.out === '-');
                 if (rec) rec.out = time;
             }
-            await syncWithCloud(); renderHistory(); updateAttendanceStatus(); showModal("Sukses", "Data presensi berhasil terkirim.");
+            await syncWithCloud(); renderHistory(); updateAttendanceStatus(); showModal("Sukses", "Data terkirim.");
         }
 
         async function bulkFinishClockOut() {
             const time = new Date().toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false}).replace(/\./g, ':');
             let updated = false;
             attendanceData.forEach(i => { if (i.out === '-') { i.out = time; updated = true; } });
-            if (updated) { await syncWithCloud(); renderHistory(); showModal("Selesai", "Semua absen pulang otomatis berhasil diproses."); }
-            else showModal("Info", "Tidak ada data yang perlu diproses.");
+            if (updated) { await syncWithCloud(); renderHistory(); showModal("Selesai", "Semua sudah dipulangkan."); }
         }
 
         function switchTab(n) {
             ['dashboard', 'attendance', 'history', 'manage', 'kop', 'pic', 'profile'].forEach(t => {
-                const tab = document.getElementById('tab-' + t);
-                if (tab) tab.classList.add('hidden');
-                
-                const btnM = document.getElementById('nav-btn-' + t);
-                if (btnM) btnM.classList.replace('text-indigo-600', 'text-slate-400');
-                
-                const btnD = document.getElementById('side-' + t);
-                if (btnD) btnD.classList.remove('bg-indigo-600', 'shadow-lg');
+                const tab = document.getElementById('tab-' + t); if (tab) tab.classList.add('hidden');
+                const btnM = document.getElementById('nav-btn-' + t); if (btnM) btnM.classList.replace('text-indigo-600', 'text-slate-400');
+                const btnD = document.getElementById('side-' + t); if (btnD) btnD.classList.remove('bg-indigo-600', 'shadow-lg');
             });
-            
             document.getElementById('tab-' + n)?.classList.remove('hidden');
-            const btnNav = document.getElementById('nav-btn-' + n);
-            if(btnNav) btnNav.classList.replace('text-slate-400', 'text-indigo-600');
-            
-            const btnSide = document.getElementById('side-' + n);
-            if(btnSide) btnSide.classList.add('bg-indigo-600', 'shadow-lg');
-            
+            const btnNav = document.getElementById('nav-btn-' + n); if(btnNav) btnNav.classList.replace('text-slate-400', 'text-indigo-600');
+            const btnSide = document.getElementById('side-' + n); if(btnSide) btnSide.classList.add('bg-indigo-600', 'shadow-lg');
             const titleEl = document.getElementById('tab-header-title');
-            if(titleEl) {
-                const title = n.charAt(0).toUpperCase() + n.slice(1);
-                titleEl.innerText = title === 'Manage' ? 'Kelola Pegawai' : (title === 'Kop' ? 'Pengaturan Kop' : (title === 'Pic' ? 'Penanggung Jawab' : title));
-            }
+            if(titleEl) titleEl.innerText = n === 'manage' ? 'Kelola Pegawai' : n.charAt(0).toUpperCase() + n.slice(1);
         }
 
         function openEditAttendanceModal(idx) {
@@ -657,7 +557,6 @@
             document.getElementById('edit-status').value = i.status;
             document.getElementById('modal-edit-attendance').classList.remove('hidden');
         }
-
         function closeEditAttendanceModal() { document.getElementById('modal-edit-attendance').classList.add('hidden'); }
 
         async function handleEditAttendanceSubmit(e) {
@@ -667,52 +566,38 @@
             attendanceData[idx].in = document.getElementById('edit-in').value;
             attendanceData[idx].out = document.getElementById('edit-out').value;
             attendanceData[idx].status = document.getElementById('edit-status').value;
-            await syncWithCloud(); renderHistory(); closeEditAttendanceModal(); showModal("Terupdate", "Data presensi telah diperbaiki.");
+            await syncWithCloud(); renderHistory(); closeEditAttendanceModal(); showModal("Update", "Data diperbaiki.");
         }
 
         function openManualAbsenModal() {
             const select = document.getElementById('manual-select-user');
             select.innerHTML = '<option value="">-- Pilih Pegawai --</option>';
             users.filter(u => u.role === 'pegawai').forEach(emp => {
-                const opt = document.createElement('option');
-                opt.value = emp.user; opt.textContent = emp.name; select.appendChild(opt);
+                const opt = document.createElement('option'); opt.value = emp.user; opt.textContent = emp.name; select.appendChild(opt);
             });
             document.getElementById('modal-manual-absen').classList.remove('hidden');
         }
-
         function closeManualAbsenModal() { document.getElementById('modal-manual-absen').classList.add('hidden'); }
 
         async function handleManualAbsenSubmit(e) {
             e.preventDefault();
             const username = document.getElementById('manual-select-user').value;
-            const emp = users.find(u => u.user === username);
-            if (!emp) return;
-
+            const emp = users.find(u => u.user === username); if (!emp) return;
             attendanceData.unshift({ 
-                name: emp.name, 
-                nip: emp.nip, 
-                statusPegawai: emp.statusPegawai, 
-                jabatan: emp.jabatan, 
+                name: emp.name, nip: emp.nip, statusPegawai: emp.statusPegawai, jabatan: emp.jabatan, 
                 date: document.getElementById('manual-date').value, 
                 in: document.getElementById('manual-in').value || '-', 
                 out: document.getElementById('manual-out').value || '-', 
-                status: document.getElementById('manual-status').value, 
-                username: emp.user 
+                status: document.getElementById('manual-status').value, username: emp.user 
             });
-
-            await syncWithCloud();
-            renderHistory();
-            closeManualAbsenModal();
-            showModal("Berhasil", "Data presensi manual telah disimpan.");
+            await syncWithCloud(); renderHistory(); closeManualAbsenModal(); showModal("Berhasil", "Data disimpan.");
         }
 
         function renderHistory() {
-            const body = document.getElementById('history-body'); 
-            if(!body || !currentUser) return; // FIX: Menghindari error saat belum login
-
+            const body = document.getElementById('history-body'); if(!body || !currentUser) return;
             const isAdmin = currentUser.role === 'admin';
             const head = document.getElementById('history-header');
-            head.innerHTML = `<th class="p-6">Nama Pegawai</th><th class="p-6">Hari & Tgl</th><th class="p-6 text-center">MASUK</th><th class="p-6 text-center">PULANG</th><th class="p-6">Status</th>${isAdmin ? '<th class="p-6 text-center">Aksi</th>' : ''}`;
+            head.innerHTML = `<th class="p-6">Nama</th><th class="p-6">Tgl</th><th class="p-6 text-center">MASUK</th><th class="p-6 text-center">PULANG</th><th class="p-6">Keterangan</th>${isAdmin ? '<th class="p-6 text-center">Aksi</th>' : ''}`;
             
             let data = isAdmin ? attendanceData : attendanceData.filter(d => d.username === currentUser.user);
             const fN = document.getElementById('filter-name')?.value.toLowerCase() || '';
@@ -722,13 +607,16 @@
             
             body.innerHTML = data.map((i) => {
                 const gIdx = attendanceData.indexOf(i);
+                const displayStatus = i.status === 'Terlambat' ? 'Hadir / Terlambat' : i.status;
+                const statusColor = (i.status === 'Hadir' || i.status === 'Terlambat') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700';
+
                 return `<tr class="hover:bg-slate-50 transition">
-                    <td class="p-6"><span class="font-bold text-slate-800">${i.name}</span><br><span class="text-[10px] text-slate-400 font-bold">${i.nip}</span></td>
+                    <td class="p-6"><span class="font-bold text-slate-800">${i.name}</span></td>
                     <td class="p-6 text-xs text-slate-500">${i.date}</td>
-                    <td class="p-6 text-center"><span class="bg-indigo-50 text-indigo-700 px-3 py-1.5 rounded-lg font-mono font-bold text-xs border border-indigo-100">${i.in}</span></td>
-                    <td class="p-6 text-center"><span class="bg-orange-50 text-orange-700 px-3 py-1.5 rounded-lg font-mono font-bold text-xs border border-orange-100">${i.out}</span></td>
-                    <td class="p-6"><span class="px-3 py-1 rounded-full text-[10px] font-black uppercase ${i.status === 'Hadir' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">${i.status}</span></td>
-                    ${isAdmin ? `<td class="p-6 text-center"><div class="flex gap-4 justify-center"><button onclick="openEditAttendanceModal(${gIdx})" class="text-blue-500 hover:text-blue-700"><i class="fas fa-edit"></i></button><button onclick="deleteRow(${gIdx})" class="text-red-400 hover:text-red-600"><i class="fas fa-trash-alt"></i></button></div></td>` : ''}
+                    <td class="p-6 text-center"><span class="bg-indigo-50 text-indigo-700 px-3 py-1.5 rounded-lg font-mono font-bold text-xs">${i.in}</span></td>
+                    <td class="p-6 text-center"><span class="bg-orange-50 text-orange-700 px-3 py-1.5 rounded-lg font-mono font-bold text-xs">${i.out}</span></td>
+                    <td class="p-6"><span class="px-3 py-1 rounded-full text-[9px] font-black uppercase ${statusColor}">${displayStatus}</span></td>
+                    ${isAdmin ? `<td class="p-6 text-center"><button onclick="openEditAttendanceModal(${gIdx})" class="text-blue-500 mr-4"><i class="fas fa-edit"></i></button><button onclick="deleteRow(${gIdx})" class="text-red-400"><i class="fas fa-trash-alt"></i></button></td>` : ''}
                 </tr>`;
             }).join('');
             
@@ -739,72 +627,44 @@
 
         function renderEmployeeList() {
             const body = document.getElementById('employee-list-body'); if(!body) return;
-            body.innerHTML = users.filter(x => x.role === 'pegawai').map(emp => `<tr class="hover:bg-slate-50 transition">
-                <td class="p-6"><span class="font-bold text-slate-800">${emp.name}</span><br><span class="text-[10px] text-slate-400">${emp.nip}</span></td>
-                <td class="p-6"><span class="font-bold text-slate-500 text-xs">${emp.statusPegawai}</span></td>
-                <td class="p-6 text-center"><button onclick="deleteUser(${emp.id})" class="w-10 h-10 bg-red-50 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition"><i class="fas fa-trash-alt"></i></button></td>
-            </tr>`).join('');
+            body.innerHTML = users.filter(x => x.role === 'pegawai').map(emp => `<tr><td class="p-6 font-bold">${emp.name}</td><td class="p-6">${emp.statusPegawai}</td><td class="p-6 text-center"><button onclick="deleteUser(${emp.id})" class="text-red-500"><i class="fas fa-trash"></i></button></td></tr>`).join('');
         }
 
         async function addEmployee(e) {
             e.preventDefault();
             users.push({ id: Date.now(), name: document.getElementById('new-name').value, user: document.getElementById('new-user').value, pass: document.getElementById('new-pass').value, role: 'pegawai', nip: document.getElementById('new-nip').value, statusPegawai: document.getElementById('new-status').value, jabatan: document.getElementById('new-jabatan').value, avatar: document.getElementById('new-avatar-url').value });
-            await syncWithCloud(); renderEmployeeList(); populateLoginUsernames(); closeAddEmployeeModal(); showModal("Sukses", "Pegawai baru berhasil didaftarkan.");
+            await syncWithCloud(); renderEmployeeList(); populateLoginUsernames(); closeAddEmployeeModal(); showModal("Sukses", "Berhasil.");
         }
-
-        async function deleteUser(id) { if(confirm("Hapus pegawai ini?")) { users = users.filter(u => u.id !== id); await syncWithCloud(); renderEmployeeList(); } }
-        async function deleteRow(idx) { if(confirm("Hapus data absen ini?")) { attendanceData.splice(idx, 1); await syncWithCloud(); renderHistory(); } }
-        
+        function openAddEmployeeModal() { document.getElementById('modal-add-employee').classList.remove('hidden'); }
+        function closeAddEmployeeModal() { document.getElementById('modal-add-employee').classList.add('hidden'); }
+        async function deleteUser(id) { if(confirm("Hapus?")) { users = users.filter(u => u.id !== id); await syncWithCloud(); renderEmployeeList(); } }
+        async function deleteRow(idx) { if(confirm("Hapus?")) { attendanceData.splice(idx, 1); await syncWithCloud(); renderHistory(); } }
         function loadKopDataUI() { if(kopData) Object.keys(kopData).forEach(k => { const el = document.getElementById('kop-'+k); if(el) el.value = kopData[k]; }); }
         function loadPICDataUI() { if(picData) Object.keys(picData).forEach(k => { const el = document.getElementById('pic-'+k); if(el) el.value = picData[k]; }); }
-
-        async function handleSaveKop(e) {
-            e.preventDefault();
-            kopData = { logoKiri: document.getElementById('kop-logo-kiri').value, logoKanan: document.getElementById('kop-logo-kanan').value, pemda: document.getElementById('kop-pemda').value, dinas: document.getElementById('kop-dinas').value, sekolah: document.getElementById('kop-sekolah').value, kecamatan: document.getElementById('kop-kecamatan').value, alamat: document.getElementById('kop-alamat').value, email: document.getElementById('kop-email').value, website: document.getElementById('kop-website').value };
-            await syncWithCloud(); showModal("Berhasil", "Pengaturan kop surat disimpan.");
-        }
-
-        async function handleSavePIC(e) {
-            e.preventDefault();
-            picData = { pengawas: document.getElementById('pic-pengawas-nama').value, nipPengawas: document.getElementById('pic-pengawas-nip').value, kepsek: document.getElementById('pic-kepsek-nama').value, nipKepsek: document.getElementById('pic-kepsek-nip').value };
-            await syncWithCloud(); showModal("Berhasil", "Data penanggung jawab disimpan.");
-        }
+        async function handleSaveKop(e) { e.preventDefault(); kopData = { logoKiri: document.getElementById('kop-logo-kiri').value, logoKanan: document.getElementById('kop-logo-kanan').value, pemda: document.getElementById('kop-pemda').value, dinas: document.getElementById('kop-dinas').value, sekolah: document.getElementById('kop-sekolah').value, kecamatan: document.getElementById('kop-kecamatan').value, alamat: document.getElementById('kop-alamat').value, email: document.getElementById('kop-email').value, website: document.getElementById('kop-website').value }; await syncWithCloud(); showModal("Simpan", "Kop Surat Terupdate."); }
+        async function handleSavePIC(e) { e.preventDefault(); picData = { pengawas: document.getElementById('pic-pengawas-nama').value, nipPengawas: document.getElementById('pic-pengawas-nip').value, kepsek: document.getElementById('pic-kepsek-nama').value, nipKepsek: document.getElementById('pic-kepsek-nip').value }; await syncWithCloud(); showModal("Simpan", "PIC Terupdate."); }
 
         async function printReport() {
-            const elPlace = document.getElementById('print-place'); 
-            const elDate = document.getElementById('print-date-manual');
-            
-            const placeVal = elPlace?.value || kopData.kecamatan || '..........';
-            const dateVal = elDate?.value || new Date().toLocaleDateString('id-ID', {day:'2-digit', month:'long', year:'numeric'});
-
-            const frame = document.getElementById('print-frame');
-            const doc = frame.contentWindow.document;
-            const rows = attendanceData.map((d, idx) => `<tr><td style="border:1px solid black;padding:5px;text-align:center">${idx+1}</td><td style="border:1px solid black;padding:5px">${d.name}</td><td style="border:1px solid black;padding:5px">${d.nip}</td><td style="border:1px solid black;padding:5px">${d.statusPegawai}</td><td style="border:1px solid black;padding:5px">${d.jabatan}</td><td style="border:1px solid black;padding:5px">${d.date}</td><td style="border:1px solid black;padding:5px;text-align:center">${d.in}</td><td style="border:1px solid black;padding:5px;text-align:center">${d.out}</td><td style="border:1px solid black;padding:5px;text-align:center">${d.status}</td></tr>`).join('');
-            
-            const html = `<html><head><style>body { font-family: 'Times New Roman', serif; padding: 20px; background: white; } .kop-container { width: 100%; border-bottom: 4px double black; margin-bottom: 20px; padding-bottom: 5px; } .kop-table { width: 100%; border-collapse: collapse; } .kop-logo { width: 80px; height: auto; } .kop-text { text-align: center; } .kop-text h2 { margin: 0; font-size: 16px; text-transform: uppercase; font-weight: normal; } .kop-text h1 { margin: 0; font-size: 20px; text-transform: uppercase; font-weight: bold; } .kop-text p { margin: 2px 0; font-size: 10px; font-style: italic; } .report-title { text-align: center; margin-bottom: 20px; } .report-title h3 { margin: 0; font-size: 16px; font-weight: bold; text-decoration: underline; } table.data-table { width: 100%; border-collapse: collapse; font-size: 11px; } table.data-table th { border: 1px solid black; background: #f2f2f2; padding: 8px; text-transform: uppercase; } .footer-table { width: 100%; margin-top: 30px; border-collapse: collapse; } .footer-table td { width: 50%; text-align: center; font-size: 13px; vertical-align: top; } .signature-space { height: 70px; } .footnote { margin-top: 20px; font-style: italic; font-size: 10px; color: #555; border-top: 1px solid #ccc; padding-top: 5px; }</style></head><body><div class="kop-container"><table class="kop-table"><tr><td width="15%" align="left"><img src="${kopData.logoKiri || ''}" class="kop-logo" onerror="this.style.display='none'"></td><td class="kop-text"><h2>${kopData.pemda || 'Pemerintah Kabupaten/Kota'}</h2><h2>${kopData.dinas || 'Dinas Pendidikan dan Kebudayaan'}</h2><h1>${kopData.sekolah || 'UPT SDN 22 Tanah Keras'}</h1><h2>KECAMATAN ${kopData.kecamatan || '..........'}</h2><p>Alamat: ${kopData.alamat || '..........'} | Email: ${kopData.email || '..........'}</p><p>Website: ${kopData.website || '..........'}</p></td><td width="15%" align="right"><img src="${kopData.logoKanan || ''}" class="kop-logo" onerror="this.style.display='none'"></td></tr></table></div><div class="report-title"><h3>LAPORAN KEHADIRAN PEGAWAI</h3></div><table class="data-table"><thead><tr><th>No</th><th>Nama Lengkap</th><th>NIP/NUPT</th><th>Status</th><th>Jabatan</th><th>Hari & Tanggal</th><th>Masuk</th><th>Pulang</th><th>Ket</th></tr></thead><tbody>${rows || '<tr><td colspan="9" align="center" style="padding:20px">Belum ada data kehadiran</td></tr>'}</tbody></table><table class="footer-table"><tr><td>Mengetahui,<br>Pengawas Satuan Pendidikan<br><br><div class="signature-space"></div><b><u>${picData.pengawas || '( .......................................... )'}</u></b><br>NIP. ${picData.nipPengawas || '..........................................'}</td><td>${placeVal}, ${dateVal}<br>Kepala Sekolah<br><br><div class="signature-space"></div><b><u>${picData.kepsek || '( .......................................... )'}</u></b><br>NIP. ${picData.nipKepsek || '..........................................'}</td></tr></table><div class="footnote">Dicetak Melalui Aplikasi Presensi UPT SDN 22 Tanah Keras</div></body></html>`;
-            
-            doc.open(); doc.write(html); doc.close();
+            const pVal = document.getElementById('print-place')?.value || kopData.kecamatan || '...';
+            const dVal = document.getElementById('print-date-manual')?.value || new Date().toLocaleDateString('id-ID', {day:'2-digit', month:'long', year:'numeric'});
+            const rows = attendanceData.map((d, idx) => {
+                const statusDisplay = d.status === 'Terlambat' ? 'Hadir / Terlambat' : d.status;
+                return `<tr><td style="border:1px solid black;text-align:center">${idx+1}</td><td style="border:1px solid black">${d.name}</td><td style="border:1px solid black">${d.nip}</td><td style="border:1px solid black">${d.statusPegawai}</td><td style="border:1px solid black">${d.jabatan}</td><td style="border:1px solid black">${d.date}</td><td style="border:1px solid black;text-align:center">${d.in}</td><td style="border:1px solid black;text-align:center">${d.out}</td><td style="border:1px solid black;text-align:center">${statusDisplay}</td></tr>`;
+            }).join('');
+            const html = `<html><head><style>body { font-family: serif; padding: 20px; text-align: center; } table { width:100%; border-collapse:collapse; margin-top:20px; font-size:11px; text-align: left; } td, th { border:1px solid black; padding:5px; } .kop { border-bottom:4px double black; padding-bottom:10px; margin-bottom: 20px; } .kop h1 { margin: 0; font-size: 22px; } .kop h2 { margin: 0; font-size: 16px; font-weight: normal; } .kop p { margin: 2px 0; font-size: 11px; font-style: italic; } .footer { margin-top:30px; width:100%; } .footer td { border:none; text-align:center; }</style></head><body><div class="kop"><h2>${kopData.pemda || ''}</h2><h2>${kopData.dinas || ''}</h2><h1>${kopData.sekolah || 'SEKOLAH'}</h1><p>Alamat: ${kopData.alamat || '..........'}</p><p>Email: ${kopData.email || '..........'} | Website: ${kopData.website || '..........'}</p></div><h3 style="text-align:center; text-decoration: underline;">LAPORAN KEHADIRAN PEGAWAI</h3><table><thead><tr><th>No</th><th>Nama</th><th>NIP</th><th>Status</th><th>Jabatan</th><th>Tgl</th><th>Masuk</th><th>Pulang</th><th>Ket</th></tr></thead><tbody>${rows}</tbody></table><table class="footer"><tr><td>Mengetahui,<br>Pengawas Satuan Pendidikan<br><br><br><br><b><u>${picData.pengawas || '...'}</u></b><br>NIP. ${picData.nipPengawas || '...'}</td><td>${pVal}, ${dVal}<br>Kepala Sekolah<br><br><br><br><b><u>${picData.kepsek || '...'}</u></b><br>NIP. ${picData.nipKepsek || '...'}</td></tr></table></body></html>`;
+            const frame = document.getElementById('print-frame'); const doc = frame.contentWindow.document; doc.open(); doc.write(html); doc.close();
             setTimeout(() => { frame.contentWindow.focus(); frame.contentWindow.print(); }, 1000);
         }
 
-        function handleLogout() { window.isLoggingOut = true; showModal("Keluar", "Terima kasih atas dedikasinya hari ini!"); }
-        function showModal(t, m) { document.getElementById('modal-title').innerText=t; document.getElementById('modal-message').innerText=m; document.getElementById('modal-alert').classList.remove('hidden'); }
+        function handleLogout() { window.isLoggingOut = true; showModal("Keluar", "Terima kasih."); }
         function closeModal() { document.getElementById('modal-alert').classList.add('hidden'); if (window.isLoggingOut) location.reload(); }
         function getDistance(la1, lo1, la2, lo2) { const R = 6371e3; const dLa = (la2-la1)*Math.PI/180, dLo = (lo2-lo1)*Math.PI/180; const a = Math.sin(dLa/2)**2 + Math.cos(la1*Math.PI/180)*Math.cos(la2*Math.PI/180)*Math.sin(dLo/2)**2; return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)); }
 
         setInterval(() => {
-            const now = new Date();
-            const t = now.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false}).replace(/\./g, ':');
-            document.getElementById('clock-mobile').innerText = t;
-            if(document.getElementById('clock-desktop')) document.getElementById('clock-desktop').innerText = t;
-            
-            const hr = now.getHours();
-            let msg = hr < 11 ? "Selamat Pagi" : hr < 15 ? "Selamat Siang" : hr < 18 ? "Selamat Sore" : "Selamat Malam";
-            document.getElementById('mobile-greeting').innerText = msg + ",";
-            document.getElementById('desktop-greeting').innerText = msg + " di UPT SDN 22 Tanah Keras!";
-            
+            const now = new Date(), t = now.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false}).replace(/\./g, ':');
+            document.getElementById('clock-mobile').innerText = t; if(document.getElementById('clock-desktop')) document.getElementById('clock-desktop').innerText = t;
             const dateStr = now.toLocaleDateString('id-ID', {weekday: 'long', day: '2-digit', month: 'long', year: 'numeric'});
-            document.getElementById('date-mobile').innerText = now.toLocaleDateString('id-ID', {day: '2-digit', month: 'short', year: 'numeric'});
+            document.getElementById('date-mobile').innerText = now.toLocaleDateString('id-ID', {day: '2-digit', month: 'short'});
             if(document.getElementById('date-desktop')) document.getElementById('date-desktop').innerText = dateStr;
         }, 1000);
 
