@@ -12,14 +12,15 @@
     <meta name="apple-mobile-web-app-title" content="E-Presensi">
     <meta name="theme-color" content="#4f46e5">
     
-    <!-- Manifest sebagai Data URI -->
     <link rel="manifest" href='data:application/manifest+json,{"name":"E-Presensi","short_name":"E-Presensi","start_url":".","display":"standalone","background_color":"#f8fafc","theme_color":"#4f46e5","icons":[{"src":"https://iili.io/Bra9Tb4.png","sizes":"192x192","type":"image/png"},{"src":"https://iili.io/Bra9Tb4.png","sizes":"512x512","type":"image/png"}]}'>
 
-    <!-- FAVICON -->
     <link rel="icon" type="image/png" href="https://iili.io/Bra9Tb4.png">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- CHART JS UNTUK GRAFIK -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; -webkit-tap-highlight-color: transparent; }
@@ -122,14 +123,14 @@
                         <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Username Admin</label>
                         <div class="relative">
                             <i class="fas fa-user-shield absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                            <input type="text" id="a-user" placeholder="....." required class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none transition text-sm">
+                            <input type="text" id="a-user" placeholder="admin" required class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none transition text-sm">
                         </div>
                     </div>
                     <div class="space-y-1">
                         <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Kode Akses</label>
                         <div class="relative">
                             <i class="fas fa-key absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                            <input type="password" id="a-pass" placeholder="....." required class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none transition text-sm">
+                            <input type="password" id="a-pass" placeholder="12345" required class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none transition text-sm">
                         </div>
                     </div>
                     <button type="submit" class="w-full py-4 bg-purple-600 text-white rounded-xl font-bold shadow-lg shadow-purple-200 hover:bg-purple-700 transition-all active:scale-[0.98]">Login Admin</button>
@@ -187,18 +188,34 @@
             <main class="flex-1 p-5 md:p-8 space-y-8 overflow-y-auto pb-32 md:pb-8">
                 
                 <section id="tab-dashboard" class="space-y-8 animate-fadeIn">
+                    <!-- KOTAK STATISTIK WARNA BARU -->
                     <div class="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
-                        <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex items-center gap-5">
-                            <div class="w-14 h-14 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center text-2xl"><i class="fas fa-user-check"></i></div>
-                            <div><p class="text-xs text-slate-400 uppercase font-bold tracking-widest">Hadir</p><p class="text-2xl font-black" id="stats-hadir">0</p></div>
+                        <div class="bg-emerald-600 p-6 rounded-3xl shadow-lg shadow-emerald-100 flex items-center gap-5 text-white">
+                            <div class="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center text-2xl"><i class="fas fa-user-check"></i></div>
+                            <div><p class="text-xs opacity-80 uppercase font-bold tracking-widest">Hadir</p><p class="text-2xl font-black" id="stats-hadir">0</p></div>
                         </div>
-                        <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex items-center gap-5">
-                            <div class="w-14 h-14 bg-orange-50 text-orange-600 rounded-2xl flex items-center justify-center text-2xl"><i class="fas fa-user-clock"></i></div>
-                            <div><p class="text-xs text-slate-400 uppercase font-bold tracking-widest">Telat</p><p class="text-2xl font-black" id="stats-late">0</p></div>
+                        <div class="bg-amber-400 p-6 rounded-3xl shadow-lg shadow-amber-100 flex items-center gap-5 text-white">
+                            <div class="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center text-2xl"><i class="fas fa-user-clock"></i></div>
+                            <div><p class="text-xs opacity-80 uppercase font-bold tracking-widest">Telat</p><p class="text-2xl font-black" id="stats-late">0</p></div>
                         </div>
-                        <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex items-center gap-5 col-span-2 md:col-span-1">
-                            <div class="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-2xl"><i class="fas fa-envelope-open-text"></i></div>
-                            <div><p class="text-xs text-slate-400 uppercase font-bold tracking-widest">Izin/Sakit</p><p class="text-2xl font-black" id="stats-izin">0</p></div>
+                        <div class="bg-rose-500 p-6 rounded-3xl shadow-lg shadow-rose-100 flex items-center gap-5 text-white col-span-2 md:col-span-1">
+                            <div class="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center text-2xl"><i class="fas fa-envelope-open-text"></i></div>
+                            <div><p class="text-xs opacity-80 uppercase font-bold tracking-widest">Izin/Sakit</p><p class="text-2xl font-black" id="stats-izin">0</p></div>
+                        </div>
+                    </div>
+
+                    <!-- GRAFIK ABSENSI (ADMIN ONLY) -->
+                    <div id="admin-chart-container" class="hidden bg-white p-6 md:p-8 rounded-[2.5rem] shadow-sm border border-slate-100 space-y-6">
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-black text-lg text-slate-800">Tren Kehadiran Mingguan</h3>
+                            <div class="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> Hadir</span>
+                                <span class="flex items-center gap-1 ml-2"><span class="w-2 h-2 rounded-full bg-amber-400"></span> Telat</span>
+                                <span class="flex items-center gap-1 ml-2"><span class="w-2 h-2 rounded-full bg-rose-500"></span> Izin</span>
+                            </div>
+                        </div>
+                        <div class="relative h-[250px] w-full">
+                            <canvas id="attendanceChart"></canvas>
                         </div>
                     </div>
                 </section>
@@ -207,7 +224,7 @@
                     <div class="bg-white p-8 md:p-12 rounded-[2.5rem] shadow-xl border border-slate-100 text-center space-y-8 max-w-2xl mx-auto">
                         <div class="bg-amber-50 border border-amber-100 p-5 rounded-3xl text-left flex gap-4">
                             <i class="fas fa-info-circle text-amber-500 text-xl"></i>
-                            <p class="text-xs md:text-sm font-medium text-amber-800 leading-relaxed"><span class="block font-bold mb-1">Informasi Keterlambatan:</span>Batas absen masuk tepat waktu adalah pukul <b>07.15 WIB, Bila Ada Izin Dinas Luar Hubungi Admin.</b>.</p>
+                            <p class="text-xs md:text-sm font-medium text-amber-800 leading-relaxed"><span class="block font-bold mb-1">Informasi Keterlambatan:</span>Batas absen masuk tepat waktu adalah pukul <b>07.15 WIB. Silakan Hubungi Admin Bila Izin dan Dinas Luar.</b>.</p>
                         </div>
                         <div class="space-y-2">
                             <h3 class="text-3xl font-black text-slate-800">Presensi Digital</h3>
@@ -266,7 +283,7 @@
                 <section id="tab-kop" class="hidden space-y-6 animate-fadeIn">
                     <div class="bg-white p-8 md:p-12 rounded-[3rem] shadow-xl border border-slate-100 max-w-2xl mx-auto">
                         <h3 class="text-2xl font-black mb-8 flex items-center gap-3"><i class="fas fa-file-invoice text-indigo-600"></i> Pengaturan Kop Surat</h3>
-                        <form onsubmit="handleSaveKop(event)" class="space-y-4">
+                        <form id="form-kop" onsubmit="handleSaveKop(event)" class="space-y-4">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <input type="text" id="kop-logo-kiri" placeholder="URL Logo Kiri" class="w-full p-4 bg-slate-50 border rounded-2xl text-sm">
                                 <input type="text" id="kop-logo-kanan" placeholder="URL Logo Kanan" class="w-full p-4 bg-slate-50 border rounded-2xl text-sm">
@@ -336,52 +353,43 @@
 
     <!-- MODAL PRESENSI MANUAL -->
     <div id="modal-manual-absen" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center p-4 z-[300]">
-        <div class="bg-white rounded-3xl p-8 w-full max-w-md shadow-2xl">
+        <div class="bg-white rounded-3xl p-8 w-full max-w-md shadow-2xl animate-scaleIn">
             <h4 class="text-xl font-black border-b pb-4 mb-4">Input Presensi Manual</h4>
             <form id="form-manual-input" onsubmit="handleManualAbsenSubmit(event)" class="space-y-4">
-                <select id="manual-select-user" required class="w-full p-3 bg-slate-50 border rounded-xl text-sm"></select>
-                <input type="text" id="manual-date" required placeholder="Senin, 11 Mei 2025" class="w-full p-3 bg-slate-50 border rounded-xl text-sm">
-                <div class="grid grid-cols-2 gap-4">
-                    <input type="text" id="manual-in" placeholder="Masuk (07:00)" class="p-3 bg-slate-50 border rounded-xl text-sm">
-                    <input type="text" id="manual-out" placeholder="Pulang (14:00)" class="p-3 bg-slate-50 border rounded-xl text-sm">
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Pilih Pegawai</label>
+                    <select id="manual-select-user" required class="w-full p-3 bg-slate-50 border rounded-xl text-sm appearance-none outline-none"></select>
                 </div>
-                <!-- Dropdown Status -->
-                <select id="manual-status" onchange="toggleManualKeterangan()" required class="w-full p-3 bg-slate-50 border rounded-xl text-sm">
-                    <option value="Hadir">Hadir</option>
-                    <option value="Terlambat">Terlambat</option>
-                    <option value="Izin">Izin</option>
-                    <option value="Sakit">Sakit</option>
-                </select>
-                <!-- Form Keterangan -->
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Tanggal</label>
+                    <input type="text" id="manual-date" required placeholder="Contoh: Senin, 11 Mei 2026" class="w-full p-3 bg-slate-50 border rounded-xl text-sm outline-none">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Jam Masuk</label>
+                        <input type="text" id="manual-in" placeholder="07:00:00" class="w-full p-3 bg-slate-50 border rounded-xl text-sm outline-none">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Jam Pulang</label>
+                        <input type="text" id="manual-out" placeholder="14:00:00" class="w-full p-3 bg-slate-50 border rounded-xl text-sm outline-none">
+                    </div>
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Status Kehadiran</label>
+                    <select id="manual-status" onchange="toggleManualKeterangan()" required class="w-full p-3 bg-slate-50 border rounded-xl text-sm appearance-none outline-none">
+                        <option value="Hadir">Hadir</option>
+                        <option value="Terlambat">Terlambat</option>
+                        <option value="Izin">Izin</option>
+                        <option value="Sakit">Sakit</option>
+                    </select>
+                </div>
                 <div id="manual-keterangan-wrapper" class="hidden space-y-1 animate-fadeIn">
                     <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Keterangan / Alasan</label>
-                    <textarea id="manual-keterangan" placeholder="Alasan..." class="w-full p-3 bg-indigo-50 border border-indigo-100 rounded-xl text-sm outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+                    <textarea id="manual-keterangan" placeholder="Isi alasan jika Izin/Sakit/Terlambat..." class="w-full p-3 bg-indigo-50 border border-indigo-100 rounded-xl text-sm outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
                 </div>
                 <div class="flex gap-4 pt-4">
-                    <button type="button" onclick="closeManualAbsenModal()" class="flex-1 py-3 bg-slate-100 rounded-xl font-bold">Batal</button>
-                    <button type="submit" class="flex-1 py-3 bg-emerald-600 text-white rounded-xl font-bold">Simpan</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- MODAL EDIT DATA -->
-    <div id="modal-edit-attendance" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center p-4 backdrop-blur-sm z-[300]">
-        <div class="bg-white rounded-[2.5rem] p-8 w-full max-w-md space-y-6 shadow-2xl animate-scaleIn">
-            <h4 class="text-xl font-black border-b pb-4">Koreksi Data</h4>
-            <form onsubmit="handleEditAttendanceSubmit(event)" class="space-y-4">
-                <input type="hidden" id="edit-index">
-                <input type="text" id="edit-date" required class="w-full p-4 bg-slate-50 border rounded-2xl text-sm">
-                <div class="grid grid-cols-2 gap-4">
-                    <input type="text" id="edit-in" placeholder="Jam Masuk" class="p-4 bg-slate-50 border rounded-2xl text-sm">
-                    <input type="text" id="edit-out" placeholder="Jam Pulang" class="p-4 bg-slate-50 border rounded-2xl text-sm">
-                </div>
-                <select id="edit-status" required class="w-full p-4 bg-slate-50 border rounded-2xl text-sm">
-                    <option value="Hadir">Hadir</option><option value="Terlambat">Terlambat</option><option value="Izin">Izin</option><option value="Sakit">Sakit</option>
-                </select>
-                <div class="flex gap-4 pt-4">
-                    <button type="button" onclick="closeEditAttendanceModal()" class="flex-1 py-4 bg-slate-100 rounded-2xl font-bold">Batal</button>
-                    <button type="submit" class="flex-1 py-4 bg-indigo-600 text-white rounded-2xl font-bold">Update</button>
+                    <button type="button" onclick="closeManualAbsenModal()" class="flex-1 py-3 bg-slate-100 rounded-xl font-bold hover:bg-slate-200 transition">Batal</button>
+                    <button type="submit" class="flex-1 py-3 bg-emerald-600 text-white rounded-xl font-bold hover:bg-emerald-700 shadow-lg shadow-emerald-100 transition">Simpan Data</button>
                 </div>
             </form>
         </div>
@@ -426,100 +434,29 @@
     </div>
 
     <script>
-        // TAUTAN BACKEND TERBARU (Updated)
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwR4VtyA1ToeERmcHumI9bH3fg8SHdOzHc9UZNneyyDkiekN66u0RWG6XJa5bncOaG0tA/exec";
+        // TAUTAN BACKEND TERBARU
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbybUa93MdokfiVXOE1SSoikv4TxI3j9J93JtNlqpJ1OPAqUjX3Z_VNBB6s9NVJdkLsQLQ/exec";
         const OFFICE_LAT = -1.2942335988142928, OFFICE_LNG = 100.52147339164873, MAX_DIST = 1000;
         let users = [], attendanceData = [], picData = {}, kopData = {}, currentUser = null;
         const DEFAULT_ADMIN = { id: 1, name: 'Admin', user: 'admin', pass: '12345', role: 'admin', nip: 'ADM', jabatan: 'Administrator', statusPegawai: 'Admin', avatar: 'https://iili.io/Bra9Tb4.png' };
+        
+        let attendanceChart = null;
 
         // HELPER FUNCTIONS (KUNCI: Jangan biarkan format berubah)
         function formatTimeDisplay(val) {
             if (!val || val === '-') return '-';
             let s = String(val).trim();
             if (/^\d{2}:\d{2}:\d{2}$/.test(s)) return s;
-            if (s.includes('T')) {
-                let parts = s.split('T');
-                if (parts[1]) return parts[1].substring(0, 8);
-            }
             return s;
         }
 
         function cleanDateDisplay(val) {
             if (!val || val === '-' || val === 'undefined') return '-';
-            let s = String(val).trim();
-            if (s.includes(',') && isNaN(s)) return s;
-            if (s.includes('T') || /^\d{4}-\d{2}-\d{2}/.test(s)) {
-                let datePart = s.split('T')[0];
-                let d = new Date(datePart);
-                if (!isNaN(d.getTime())) {
-                    return d.toLocaleDateString('id-ID', {weekday: 'long', day: '2-digit', month: 'long', year: 'numeric'});
-                }
-            }
-            return s; 
-        }
-
-        function parseToTimestamp(dateStr, timeStr) {
-            if (!dateStr || dateStr === '-' || dateStr === 'undefined') return 0;
-            const months = { "Januari": 0, "Februari": 1, "Maret": 2, "April": 3, "Mei": 4, "Juni": 5, "Juli": 6, "Agustus": 7, "September": 8, "Oktober": 9, "November": 10, "Desember": 11 };
-            try {
-                let s = String(dateStr);
-                if (s.includes(',')) {
-                    const parts = s.split(', ')[1].split(' ');
-                    const day = parseInt(parts[0]);
-                    const month = months[parts[1]];
-                    const year = parseInt(parts[2]);
-                    const t = (timeStr && timeStr !== '-') ? String(timeStr).split(':') : [0,0,0];
-                    return new Date(year, month, day, parseInt(t[0] || 0), parseInt(t[1] || 0), parseInt(t[2] || 0)).getTime();
-                }
-                return new Date(s).getTime() || 0;
-            } catch(e) { return 0; }
-        }
-
-        function sortAttendanceData() {
-            attendanceData.sort((a, b) => parseToTimestamp(a.date, a.in) - parseToTimestamp(b.date, b.in));
-        }
-
-        function populateDateFilter() {
-            const select = document.getElementById('filter-date-table');
-            if (!select) return;
-            const currentVal = select.value;
-            const uniqueDates = [...new Set(attendanceData.map(item => item.date))];
-            uniqueDates.sort((a, b) => parseToTimestamp(b, "00:00:00") - parseToTimestamp(a, "00:00:00"));
-            let optionsHtml = '<option value="">Semua Tanggal</option>';
-            uniqueDates.forEach(date => { if(date !== '-' && date !== 'undefined') optionsHtml += `<option value="${date}">${date}</option>`; });
-            select.innerHTML = optionsHtml;
-            select.value = currentVal;
-        }
-
-        // UI HELPERS
-        function populateLoginUsernames() {
-            const select = document.getElementById('p-user');
-            if (!select) return;
-            select.innerHTML = '<option value="">-- Pilih Username Pegawai --</option>';
-            users.filter(u => u.role === 'pegawai').forEach(u => {
-                const opt = document.createElement('option'); opt.value = u.user; opt.textContent = u.name; select.appendChild(opt);
-            });
-        }
-
-        function populatePiketDropdown() {
-            const select = document.getElementById('pic-piket-nama');
-            if (!select) return;
-            select.innerHTML = '<option value="">-- Pilih Guru Piket --</option>';
-            users.filter(u => u.role === 'pegawai').forEach(u => {
-                const opt = document.createElement('option'); opt.value = u.name; opt.textContent = u.name; select.appendChild(opt);
-            });
-        }
-
-        function autoFillPiketNIP() {
-            const name = document.getElementById('pic-piket-nama').value;
-            const emp = users.find(u => u.name === name);
-            const nipEl = document.getElementById('pic-piket-nip');
-            if(nipEl) nipEl.value = emp ? (emp.nip || '-') : '';
+            return String(val).trim();
         }
 
         async function syncWithCloud() {
             if (!SCRIPT_URL) return;
-            sortAttendanceData(); 
             document.getElementById('loading-overlay').classList.remove('hidden');
             try { 
                 await fetch(SCRIPT_URL, { 
@@ -530,19 +467,9 @@
                     body: JSON.stringify({ type: "sync_all", users, history: attendanceData, pic: picData, kop: kopData }) 
                 }); 
             } catch (err) { console.error("Sync error:", err); } 
-            finally { document.getElementById('loading-overlay').classList.add('hidden'); }
-        }
-
-        async function fetchWithRetry(url, options = {}, retries = 3) {
-            for (let i = 0; i < retries; i++) {
-                try {
-                    const response = await fetch(url, { ...options, mode: 'cors', credentials: 'omit', cache: 'no-store' });
-                    if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
-                    return await response.json();
-                } catch (err) {
-                    if (i === retries - 1) throw err;
-                    await new Promise(res => setTimeout(res, 1000 * (i + 1)));
-                }
+            finally { 
+                document.getElementById('loading-overlay').classList.add('hidden'); 
+                if (currentUser && currentUser.role === 'admin') updateDashboardChart();
             }
         }
 
@@ -550,20 +477,15 @@
             if (!SCRIPT_URL) return;
             document.getElementById('loading-overlay').classList.remove('hidden');
             try {
-                const data = await fetchWithRetry(SCRIPT_URL, { method: 'GET', redirect: 'follow' });
+                const response = await fetch(SCRIPT_URL, { method: 'GET', cache: 'no-store' });
+                const data = await response.json();
                 users = (data.users && data.users.length) ? data.users : [DEFAULT_ADMIN];
                 if (!users.some(u => u.user === 'admin')) users.push(DEFAULT_ADMIN);
                 
-                attendanceData = (data.history || []).map(i => ({ 
-                    ...i, 
-                    date: i.date,
-                    in: i.in, 
-                    out: i.out, 
-                    keterangan: i.keterangan || "" 
-                }));
+                attendanceData = data.history || [];
+                picData = data.pic || {}; 
+                kopData = data.kop || {};
                 
-                sortAttendanceData(); 
-                picData = data.pic || {}; kopData = data.kop || {};
                 populateLoginUsernames();
                 populatePiketDropdown();
                 loadKopDataUI(); 
@@ -593,6 +515,7 @@
         }
 
         function initDashboard() {
+            if(!currentUser) return;
             const name = currentUser.name;
             document.getElementById('display-name').innerText = name;
             document.getElementById('profile-name').innerText = name;
@@ -603,13 +526,16 @@
             document.getElementById('side-avatar').src = avatarUrl;
             document.getElementById('profile-avatar').src = avatarUrl;
             document.getElementById('header-avatar').src = avatarUrl;
+            
             const isAdmin = currentUser.role === 'admin';
-            ['side-manage', 'side-pic', 'side-kop', 'side-sync', 'admin-history-filters', 'admin-manual-area'].forEach(id => {
+            ['side-manage', 'side-pic', 'side-kop', 'side-sync', 'admin-history-filters', 'admin-manual-area', 'admin-chart-container'].forEach(id => {
                 const el = document.getElementById(id); if(el) el.classList.toggle('hidden', !isAdmin);
             });
+            
             switchTab(isAdmin ? 'dashboard' : 'attendance');
             renderHistory(); 
             updateAttendanceStatus();
+            if(isAdmin) updateDashboardChart();
         }
 
         function updateAttendanceStatus() {
@@ -630,6 +556,43 @@
                 btnOut.disabled = true; btnOut.className = "px-8 py-6 rounded-3xl font-bold shadow-lg btn-disabled";
                 label.innerText = "Selesai Hari Ini";
             }
+        }
+
+        function updateDashboardChart() {
+            const ctx = document.getElementById('attendanceChart')?.getContext('2d');
+            if (!ctx) return;
+
+            // Ambil 7 tanggal terakhir unik dari data absensi
+            const uniqueDates = [...new Set(attendanceData.map(d => d.date))].slice(-7);
+            
+            const datasets = {
+                hadir: uniqueDates.map(date => attendanceData.filter(d => d.date === date && d.status === 'Hadir').length),
+                telat: uniqueDates.map(date => attendanceData.filter(d => d.date === date && d.status === 'Terlambat').length),
+                izin: uniqueDates.map(date => attendanceData.filter(d => d.date === date && (d.status === 'Izin' || d.status === 'Sakit')).length)
+            };
+
+            if (attendanceChart) attendanceChart.destroy();
+
+            attendanceChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: uniqueDates.map(d => d.split(',')[1] || d), // Ambil tgl saja tanpa hari
+                    datasets: [
+                        { label: 'Hadir', data: datasets.hadir, backgroundColor: '#10b981', borderRadius: 8 },
+                        { label: 'Telat', data: datasets.telat, backgroundColor: '#fbbf24', borderRadius: 8 },
+                        { label: 'Izin', data: datasets.izin, backgroundColor: '#f43f5e', borderRadius: 8 }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { font: { size: 10, weight: 'bold' } } },
+                        y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { stepSize: 1, font: { size: 10 } } }
+                    }
+                }
+            });
         }
 
         async function startAbsenceProcess(type) {
@@ -669,51 +632,136 @@
             });
             document.getElementById('tab-' + n)?.classList.remove('hidden');
             const btnSide = document.getElementById('side-' + n); if(btnSide) btnSide.classList.add('bg-indigo-600', 'shadow-lg');
+            document.getElementById('tab-header-title').innerText = n.charAt(0).toUpperCase() + n.slice(1);
         }
 
-        function openEditAttendanceModal(idx) {
-            const i = attendanceData[idx];
-            document.getElementById('edit-index').value = idx;
-            document.getElementById('edit-date').value = i.date;
-            document.getElementById('edit-in').value = i.in;
-            document.getElementById('edit-out').value = i.out;
-            document.getElementById('edit-status').value = i.status;
-            document.getElementById('modal-edit-attendance').classList.remove('hidden');
+        function populateLoginUsernames() {
+            const select = document.getElementById('p-user');
+            if (!select) return;
+            select.innerHTML = '<option value="">-- Pilih Username Pegawai --</option>';
+            users.filter(u => u.role === 'pegawai').forEach(u => {
+                const opt = document.createElement('option'); opt.value = u.user; opt.textContent = u.name; select.appendChild(opt);
+            });
         }
 
-        async function handleEditAttendanceSubmit(e) {
-            e.preventDefault();
-            const idx = document.getElementById('edit-index').value;
-            attendanceData[idx].date = document.getElementById('edit-date').value;
-            attendanceData[idx].in = document.getElementById('edit-in').value;
-            attendanceData[idx].out = document.getElementById('edit-out').value;
-            attendanceData[idx].status = document.getElementById('edit-status').value;
-            await syncWithCloud(); renderHistory(); closeEditAttendanceModal(); showModal("Update", "Data diperbaiki.");
+        function populatePiketDropdown() {
+            const select = document.getElementById('pic-piket-nama');
+            if (!select) return;
+            select.innerHTML = '<option value="">-- Pilih Guru Piket --</option>';
+            users.filter(u => u.role === 'pegawai').forEach(u => {
+                const opt = document.createElement('option'); opt.value = u.name; opt.textContent = u.name; select.appendChild(opt);
+            });
+        }
+
+        function autoFillPiketNIP() {
+            const name = document.getElementById('pic-piket-nama').value;
+            const emp = users.find(u => u.name === name);
+            const nipEl = document.getElementById('pic-piket-nip');
+            if(nipEl) nipEl.value = emp ? (emp.nip || '-') : '';
+        }
+
+        function populateDateFilter() {
+            const select = document.getElementById('filter-date-table');
+            if (!select) return;
+            const uniqueDates = [...new Set(attendanceData.map(item => item.date))];
+            select.innerHTML = '<option value="">Semua Tanggal</option>';
+            uniqueDates.forEach(date => { if(date !== '-' && date !== 'undefined') {
+                const opt = document.createElement('option'); opt.value = date; opt.textContent = date; select.appendChild(opt);
+            }});
+        }
+
+        // FUNGSI MODAL ADMIN
+        function openAddEmployeeModal() {
+            const modal = document.getElementById('modal-add-employee');
+            if(modal) modal.classList.remove('hidden');
+        }
+
+        function closeAddEmployeeModal() {
+            const modal = document.getElementById('modal-add-employee');
+            if(modal) modal.classList.add('hidden');
+        }
+
+        async function addEmployee(event) {
+            event.preventDefault();
+            const newEmp = {
+                id: Date.now(),
+                name: document.getElementById('new-name').value,
+                user: document.getElementById('new-user').value,
+                pass: document.getElementById('new-pass').value,
+                role: 'pegawai',
+                nip: document.getElementById('new-nip').value,
+                jabatan: document.getElementById('new-jabatan').value,
+                statusPegawai: document.getElementById('new-status').value,
+                avatar: document.getElementById('new-avatar-url').value || ""
+            };
+            users.push(newEmp);
+            await syncWithCloud();
+            closeAddEmployeeModal();
+            renderEmployeeList();
+            populateLoginUsernames();
+            showModal("Sukses", "Pegawai baru berhasil ditambahkan.");
         }
 
         function openManualAbsenModal() {
             const select = document.getElementById('manual-select-user');
+            if(!select) return;
             select.innerHTML = '<option value="">-- Pilih Pegawai --</option>';
             users.filter(u => u.role === 'pegawai').forEach(emp => {
-                const opt = document.createElement('option'); opt.value = emp.user; opt.textContent = emp.name; select.appendChild(opt);
+                const opt = document.createElement('option'); 
+                opt.value = emp.user; 
+                opt.textContent = emp.name; 
+                select.appendChild(opt);
             });
-            document.getElementById('manual-date').value = new Date().toLocaleDateString('id-ID', {weekday: 'long', day: '2-digit', month: 'long', year: 'numeric'});
+            const today = new Date().toLocaleDateString('id-ID', {weekday: 'long', day: '2-digit', month: 'long', year: 'numeric'});
+            document.getElementById('manual-date').value = today;
             document.getElementById('modal-manual-absen').classList.remove('hidden');
+        }
+
+        function closeManualAbsenModal() {
+            document.getElementById('modal-manual-absen').classList.add('hidden');
+            document.getElementById('form-manual-input').reset();
+            toggleManualKeterangan();
+        }
+
+        function toggleManualKeterangan() {
+            const status = document.getElementById('manual-status').value;
+            const wrapper = document.getElementById('manual-keterangan-wrapper');
+            if(['Terlambat', 'Izin', 'Sakit'].includes(status)) {
+                wrapper.classList.remove('hidden');
+            } else {
+                wrapper.classList.add('hidden');
+            }
         }
 
         async function handleManualAbsenSubmit(e) {
             e.preventDefault();
             const username = document.getElementById('manual-select-user').value;
             const emp = users.find(u => u.user === username);
+            if(!emp) return;
+
             const status = document.getElementById('manual-status').value;
+            const date = document.getElementById('manual-date').value;
+            const timeIn = document.getElementById('manual-in').value || '-';
+            const timeOut = document.getElementById('manual-out').value || '-';
+            const ket = document.getElementById('manual-keterangan').value || "";
+
             attendanceData.push({ 
-                name: emp.name, nip: emp.nip, statusPegawai: emp.statusPegawai, jabatan: emp.jabatan, 
-                date: document.getElementById('manual-date').value, 
-                in: document.getElementById('manual-in').value || '-', 
-                out: document.getElementById('manual-out').value || '-', 
-                status, username: emp.user, keterangan: document.getElementById('manual-keterangan').value || ""
+                name: emp.name, 
+                nip: emp.nip || '-', 
+                statusPegawai: emp.statusPegawai || '-', 
+                jabatan: emp.jabatan || '-', 
+                date: date, 
+                in: timeIn, 
+                out: timeOut, 
+                status: status, 
+                username: emp.user, 
+                keterangan: ket
             });
-            await syncWithCloud(); renderHistory(); closeManualAbsenModal(); showModal("Berhasil", "Data disimpan.");
+
+            await syncWithCloud();
+            renderHistory();
+            closeManualAbsenModal();
+            showModal("Berhasil", "Presensi manual telah disimpan.");
         }
 
         function renderHistory() {
@@ -734,126 +782,164 @@
                     <td class="p-6 text-center font-mono font-bold">${i.in}</td>
                     <td class="p-6 text-center font-mono font-bold">${i.out}</td>
                     <td class="p-6 text-xs uppercase font-bold text-indigo-600">${i.status}${i.keterangan ? `<div class="text-[9px] text-slate-400 normal-case mt-1 italic">Ket: ${i.keterangan}</div>` : ''}</td>
-                    ${isAdmin ? `<td class="p-6 text-center"><button onclick="openEditAttendanceModal(${gIdx})" class="text-blue-500 mr-4"><i class="fas fa-edit"></i></button><button onclick="deleteRow(${gIdx})" class="text-red-400"><i class="fas fa-trash"></i></button></td>` : ''}
+                    ${isAdmin ? `<td class="p-6 text-center"><button onclick="deleteRow(${gIdx})" class="text-red-400 hover:text-red-600 transition"><i class="fas fa-trash"></i></button></td>` : ''}
                 </tr>`;
             }).join('');
-            document.getElementById('stats-hadir').innerText = data.filter(x => x.status === 'Hadir').length;
-            document.getElementById('stats-late').innerText = data.filter(x => x.status === 'Terlambat').length;
-            document.getElementById('stats-izin').innerText = data.filter(x => x.status === 'Izin' || x.status === 'Sakit').length;
+            
+            // Statistik
+            const totalHadir = data.filter(x => x.status === 'Hadir').length;
+            const totalLate = data.filter(x => x.status === 'Terlambat').length;
+            const totalIzin = data.filter(x => x.status === 'Izin' || x.status === 'Sakit').length;
+            
+            document.getElementById('stats-hadir').innerText = totalHadir;
+            document.getElementById('stats-late').innerText = totalLate;
+            document.getElementById('stats-izin').innerText = totalIzin;
+            
+            if (isAdmin) updateDashboardChart();
         }
 
         function renderEmployeeList() {
             const body = document.getElementById('employee-list-body'); if(!body) return;
-            body.innerHTML = users.filter(x => x.role === 'pegawai').map(emp => `<tr><td class="p-6 font-bold">${emp.name}</td><td class="p-6">${emp.statusPegawai}</td><td class="p-6 text-center"><button onclick="deleteUser(${emp.id})" class="text-red-500"><i class="fas fa-trash"></i></button></td></tr>`).join('');
+            body.innerHTML = users.filter(x => x.role === 'pegawai').map(emp => `<tr><td class="p-6 font-bold">${emp.name}</td><td class="p-6">${emp.statusPegawai}</td><td class="p-6 text-center"><button onclick="deleteUser(${emp.id})" class="text-red-400 hover:text-red-600 transition"><i class="fas fa-trash"></i></button></td></tr>`).join('');
         }
 
-        async function addEmployee(e) {
-            e.preventDefault();
-            const avatarUrl = document.getElementById('new-avatar-url').value;
-            users.push({ id: Date.now(), name: document.getElementById('new-name').value, user: document.getElementById('new-user').value, pass: document.getElementById('new-pass').value, role: 'pegawai', nip: document.getElementById('new-nip').value, jabatan: document.getElementById('new-jabatan').value, statusPegawai: document.getElementById('new-status').value, avatar: avatarUrl });
-            await syncWithCloud(); renderEmployeeList(); populateLoginUsernames(); closeAddEmployeeModal(); showModal("Sukses", "Pegawai disimpan.");
+        async function deleteUser(id) { if(confirm("Hapus pegawai ini?")) { users = users.filter(u => u.id !== id); await syncWithCloud(); renderEmployeeList(); populateLoginUsernames(); } }
+        async function deleteRow(idx) { if(confirm("Hapus baris ini?")) { attendanceData.splice(idx, 1); await syncWithCloud(); renderHistory(); } }
+
+        function loadKopDataUI() { 
+            if(!kopData) return;
+            document.getElementById('kop-logo-kiri').value = kopData.logoKiri || "";
+            document.getElementById('kop-logo-kanan').value = kopData.logoKanan || "";
+            document.getElementById('kop-pemda').value = kopData.pemda || "";
+            document.getElementById('kop-dinas').value = kopData.dinas || "";
+            document.getElementById('kop-sekolah').value = kopData.sekolah || "";
+            document.getElementById('kop-kecamatan').value = kopData.kecamatan || "";
+            document.getElementById('kop-alamat').value = kopData.alamat || "";
+            document.getElementById('kop-email').value = kopData.email || "";
+            document.getElementById('kop-website').value = kopData.website || "";
         }
-
-        function loadKopDataUI() { if(kopData) Object.keys(kopData).forEach(k => { const el = document.getElementById('kop-'+k); if(el) el.value = kopData[k]; }); }
-        function loadPICDataUI() { if(picData) Object.keys(picData).forEach(k => { const el = document.getElementById('pic-'+k); if(el) el.value = picData[k]; }); }
-        async function handleSaveKop(e) { e.preventDefault(); kopData = { logoKiri: document.getElementById('kop-logo-kiri').value, logoKanan: document.getElementById('kop-logo-kanan').value, pemda: document.getElementById('kop-pemda').value, dinas: document.getElementById('kop-dinas').value, sekolah: document.getElementById('kop-sekolah').value, kecamatan: document.getElementById('kop-kecamatan').value, alamat: document.getElementById('kop-alamat').value, email: document.getElementById('kop-email').value, website: document.getElementById('kop-website').value }; await syncWithCloud(); showModal("Simpan", "Kop Surat Terupdate."); }
-        async function handleSavePIC(e) { e.preventDefault(); picData = { pengawas: document.getElementById('pic-pengawas-nama').value, nipPengawas: document.getElementById('pic-pengawas-nip').value, kepsek: document.getElementById('pic-kepsek-nama').value, nipKepsek: document.getElementById('pic-kepsek-nip').value, piket: document.getElementById('pic-piket-nama').value, nipPiket: document.getElementById('pic-piket-nip').value }; await syncWithCloud(); showModal("Simpan", "PIC Terupdate."); }
-
-        function toggleManualKeterangan() { document.getElementById('manual-keterangan-wrapper').classList.toggle('hidden', !['Terlambat', 'Izin', 'Sakit'].includes(document.getElementById('manual-status').value)); }
-        function openAddEmployeeModal() { document.getElementById('modal-add-employee').classList.remove('hidden'); }
-        function closeAddEmployeeModal() { document.getElementById('modal-add-employee').classList.add('hidden'); }
-        function closeManualAbsenModal() { document.getElementById('modal-manual-absen').classList.add('hidden'); }
-        function closeEditAttendanceModal() { document.getElementById('modal-edit-attendance').classList.add('hidden'); }
-        async function deleteUser(id) { if(confirm("Hapus?")) { users = users.filter(u => u.id !== id); await syncWithCloud(); renderEmployeeList(); } }
-        async function deleteRow(idx) { if(confirm("Hapus?")) { attendanceData.splice(idx, 1); await syncWithCloud(); renderHistory(); } }
-        function handleLogout() { location.reload(); }
-        function closeModal() { document.getElementById('modal-alert').classList.add('hidden'); }
-        function getDistance(la1, lo1, la2, lo2) { const R = 6371e3; const dLa = (la2-la1)*Math.PI/180, dLo = (lo2-lo1)*Math.PI/180; const a = Math.sin(dLa/2)**2 + Math.cos(la1*Math.PI/180)*Math.cos(la2*Math.PI/180)*Math.sin(dLo/2)**2; return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)); }
-        function showModal(t, m) { document.getElementById('modal-title').innerText = t; document.getElementById('modal-message').innerText = m; document.getElementById('modal-alert').classList.remove('hidden'); }
+        
+        function loadPICDataUI() { 
+            if(!picData) return;
+            document.getElementById('pic-pengawas-nama').value = picData.pengawas || "";
+            document.getElementById('pic-pengawas-nip').value = picData.nipPengawas || "";
+            document.getElementById('pic-kepsek-nama').value = picData.kepsek || "";
+            document.getElementById('pic-kepsek-nip').value = picData.nipKepsek || "";
+            document.getElementById('pic-piket-nama').value = picData.piket || "";
+            document.getElementById('pic-piket-nip').value = picData.nipPiket || "";
+        }
+        
+        async function handleSaveKop(e) { 
+            e.preventDefault(); 
+            kopData = { 
+                logoKiri: document.getElementById('kop-logo-kiri').value, 
+                logoKanan: document.getElementById('kop-logo-kanan').value, 
+                pemda: document.getElementById('kop-pemda').value, 
+                dinas: document.getElementById('kop-dinas').value, 
+                sekolah: document.getElementById('kop-sekolah').value, 
+                kecamatan: document.getElementById('kop-kecamatan').value, 
+                alamat: document.getElementById('kop-alamat').value, 
+                email: document.getElementById('kop-email').value, 
+                website: document.getElementById('kop-website').value 
+            }; 
+            await syncWithCloud(); 
+            showModal("Simpan", "Kop Surat Terupdate."); 
+        }
+        
+        async function handleSavePIC(e) { 
+            e.preventDefault(); 
+            picData = { 
+                pengawas: document.getElementById('pic-pengawas-nama').value, 
+                nipPengawas: document.getElementById('pic-pengawas-nip').value, 
+                kepsek: document.getElementById('pic-kepsek-nama').value, 
+                nipKepsek: document.getElementById('pic-kepsek-nip').value, 
+                piket: document.getElementById('pic-piket-nama').value, 
+                nipPiket: document.getElementById('pic-piket-nip').value 
+            }; 
+            await syncWithCloud(); 
+            showModal("Simpan", "PIC Terupdate."); 
+        }
 
         async function printReport() {
-            // Ambil data input manual dari form filter riwayat
             const pVal = document.getElementById('print-place')?.value || kopData.kecamatan || '...';
             const dVal = document.getElementById('print-date-manual')?.value || new Date().toLocaleDateString('id-ID', {day:'2-digit', month:'long', year:'numeric'});
+            let data = [...attendanceData];
+            const fN = document.getElementById('filter-name')?.value.toLowerCase();
+            const fD = document.getElementById('filter-date-table')?.value;
+            if (fN) data = data.filter(d => d.name.toLowerCase().includes(fN));
+            if (fD) data = data.filter(d => d.date === fD);
 
-            let dataToPrint = [...attendanceData];
-            const isAdmin = currentUser.role === 'admin';
-            if (!isAdmin) dataToPrint = dataToPrint.filter(d => d.username === currentUser.user);
-            
-            const fN = document.getElementById('filter-name')?.value.toLowerCase() || '';
-            const fD = document.getElementById('filter-date-table')?.value || '';
-            if (fN) dataToPrint = dataToPrint.filter(d => d.name.toLowerCase().includes(fN));
-            if (fD) dataToPrint = dataToPrint.filter(d => d.date === fD);
-
-            const rowsHtml = dataToPrint.map((d, idx) => {
-                const statusDisplay = d.status === 'Terlambat' ? 'Hadir / Terlambat' : d.status;
-                return `<tr>
-                    <td style="border:1px solid black;text-align:center">${idx+1}</td>
-                    <td style="border:1px solid black">${d.name}</td>
-                    <td style="border:1px solid black">${d.nip}</td>
-                    <td style="border:1px solid black">${d.statusPegawai}</td>
-                    <td style="border:1px solid black">${d.jabatan}</td>
-                    <td style="border:1px solid black">${d.date}</td>
-                    <td style="border:1px solid black;text-align:center">${d.in}</td>
-                    <td style="border:1px solid black;text-align:center">${d.out}</td>
-                    <td style="border:1px solid black;text-align:center">${statusDisplay}</td>
-                    <td style="border:1px solid black;font-style:italic">${d.keterangan || '-'}</td>
-                </tr>`;
-            }).join('');
+            const rowsHtml = data.map((d, idx) => `<tr><td style="border:1px solid black;text-align:center">${idx+1}</td><td style="border:1px solid black">${d.name}</td><td style="border:1px solid black">${d.nip}</td><td style="border:1px solid black">${d.statusPegawai}</td><td style="border:1px solid black">${d.jabatan}</td><td style="border:1px solid black">${d.date}</td><td style="border:1px solid black;text-align:center">${d.in}</td><td style="border:1px solid black;text-align:center">${d.out}</td><td style="border:1px solid black;text-align:center">${d.status}</td><td style="border:1px solid black">${d.keterangan || '-'}</td></tr>`).join('');
 
             const html = `<html><head><style>
-                body { font-family: serif; padding: 20px; color: black; } 
-                .kop-table { width: 100%; border-collapse: collapse; border-bottom: 4px double black; margin-bottom: 20px; }
-                .kop-logo { width: 85px; height: auto; }
-                .kop-text { text-align: center; padding: 0 10px; }
-                .kop-text h2 { margin: 0; font-size: 16px; font-weight: normal; text-transform: uppercase; }
-                .kop-text h1 { margin: 2px 0; font-size: 22px; font-weight: bold; text-transform: uppercase; }
-                .kop-text p { margin: 1px 0; font-size: 11px; font-style: italic; }
-                table.data-table { width:100%; border-collapse:collapse; margin-top:20px; font-size:10px; text-align: left; } 
-                table.data-table td, table.data-table th { border:1px solid black; padding:5px; } 
-                table.data-table th { background-color: #f2f2f2; text-align: center; }
-                .footer { margin-top:30px; width:100%; font-size: 12px; } 
-                .footer td { border:none; text-align:center; width: 33.3%; vertical-align: top; padding: 10px 5px; }
-                .footnote { margin-top: 40px; border-top: 1px solid #ccc; padding-top: 5px; font-size: 9px; font-style: italic; color: #555; text-align: left; }
-            </style></head><body>
+                body { font-family: 'Times New Roman', serif; padding: 20px; color: black; line-height: 1.15; } 
+                .kop-table { width: 100%; border-collapse: collapse; border-bottom: 3px solid black; margin-bottom: 2px; }
+                .kop-text { text-align: center; }
+                .kop-text h2, .kop-text h1, .kop-text p { margin: 0; padding: 0; }
+                .kop-text h2 { font-size: 16pt; font-weight: normal; text-transform: uppercase; }
+                .kop-text h1 { font-size: 18pt; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; }
+                .kop-text p { font-size: 10pt; font-style: italic; }
+                hr.kop-line { border: none; border-top: 1px solid black; margin-top: 2px; margin-bottom: 20px; }
+                .report-title { text-align: center; font-size: 14pt; font-weight: bold; text-decoration: underline; margin-bottom: 20px; margin-top: 10px; }
+                .data-table { width: 100%; border-collapse: collapse; font-size: 9pt; }
+                .data-table th, .data-table td { border: 1px solid black; padding: 4px; }
+                .data-table th { background-color: #f2f2f2; text-transform: uppercase; }
+                .footer-table { width: 100%; margin-top: 50px; font-size: 11pt; border-collapse: collapse; }
+                .footer-table td { width: 33.33%; vertical-align: top; text-align: center; padding-bottom: 80px; }
+                .sig-name { font-weight: bold; text-decoration: underline; }
+                </style></head><body>
                 <table class="kop-table">
                     <tr>
-                        <td width="15%" align="left">${kopData.logoKiri ? `<img src="${kopData.logoKiri}" class="kop-logo" onerror="this.style.display='none'">` : ''}</td>
+                        <td width="15%" align="center">${kopData.logoKiri ? `<img src="${kopData.logoKiri}" width="80">` : ''}</td>
                         <td class="kop-text">
                             <h2>${kopData.pemda || 'PEMERINTAH KABUPATEN/KOTA'}</h2>
                             <h2>${kopData.dinas || 'DINAS PENDIDIKAN DAN KEBUDAYAAN'}</h2>
                             <h1>${kopData.sekolah || 'SEKOLAH'}</h1>
-                            <p>Alamat: ${kopData.alamat || '..........'}</p>
-                            <p>Email: ${kopData.email || '..........'} | Website: ${kopData.website || '..........'}</p>
+                            <p>Alamat: ${kopData.alamat || '...'}</p>
+                            <p>Email: ${kopData.email || '...'} | Website: ${kopData.website || '...'}</p>
                         </td>
-                        <td width="15%" align="right">${kopData.logoKanan ? `<img src="${kopData.logoKanan}" class="kop-logo" onerror="this.style.display='none'">` : ''}</td>
+                        <td width="15%" align="center">${kopData.logoKanan ? `<img src="${kopData.logoKanan}" width="80">` : ''}</td>
                     </tr>
                 </table>
-                <h3 style="text-align:center; text-decoration: underline; font-size: 16px; margin-bottom: 20px;">LAPORAN KEHADIRAN PEGAWAI</h3>
+                <hr class="kop-line">
+                <div class="report-title">LAPORAN KEHADIRAN PEGAWAI</div>
                 <table class="data-table">
-                    <thead><tr><th>No</th><th>Nama</th><th>NIP</th><th>Status</th><th>Jabatan</th><th>Tgl</th><th>Masuk</th><th>Pulang</th><th>Status Presensi</th><th>Keterangan</th></tr></thead>
-                    <tbody>${rowsHtml || '<tr><td colspan="10" align="center">Tidak ada data sesuai filter</td></tr>'}</tbody>
+                    <thead><tr><th>No</th><th>Nama</th><th>NIP</th><th>Status</th><th>Jabatan</th><th>Tgl</th><th>Masuk</th><th>Pulang</th><th>Status</th><th>Keterangan</th></tr></thead>
+                    <tbody>${rowsHtml || '<tr><td colspan="10" align="center">Tidak ada data</td></tr>'}</tbody>
                 </table>
-                <table class="footer">
+                <table class="footer-table">
                     <tr>
-                        <td>Mengetahui,<br>Pengawas Satuan Pendidikan<br><br><br><br><br><b><u>${picData.pengawas || '...'}</u></b><br>NIP. ${picData.nipPengawas || '...'}</td>
-                        <td>Mengetahui,<br>Kepala Sekolah<br><br><br><br><br><b><u>${picData.kepsek || '...'}</u></b><br>NIP. ${picData.nipKepsek || '...'}</td>
-                        <td>${pVal}, ${dVal}<br>Guru Piket<br><br><br><br><br><b><u>${picData.piket || '...'}</u></b><br>NIP. ${picData.nipPiket || '...'}</td>
+                        <td>
+                            Mengetahui,<br>Pengawas Satuan Pendidikan<br><br><br><br><br>
+                            <span class="sig-name">${picData.pengawas || '................................'}</span><br>
+                            NIP. ${picData.nipPengawas || '................................'}
+                        </td>
+                        <td>
+                            Mengetahui,<br>Kepala Sekolah<br><br><br><br><br>
+                            <span class="sig-name">${picData.kepsek || '................................'}</span><br>
+                            NIP. ${picData.nipKepsek || '................................'}
+                        </td>
+                        <td>
+                            ${pVal}, ${dVal}<br>Guru Piket<br><br><br><br><br>
+                            <span class="sig-name">${picData.piket || '................................'}</span><br>
+                            NIP. ${picData.nipPiket || '................................'}
+                        </td>
                     </tr>
                 </table>
-                <div class="footnote">Dicetak Oleh Aplikasi E-Presensi ${kopData.sekolah || 'Digital'}</div>
             </body></html>`;
-
-            const frame = document.getElementById('print-frame'); 
-            const doc = frame.contentWindow.document; 
-            doc.open(); doc.write(html); doc.close();
+            const frame = document.getElementById('print-frame'); frame.contentWindow.document.open(); frame.contentWindow.document.write(html); frame.contentWindow.document.close();
             setTimeout(() => { frame.contentWindow.focus(); frame.contentWindow.print(); }, 1000);
         }
 
+        function handleLogout() { location.reload(); }
+        function closeModal() { document.getElementById('modal-alert').classList.add('hidden'); }
+        function showModal(t, m) { document.getElementById('modal-title').innerText = t; document.getElementById('modal-message').innerText = m; document.getElementById('modal-alert').classList.remove('hidden'); }
+        function getDistance(la1, lo1, la2, lo2) { const R = 6371e3; const dLa = (la2-la1)*Math.PI/180, dLo = (lo2-lo1)*Math.PI/180; const a = Math.sin(dLa/2)**2 + Math.cos(la1*Math.PI/180)*Math.cos(la2*Math.PI/180)*Math.sin(dLo/2)**2; return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)); }
+        
         setInterval(() => {
             const now = new Date(), t = now.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false}).replace(/\./g, ':');
-            document.getElementById('clock-mobile').innerText = t; document.getElementById('clock-desktop').innerText = t;
-            document.getElementById('date-mobile').innerText = now.toLocaleDateString('id-ID', {day: '2-digit', month: 'short'});
+            document.getElementById('clock-desktop').innerText = t;
+            document.getElementById('date-desktop').innerText = now.toLocaleDateString('id-ID', {weekday: 'long', day: '2-digit', month: 'short', year: 'numeric'});
         }, 1000);
         window.onload = loadFromCloud;
     </script>
