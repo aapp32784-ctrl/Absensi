@@ -174,13 +174,19 @@
                         <p id="mobile-nip" class="text-[9px] font-medium text-slate-400 mt-0.5">-</p>
                     </div>
                 </div>
-                <div class="text-right"><div id="clock-mobile" class="text-sm font-mono font-bold text-indigo-700">00:00:00</div><div id="date-mobile" class="text-[9px] text-slate-400 font-medium uppercase tracking-tighter">-</div></div>
+                <div class="text-right">
+                    <div id="clock-mobile" class="text-sm font-mono font-bold text-indigo-700">00:00:00</div>
+                    <div id="date-mobile" class="text-[9px] text-slate-400 font-medium uppercase tracking-tighter">-</div>
+                </div>
             </header>
 
             <header class="hidden md:flex items-center justify-between p-8 bg-white border-b sticky top-0 z-10">
                 <div><h2 id="tab-header-title" class="text-2xl font-black text-slate-800">Beranda</h2><p id="desktop-greeting" class="text-slate-500 text-sm">Selamat bekerja di UPT SDN 22 Tanah Keras!</p></div>
                 <div class="flex items-center gap-6">
-                    <div class="text-right"><div id="clock-desktop" class="text-2xl font-mono font-bold text-indigo-600">00:00:00</div><div id="date-desktop" class="text-sm text-slate-400 font-medium">Senin, 01 Jan 2024</div></div>
+                    <div class="text-right">
+                        <div id="clock-desktop" class="text-2xl font-mono font-bold text-indigo-600">00:00:00</div>
+                        <div id="date-desktop" class="text-sm text-slate-400 font-medium">Senin, 01 Jan 2024</div>
+                    </div>
                     <button onclick="handleLogout()" class="w-12 h-12 bg-slate-50 text-slate-400 rounded-2xl flex items-center justify-center hover:bg-red-50 hover:text-red-600 transition"><i class="fas fa-power-off"></i></button>
                 </div>
             </header>
@@ -224,10 +230,10 @@
                     <div class="bg-white p-8 md:p-12 rounded-[2.5rem] shadow-xl border border-slate-100 text-center space-y-8 max-w-2xl mx-auto">
                         <div class="bg-amber-50 border border-amber-100 p-5 rounded-3xl text-left flex gap-4">
                             <i class="fas fa-info-circle text-amber-500 text-xl"></i>
-                            <p class="text-xs md:text-sm font-medium text-amber-800 leading-relaxed"><span class="block font-bold mb-1">Informasi Keterlambatan:</span>Batas absen masuk tepat waktu adalah pukul <b>07.15 WIB. Silakan Hubungi Admin Bila Izin dan Dinas Luar.</b>.</p>
+                            <p class="text-xs md:text-sm font-medium text-amber-800 leading-relaxed"><span class="block font-bold mb-1">Informasi Keterlambatan:</span>Batas absen masuk tepat waktu adalah pukul <b>07.15 WIB. Silakan Hubungi Admin Bila Izin dan Dinas Luar</b>.</p>
                         </div>
                         <div class="space-y-2">
-                            <h3 class="text-3xl font-black text-slate-800">Presensi Digital</h3>
+                            <h3 class="text-3xl font-black text-slate-800">E-Presensi</h3>
                             <p class="text-slate-500 text-sm italic"><i class="fas fa-map-marker-alt text-red-500"></i> UPT SDN 22 Tanah Keras</p>
                         </div>
                         <div id="label-status" class="px-8 py-2.5 inline-block rounded-full bg-slate-100 text-slate-500 text-sm font-bold tracking-wide">Mengecek Sesi...</div>
@@ -887,6 +893,7 @@
                 .footer-table { width: 100%; margin-top: 50px; font-size: 11pt; border-collapse: collapse; }
                 .footer-table td { width: 33.33%; vertical-align: top; text-align: center; padding-bottom: 80px; }
                 .sig-name { font-weight: bold; text-decoration: underline; }
+                .print-footnote { margin-top: 30px; border-top: 1px solid black; padding-top: 5px; font-size: 8pt; font-style: italic; text-align: left; }
                 </style></head><body>
                 <table class="kop-table">
                     <tr>
@@ -926,6 +933,7 @@
                         </td>
                     </tr>
                 </table>
+                <div class="print-footnote">Di cetak Pada Aplikasi E-Presensi UPT SDN 22 Tanah Keras</div>
             </body></html>`;
             const frame = document.getElementById('print-frame'); frame.contentWindow.document.open(); frame.contentWindow.document.write(html); frame.contentWindow.document.close();
             setTimeout(() => { frame.contentWindow.focus(); frame.contentWindow.print(); }, 1000);
@@ -936,11 +944,22 @@
         function showModal(t, m) { document.getElementById('modal-title').innerText = t; document.getElementById('modal-message').innerText = m; document.getElementById('modal-alert').classList.remove('hidden'); }
         function getDistance(la1, lo1, la2, lo2) { const R = 6371e3; const dLa = (la2-la1)*Math.PI/180, dLo = (lo2-lo1)*Math.PI/180; const a = Math.sin(dLa/2)**2 + Math.cos(la1*Math.PI/180)*Math.cos(la2*Math.PI/180)*Math.sin(dLo/2)**2; return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)); }
         
+        // FUNGSI AKTIVASI JAM REAL-TIME (Desktop & Mobile)
         setInterval(() => {
-            const now = new Date(), t = now.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false}).replace(/\./g, ':');
-            document.getElementById('clock-desktop').innerText = t;
-            document.getElementById('date-desktop').innerText = now.toLocaleDateString('id-ID', {weekday: 'long', day: '2-digit', month: 'short', year: 'numeric'});
+            const now = new Date();
+            const t = now.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false}).replace(/\./g, ':');
+            const dShort = now.toLocaleDateString('id-ID', {weekday: 'long', day: '2-digit', month: 'short', year: 'numeric'});
+            const dLong = now.toLocaleDateString('id-ID', {weekday: 'long', day: '2-digit', month: 'long', year: 'numeric'});
+
+            // Update Desktop
+            const cd = document.getElementById('clock-desktop'); if(cd) cd.innerText = t;
+            const dd = document.getElementById('date-desktop'); if(dd) dd.innerText = dShort;
+
+            // Update Mobile
+            const cm = document.getElementById('clock-mobile'); if(cm) cm.innerText = t;
+            const dm = document.getElementById('date-mobile'); if(dm) dm.innerText = dLong;
         }, 1000);
+
         window.onload = loadFromCloud;
     </script>
 </body>
