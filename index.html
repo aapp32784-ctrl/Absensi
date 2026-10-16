@@ -137,6 +137,18 @@
             <div class="p-8">
                 <div id="login-error" class="hidden mb-4 p-3 bg-red-50 text-red-600 text-xs font-bold rounded-xl border border-red-100 flex items-center gap-2"><i class="fas fa-exclamation-circle"></i> Username atau sandi salah!</div>
                 
+                <div id="biometric-login-box" class="hidden mb-5">
+                    <button type="button" onclick="handleBiometricLogin()" class="w-full py-3.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold rounded-2xl shadow-lg shadow-emerald-200 flex items-center justify-center gap-3 transition active:scale-[0.98]">
+                        <i class="fas fa-fingerprint text-2xl"></i>
+                        <span class="text-sm">Masuk Pakai Sidik Jari / Face ID</span>
+                    </button>
+                    <div class="relative flex py-3 items-center">
+                        <div class="flex-grow border-t border-slate-200"></div>
+                        <span class="flex-shrink mx-3 text-[10px] text-slate-400 font-bold uppercase tracking-widest">atau kata sandi</span>
+                        <div class="flex-grow border-t border-slate-200"></div>
+                    </div>
+                </div>
+
                 <form id="form-pegawai" onsubmit="handleLogin(event, 'pegawai')" class="space-y-4 md:hidden">
                     <div class="space-y-1">
                         <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Username Pegawai</label>
@@ -403,6 +415,22 @@
                             <h3 id="profile-name" class="text-2xl font-black text-slate-800">-</h3>
                             <p id="profile-role-text" class="text-indigo-600 font-bold text-sm uppercase tracking-wide">-</p>
                         </div>
+
+                        <div id="biometric-settings-card" class="bg-indigo-50 border border-indigo-100 p-5 rounded-3xl text-left space-y-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-2xl bg-indigo-600 text-white flex items-center justify-center text-lg shadow-md">
+                                    <i class="fas fa-fingerprint"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-xs text-slate-800">Biometrik (Sidik Jari / Face ID)</h4>
+                                    <p id="bio-status-text" class="text-[10px] text-slate-500">Belum didaftarkan pada perangkat ini</p>
+                                </div>
+                            </div>
+                            <button id="btn-register-bio" type="button" onclick="registerBiometric()" class="w-full py-3 bg-indigo-600 text-white rounded-xl text-xs font-bold shadow-md hover:bg-indigo-700 transition flex items-center justify-center gap-2">
+                                <i class="fas fa-plus-circle"></i> Daftarkan Sidik Jari HP
+                            </button>
+                        </div>
+
                         <button onclick="handleLogout()" class="w-full py-4 text-red-600 font-bold bg-white border border-red-100 rounded-3xl flex items-center justify-center gap-3"><i class="fas fa-sign-out-alt"></i> Keluar</button>
                     </div>
                 </section>
@@ -619,6 +647,123 @@
         let confirmCallback = null;
         let currentAbsenceType = null;
 
+        function checkBiometricSupport() {
+            return window.PublicKeyCredential !== undefined && typeof window.PublicKeyCredential === 'function';
+        }
+
+        function checkExistingBiometric() {
+            const bioBox = document.getElementById('biometric-login-box');
+            if (!bioBox) return;
+            const bioUser = localStorage.getItem('epresensi_bio_user');
+            if (bioUser && checkBiometricSupport()) {
+                bioBox.classList.remove('hidden');
+            } else {
+                bioBox.classList.add('hidden');
+            }
+        }
+
+        async function registerBiometric() {
+            if (!currentUser) return;
+            if (!checkBiometricSupport()) {
+                showModal("Tidak Didukung", "Fitur Sidik Jari / Face ID tidak didukung oleh perangkat atau peramban ini.");
+                return;
+            }
+
+            try {
+                // Generate WebAuthn Credential Challenge
+                const challenge = new Uint8Array(32);
+                window.crypto.getRandomValues(challenge);
+                
+                const userId = new Uint8Array(16);
+                window.crypto.getRandomValues(userId);
+
+                const publicKey = {
+                    challenge: challenge,
+                    rp: { name: "E-Presensi Sekolah", id: window.location.hostname || "localhost" },
+                    user: {
+                        id: userId,
+                        name: currentUser.user,
+                        displayName: currentUser.name
+                    },
+                    pubKeyCredParams: [
+                        { type: "public-key", alg: -7 },  // ES256
+                        { type: "public-key", alg: -257 } // RS256
+                    ],
+                    authenticatorSelection: {
+                        authenticatorAttachment: "platform",
+                        userVerification: "preferred"
+                    },
+                    timeout: 60000
+                };
+
+                const credential = await navigator.credentials.create({ publicKey });
+                if (credential) {
+                    localStorage.setItem('epresensi_bio_user', currentUser.user);
+                    localStorage.setItem('epresensi_bio_cred_id', credential.id);
+                    updateBiometricUI();
+                    showModal("Berhasil!", "Sidik Jari / Face ID berhasil didaftarkan. Anda dapat menggunakannya untuk Login di HP ini.");
+                }
+            } catch (err) {
+                console.error("Biometric registration error:", err);
+                if (err.name !== 'NotAllowedError') {
+                    showModal("Gagal", "Pendaftaran sidik jari gagal atau dibatalkan. Pastikan Anda telah mengaktifkan Kunci Layar (PIN/Sidik Jari) di HP Anda.");
+                }
+            }
+        }
+
+        async function handleBiometricLogin() {
+            const savedUser = localStorage.getItem('epresensi_bio_user');
+            if (!savedUser) {
+                showModal("Gagal", "Belum ada akun terdaftar untuk Sidik Jari di HP ini.");
+                return;
+            }
+
+            const found = users.find(x => String(x.user).toLowerCase() === savedUser.toLowerCase());
+            if (!found) {
+                showModal("Gagal", "Data pengguna tidak ditemukan.");
+                return;
+            }
+
+            try {
+                const challenge = new Uint8Array(32);
+                window.crypto.getRandomValues(challenge);
+
+                const publicKey = {
+                    challenge: challenge,
+                    timeout: 60000,
+                    userVerification: "preferred"
+                };
+
+                const assertion = await navigator.credentials.get({ publicKey });
+                if (assertion) {
+                    currentUser = found;
+                    initDashboard();
+                    document.getElementById('login-page').classList.add('hidden');
+                    document.getElementById('main-app').classList.remove('hidden');
+                }
+            } catch (err) {
+                console.error("Biometric login error:", err);
+                if (err.name !== 'NotAllowedError') {
+                    showModal("Gagal Biometrik", "Verifikasi sidik jari/Face ID gagal. Silakan masuk menggunakan kata sandi.");
+                }
+            }
+        }
+
+        function updateBiometricUI() {
+            const statusText = document.getElementById('bio-status-text');
+            const regBtn = document.getElementById('btn-register-bio');
+            if (!statusText || !regBtn) return;
+
+            const savedUser = localStorage.getItem('epresensi_bio_user');
+            if (currentUser && savedUser === currentUser.user) {
+                statusText.innerHTML = '<span class="text-emerald-600 font-bold"><i class="fas fa-check-circle"></i> Terdaftar di HP Ini</span>';
+                regBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Perbarui Sidik Jari HP';
+            } else {
+                statusText.innerText = 'Belum didaftarkan pada perangkat ini';
+                regBtn.innerHTML = '<i class="fas fa-plus-circle"></i> Daftarkan Sidik Jari HP';
+            }
+        }
+
         // CANVAS TANDA TANGAN (SIGNATURE PAD)
         let canvas, ctx, drawing = false;
         let manualCanvasIn, manualCtxIn, manualDrawingIn = false;
@@ -726,6 +871,7 @@
                 populateDateFilter(); 
                 renderHistory(); 
                 renderEmployeeList(); 
+                checkExistingBiometric();
                 if(currentUser) initDashboard();
             } catch(e) { console.error("Load error:", e); } 
             finally { document.getElementById('loading-overlay').classList.add('hidden'); }
@@ -776,6 +922,7 @@
             switchTab(isAdmin ? 'dashboard' : 'attendance');
             renderHistory(); 
             updateAttendanceStatus();
+            updateBiometricUI();
             if(isAdmin) updateDashboardChart();
         }
 
