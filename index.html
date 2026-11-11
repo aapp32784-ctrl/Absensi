@@ -14,10 +14,10 @@
     <meta name="theme-color" content="#1e3a8a">
     
     <!-- Ikon Apple Touch Icon Menggunakan Foto Logo Sekolah (iOS iPhone & iPad) -->
-    <link rel="apple-touch-icon" href="https://iili.io/3b1SedN.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="https://iili.io/3b1SedN.png">
-    <link rel="apple-touch-icon" sizes="167x167" href="https://iili.io/3b1SedN.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="https://iili.io/3b1SedN.png">
+    <link rel="apple-touch-icon" href="https://iili.io/nb1rP8g.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="https://iili.io/nb1rP8g.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="https://iili.io/nb1rP8g.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://iili.io/nb1rP8g.png">
     
     <!-- Manifest Inline PWA (Ikon Otomatis Menggunakan Logo Sekolah di Chrome, Edge & Android) -->
     <link rel="manifest" href="data:application/json;base64,eyJkZWZhdWx0X2xvY2FsZSI6ImlkIiwibmFtZSI6IkUtUFJFU0VOU0kgU0VLT0xBSCIsInNob3J0X25hbWUiOiJFLVBSRVNFTlNJIiwic3RhcnRfdXJsIjoiLi8iLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsImJhY2tncm91bmRfY29sb3IiOiIjMWUzYThhIiwidGhlbWVfY29sb3IiOiIjMWUzYThhIiwiaWNvbnMiOlt7InNyYyI6Imh0dHBzOi8vaWlsaS5pby8zYjFTZWROLnBuZyIsInNpemVzIjoiMTkyeDE5MiIsInR5cGUiOiJpbWFnZS9wbmciLCJwdXJwb3NlIjoiYW55IG1hc2thYmxlIn0seyJzcmMiOiJodHRwczovL2lpbGkuaW8vM2IxU2VkTi5wbmciLCJzaXplcyI6IjUxMng1MTIiLCJ0eXBlIjoiaW1hZ2UvcG5nIiwicHVycG9zZSI6ImFueSBtYXNrYWJsZSJ9XX0=">
@@ -641,7 +641,7 @@
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx8A91COMyxFYVqpcUdKy-e_9UmARJKG2L3A7BUwYV3ODZyELFzUkioL-0Sy12MopI1/exec";
         const OFFICE_LAT = -1.2942335988142928, OFFICE_LNG = 100.52147339164873, MAX_DIST = 1000;
         let users = [], attendanceData = [], picData = {}, kopData = {}, currentUser = null;
-        const DEFAULT_ADMIN = { id: 1, name: 'Admin', user: 'admin', pass: '12345', role: 'admin', nip: 'ADM', jabatan: 'Administrator', statusPegawai: 'Admin', avatar: 'https://iili.io/ChkXJyb.png' };
+        const DEFAULT_ADMIN = { id: 1, name: 'Admin', user: 'admin', pass: '12345', role: 'admin', nip: 'ADM', jabatan: 'Administrator', statusPegawai: 'Admin', avatar: 'https://iili.io/nb1rP8g.png' };
         
         let attendanceChart = null;
         let confirmCallback = null;
@@ -904,7 +904,7 @@
             
             let avatarUrl = currentUser.avatar;
             if (currentUser.role === 'admin') {
-                avatarUrl = 'https://iili.io/ChkXJyb.png';
+                avatarUrl = 'https://iili.io/nb1rP8g.png';
             }
             if (!avatarUrl) {
                 avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random&color=fff&bold=true`;
